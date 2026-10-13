@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef } from 'react'
-import { Link } from 'react-router-dom'
 import ClevioLogo from '../components/ClevioLogo'
 import {
   PhoneIcon,
@@ -814,10 +813,10 @@ export default function Landing() {
       {/* 1. STICKY NAVBAR */}
       <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-15 sm:h-16 md:h-22 flex items-center justify-between">
-          <Link to="/" className="flex items-center group">
+          <a href="#" className="flex items-center group">
             <ClevioLogo size="md" className="sm:hidden" variant="dark" />
             <ClevioLogo size="lg" className="hidden sm:inline-flex" variant="dark" />
-          </Link>
+          </a>
 
           {/* Center Links (Desktop) */}
           <div className="hidden md:flex items-center gap-9 text-[15px] font-semibold text-gray-700">
@@ -1757,8 +1756,8 @@ export default function Landing() {
                 {t.footer.legal}
               </h4>
               <ul className="space-y-2.5 text-xs text-gray-600">
-                <li><Link to="/privacy" className="hover:text-black transition-colors">{t.footer.links.privasi}</Link></li>
-                <li><Link to="/terms" className="hover:text-black transition-colors">{t.footer.links.ketentuan}</Link></li>
+                <li><a href="#" className="hover:text-black transition-colors">{t.footer.links.privasi}</a></li>
+                <li><a href="#" className="hover:text-black transition-colors">{t.footer.links.ketentuan}</a></li>
                 <li><a href="#" className="hover:text-black transition-colors">{t.footer.links.aiPolicy}</a></li>
               </ul>
             </div>
