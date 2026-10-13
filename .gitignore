@@ -23,3 +23,16 @@ npm-debug.log*
 .DS_Store
 .vscode/
 .idea/
+.vercel
+
+# Agent instructions & scratch
+.agents/
+AGENTS.md
+GEMINI.md
+antislop.md
+AI-docs/
+Oauth-google-preparation/
+deploy/
+docs/
+*.csv
+*.xlsx

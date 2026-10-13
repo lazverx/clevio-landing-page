@@ -4,12 +4,11 @@ export default {
   theme: {
     extend: {
       fontFamily: {
+        heading: ['Poppins', '-apple-system', 'sans-serif'],
         sans: [
+          'Inter',
           '-apple-system',
           'BlinkMacSystemFont',
-          'SF Pro Display',
-          'SF Pro Text',
-          'Inter',
           'system-ui',
           'sans-serif',
         ],
@@ -26,16 +25,17 @@ export default {
           50: '#fbfbfd',
         },
         brand: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#0071e3',
-          700: '#0058b9',
-          900: '#0a2540',
+          50: '#f0f3fa',
+          100: '#e1e7f5',
+          200: '#c3cfeb',
+          400: '#3d4f9f',
+          500: '#273887',
+          600: '#1C2974',
+          700: '#141d54',
+          800: '#0e153d',
+          900: '#070a20',
         },
-        accent: '#0071e3',
+        accent: '#1C2974',
       },
       boxShadow: {
         card: '0 1px 2px rgba(16,24,40,0.04), 0 4px 16px rgba(16,24,40,0.06)',

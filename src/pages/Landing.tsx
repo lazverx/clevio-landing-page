@@ -1,864 +1,1784 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
+import ClevioLogo from '../components/ClevioLogo'
+import {
+  PhoneIcon,
+  VideoIcon,
+  ChevronLeftIcon,
+  ChevronDownIcon,
+  SendIcon,
+  SmileIcon,
+  DoubleCheckIcon,
+  CheckIcon,
+  CloseIcon,
+  LightningIcon,
+  CalendarIcon,
+  ShieldCheckIcon,
+  MessageSquareIcon,
+  QrCodeIcon,
+  SparklesIcon,
+  MenuIcon,
+  XIcon,
+  ArrowRightIcon,
+  InstagramIcon,
+  LinkedInIcon,
+  ShoppingBagIcon,
+  ClinicIcon,
+  PropertyIcon,
+  UserIcon,
+} from '../components/Icons'
 
 type Lang = 'id' | 'en'
 
-type Msg = { side: 'in' | 'out'; text: string }
-type UseCase = { key: string; label: string; name: string; chat: Msg[] }
-type Plan = { name: string; m: number; a: number; items: string[]; featured?: boolean }
+type Msg = { side: 'user' | 'bot'; text: string; time: string }
+type UseCase = {
+  key: string
+  label: string
+  name: string
+  title: string
+  desc: string
+  bullets: string[]
+  chat: Msg[]
+}
+type Plan = {
+  name: string
+  sub: string
+  m: number
+  items: string[]
+  featured?: boolean
+  btnText: string
+}
+
+interface HeroScenario {
+  key: string
+  label: string
+  shopName: string
+  initialChat: Msg[]
+  quickQuestions: { q: string; a: string }[]
+}
+
 interface LangCopy {
-  nav: { solusi: string; cara: string; harga: string; bantuan: string; masuk: string }
-  hero: { eyebrow: string; title1: string; title2: string; sub: string; cta: string; learn: string; badge: string; heroChat: Msg[] }
-  how: { eyebrow: string; title: string; steps: { n: string; t: string; d: string }[] }
-  arthur: { eyebrow: string; title1: string; title2: string; body: string; role: string; cta: string; chat: Msg[] }
-  solusi: { eyebrow: string; title: string; sub: string; bullets: string[]; heading: (n: string, l: string) => string; body: string }
-  testimonial: { eyebrow: string; title: string; items: { q: string; a: string; r: string }[] }
-  pricing: { eyebrow: string; title: string; sub: string; monthly: string; annual: string; per: string; startFree: string; pick: string; plans: Plan[]; popular: string }
-  faq: { eyebrow: string; title: string; items: { q: string; a: string }[] }
-  cta: { title: string; sub: string; btn: string }
-  footer: { clevio: string; dukungan: string; perusahaan: string; legal: string; copyright: string; systems: string; links: Record<string, string> }
+  nav: { solusi: string; cara: string; bandingkan: string; harga: string; bantuan: string; masuk: string; cta: string }
+  hero: {
+    title1: string
+    title2: string
+    sub: string
+    cta: string
+    learn: string
+    trust1: string
+    trust2: string
+    trust3: string
+    chip1: string
+    chip2: string
+    simulatorHint: string
+    scenarios: HeroScenario[]
+  }
+  how: {
+    eyebrow: string
+    title: string
+    sub: string
+    steps: { n: string; t: string; d: string }[]
+  }
+  comparison: {
+    eyebrow: string
+    title: string
+    sub: string
+    botBadge: string
+    botTitle: string
+    botDesc: string
+    botBad: string[]
+    botChat: Msg[]
+    clevioBadge: string
+    clevioTitle: string
+    clevioDesc: string
+    clevioGood: string[]
+    clevioChat: Msg[]
+  }
+  arthur: {
+    eyebrow: string
+    title: string
+    body: string
+    cta: string
+  }
+  solusi: {
+    eyebrow: string
+    title: string
+  }
+  pricing: {
+    eyebrow: string
+    title: string
+    per: string
+    popular: string
+    plans: Plan[]
+  }
+  faq: {
+    eyebrow: string
+    title: string
+    viewAll: string
+    items: { q: string; a: string }[]
+  }
+  cta: {
+    title: string
+    sub: string
+    btn: string
+  }
+  footer: {
+    clevio: string
+    dukungan: string
+    perusahaan: string
+    legal: string
+    copyright: string
+    systems: string
+    links: {
+      solusi: string
+      cara: string
+      harga: string
+      blog: string
+      pusatBantuan: string
+      kontak: string
+      status: string
+      komunitas: string
+      tentang: string
+      karier: string
+      media: string
+      mitra: string
+      privasi: string
+      ketentuan: string
+      aiPolicy: string
+    }
+  }
   useCases: UseCase[]
 }
 
 const COPY: Record<Lang, LangCopy> = {
   id: {
-    nav: { solusi: 'Solusi', cara: 'Cara kerja', harga: 'Harga', bantuan: 'Bantuan', masuk: 'Masuk' },
+    nav: { solusi: 'Solusi', cara: 'Cara Kerja', bandingkan: 'Perbandingan', harga: 'Harga', bantuan: 'Bantuan', masuk: 'Masuk', cta: 'Mulai Gratis' },
     hero: {
-      eyebrow: 'Clevio AI Staff',
       title1: 'Clevio AI Staff',
       title2: 'untuk WhatsApp Anda.',
-      sub: 'Menjawab pelanggan, mengatur jadwal, mengurus hal kecil — sepanjang hari. Siap dalam lima menit.',
-      cta: 'Mulai gratis',
-      learn: 'Pelajari lebih lanjut',
-      badge: 'Aktif sekarang',
-      heroChat: [
-        { side: 'in', text: 'Halo, masih buka?' },
-        { side: 'out', text: 'Halo Kak! Buka 24 jam 😊 Ada yang bisa dibantu?' },
-        { side: 'in', text: 'Mau pesan kue ulang tahun untuk besok.' },
-        { side: 'out', text: 'Bisa Kak. Ukuran berapa & rasa apa?' },
-        { side: 'in', text: '20cm, cokelat.' },
-        { side: 'out', text: 'Siap dicatat! Mau diantar atau diambil?' },
+      sub: 'Menjawab pelanggan, mengatur jadwal, dan mengurus pesanan sepanjang hari. Siap dalam lima menit.',
+      cta: 'Mulai Gratis',
+      learn: 'Pelajari Lebih Lanjut',
+      trust1: 'Respon Cepat & Konsisten',
+      trust2: 'Terhubung ke Kalender & Tools',
+      trust3: 'Aman & Tepercaya',
+      chip1: 'Respon Otomatis 24 Jam',
+      chip2: 'Terhubung ke Kalender & Sheets',
+      simulatorHint: 'Pilih pertanyaan cepat:',
+      scenarios: [
+        {
+          key: 'shop',
+          label: 'Toko Online',
+          shopName: 'Toko Nadine',
+          initialChat: [
+            { side: 'user', text: 'Halo, kak. Ini masih ada kaos oversize warna navy?', time: '09.41' },
+            { side: 'bot', text: 'Halo! Ada, kak. Kaos oversize navy masih tersedia ya.', time: '09.41' },
+            { side: 'user', text: 'Bisa pesan ukuran L sekaligus 2 pcs?', time: '09.42' },
+            { side: 'bot', text: 'Bisa, kak! Totalnya Rp 198.000. Mau dikirim ke alamat yang sama seperti sebelumnya?', time: '09.42' },
+          ],
+          quickQuestions: [
+            { q: 'Ada diskon atau gratis ongkir?', a: 'Ada Kak! Pembelian minimal 2 pcs gratis ongkir se-Jabodetabek dan cashback 5%.' },
+            { q: 'Bisa kirim hari ini?', a: 'Bisa Kak! Pembayaran sebelum jam 15.00 langsung dikirim hari ini via ekspedisi pilihan Kakak.' },
+            { q: 'Bisa bayar COD?', a: 'Bisa banget Kak! Kami melayani COD via kurir SiCepat dan J&T. Mau diproses sekarang?' },
+          ],
+        },
+        {
+          key: 'clinic',
+          label: 'Klinik',
+          shopName: 'Klinik dr. Sari',
+          initialChat: [
+            { side: 'user', text: 'Halo dok, mau tanya jadwal pembersihan karang gigi Sabtu ini?', time: '10.15' },
+            { side: 'bot', text: 'Halo! Untuk scaling hari Sabtu tersedia slot pk 11.00 dan pk 15.30 bersama drg. Sari. Mau ambil jam berapa Kak?', time: '10.15' },
+          ],
+          quickQuestions: [
+            { q: 'Berapa biaya perawatannya?', a: 'Biaya scaling mulai Rp 250.000 sudah termasuk konsultasi dokter dan dental checkup gratis Kak.' },
+            { q: 'Bisa pakai asuransi?', a: 'Bisa Kak! Kami bekerjasama dengan AdMedika, Prudential, dan reimbursement asuransi lainnya.' },
+            { q: 'Boleh booking jam 15.30?', a: 'Siap Kak! Slot jam 15.30 hari Sabtu sudah kami reservasi. Boleh minta nama lengkap pasien?' },
+          ],
+        },
+        {
+          key: 'property',
+          label: 'Properti',
+          shopName: 'Reza BSD Property',
+          initialChat: [
+            { side: 'user', text: 'Halo Mas, cari rumah 2 lantai di BSD budget 2M ada rekomendasi?', time: '11.20' },
+            { side: 'bot', text: 'Halo Pak! Ada cluster Foresta di 1.95M siap huni. Mau saya kirim brosur PDF dan denahnya?', time: '11.20' },
+          ],
+          quickQuestions: [
+            { q: 'Bisa kirim brosur & denah?', a: 'Siap Pak! Dokumen brosur dan denah Foresta sudah dikirim. Ada promo subsidi DP 15 juta bulan ini.' },
+            { q: 'Bisa survei lokasi Sabtu ini?', a: 'Bisa banget Pak! Jadwal survei pk 10.00 hari Sabtu sudah kami catat bersama agen kami.' },
+            { q: 'Bisa simulasi cicilan KPR?', a: 'Bisa Pak! Untuk DP 10% (195 jt), cicilan mulai 12 jutaan/bulan fixed 3 tahun via bank rekanan.' },
+          ],
+        },
+        {
+          key: 'personal',
+          label: 'Pribadi',
+          shopName: 'Leo Personal Staff',
+          initialChat: [
+            { side: 'user', text: 'Tolong ingatkan bayar tagihan listrik dan asuransi tiap tanggal 25 ya.', time: '08.05' },
+            { side: 'bot', text: 'Siap! Pengingat otomatis sudah dijadwalkan setiap tanggal 25 pukul 09.00 pagi.', time: '08.05' },
+          ],
+          quickQuestions: [
+            { q: 'Ada meeting apa hari ini?', a: 'Hari ini ada 2 agenda: pk 10.00 Weekly Sync Tim Produk, dan pk 14.30 Call Vendor di Google Meet.' },
+            { q: 'Catat ide konten video', a: 'Siap dicatat ke to-do list: Ide konten video edukasi Clevio AI Staff. Sudah disinkronkan ke kalender.' },
+            { q: 'Rangkum email prioritas', a: 'Ada 1 email penting dari Klien Korporat perihal konfirmasi jadwal presentasi proposal besok.' },
+          ],
+        },
       ],
     },
     how: {
-      eyebrow: 'Cara kerja', title: 'Lima menit, lalu selesai.',
+      eyebrow: 'CARA KERJA',
+      title: 'Lima menit, lalu selesai.',
+      sub: 'Aktifkan asisten AI untuk WhatsApp Anda dalam tiga langkah mudah.',
       steps: [
-        { n: '01', t: 'Ngobrol dengan Arthur', d: 'Ceritakan bisnis Anda dengan bahasa sendiri. Arthur merangkai semuanya.' },
-        { n: '02', t: 'Hubungkan WhatsApp', d: 'Scan QR satu kali. Nomor Anda langsung dijaga AI.' },
-        { n: '03', t: 'AI mulai bekerja', d: 'Pelanggan dibalas otomatis dengan gaya bicara Anda.' },
+        { n: '01', t: 'Ngobrol dengan Arthur', d: 'Ceritakan bisnis dengan bahasa sendiri tanpa istilah teknis.' },
+        { n: '02', t: 'Hubungkan WhatsApp', d: 'Scan QR satu kali, nomor langsung aktif dijaga AI secara mandiri.' },
+        { n: '03', t: 'AI Mulai Bekerja', d: 'Pesan dibalas otomatis sesuai gaya bicara dan katalog brand Anda.' },
+      ],
+    },
+    comparison: {
+      eyebrow: 'MENGAPA CLEVIO AI STAFF',
+      title: 'Tinggalkan chatbot kaku. Beralih ke asisten AI yang manusiawi.',
+      sub: 'Pelanggan di WhatsApp ingin berbicara dengan staf yang memahami konteks percakapan, bukan bot kaku yang menyuruh ketik angka.',
+      botBadge: 'CHATBOT LAMA (RULE-BASED)',
+      botTitle: 'Kaku & Sering Bikin Pembeli Kabur',
+      botDesc: 'Hanya mengenali tombol dan kata kunci kaku. Sekali pelanggan mengetik kalimat bebas, bot langsung macet.',
+      botBad: [
+        'Hanya membalas jika pelanggan ketik angka (1, 2, 3)',
+        'Gagal total saat ada typo, singkatan, atau bahasa santai',
+        'Pembeli merasa diabaikan dan langsung pindah ke kompetitor',
+      ],
+      botChat: [
+        { side: 'user', text: 'Halo min, mau tanya kaos polo navy ada diskon gak?', time: '14.10' },
+        { side: 'bot', text: 'Format tidak dikenal. Ketik 1 untuk katalog, 2 jam operasional, 3 komplain.', time: '14.10' },
+      ],
+      clevioBadge: 'CLEVIO AI STAFF (NATURAL & SOLUTIF)',
+      clevioTitle: 'Pintar, Luwes, dan Siap Jualan 24/7',
+      clevioDesc: 'Memahami bahasa sehari-hari orang Indonesia, gaya belanja WhatsApp, dan proaktif membantu transaksi closing.',
+      clevioGood: [
+        'Memahami bahasa santai, singkatan, typo, dan konteks percakapan',
+        'Proaktif menawarkan promo bundle dan otomatis catat order ke Sheets',
+        'Tahu persis kapan harus eskalasi ke staf manusia saat ada kendala',
+      ],
+      clevioChat: [
+        { side: 'user', text: 'Halo min, mau tanya kaos polo navy ada diskon gak?', time: '14.10' },
+        { side: 'bot', text: 'Ada Kak! Polo navy diskon 10% + gratis ongkir hari ini. Mau sekalian ukuran apa Kak?', time: '14.10' },
       ],
     },
     arthur: {
-      eyebrow: 'Arthur', title1: 'Bangun asisten AI', title2: 'sambil ngobrol.',
-      body: 'Arthur menerjemahkan kebutuhan Anda menjadi asisten AI siap pakai. Tanpa form panjang, tanpa istilah teknis.',
-      role: 'Pembuat Asisten',
-      cta: 'Lihat paket',
-      chat: [
-        { side: 'in', text: 'Bisnis Anda di bidang apa?' },
-        { side: 'out', text: 'Toko sepatu online di WhatsApp.' },
-        { side: 'in', text: 'Beri nama asisten AI ini.' },
-        { side: 'out', text: 'Mira.' },
-        { side: 'in', text: 'Mira aktif. Siap menerima pesanan.' },
-      ] as Msg[],
+      eyebrow: 'SPOTLIGHT ARTHUR',
+      title: 'Bangun Asisten AI Sambil Ngobrol.',
+      body: 'Arthur akan merangkum kebutuhan bisnis Anda tanpa form panjang atau istilah teknis. Cukup ngobrol seperti biasa, dan asisten digital Anda langsung siap bekerja.',
+      cta: 'Coba Ngobrol dengan Arthur',
     },
     solusi: {
-      eyebrow: 'Solusi', title: 'Cocok untuk apa pun.',
-      sub: 'Satu platform — untuk bisnis Anda maupun kebutuhan pribadi.',
-      bullets: ['Membalas pertanyaan produk & harga', 'Bantu booking atau follow-up otomatis', 'Eskalasi ke Anda saat butuh manusia'],
-      heading: (name: string, label: string) => `${name}, asisten AI Anda untuk ${label.toLowerCase()}.`,
-      body: 'Memahami produk, harga, dan jadwal Anda. Berbicara dengan nada yang sesuai brand — tidak terdengar seperti robot.',
-    },
-    testimonial: {
-      eyebrow: 'Cerita pelanggan', title: 'Sudah dirasakan, bukan dijanjikan.',
-      items: [
-        { q: 'Order naik tiga kali sejak pakai Clevio. AI-nya lebih sabar dari saya.', a: 'Rina', r: 'Owner Toko Online' },
-        { q: 'Tiga admin kewalahan kini jadi satu AI. Tim bisa fokus closing.', a: 'Budi', r: 'Klinik Kecantikan' },
-        { q: 'Sepuluh menit selesai. Saya kira bakal rumit, ternyata cukup ngobrol.', a: 'Andre', r: 'Agen Properti' },
-      ],
+      eyebrow: 'SOLUSI UNTUK BERBAGAI INDUSTRI',
+      title: 'Satu solusi, banyak kemungkinan.',
     },
     pricing: {
-      eyebrow: 'Harga', title: 'Harga sederhana.', sub: 'Mulai gratis. Tingkatkan kapan saja.',
-      monthly: 'Bulanan', annual: 'Tahunan · hemat 20%',
-      per: '/bln', startFree: 'Mulai gratis', pick: 'Pilih paket',
+      eyebrow: 'PAKET & HARGA',
+      title: 'Pilih paket yang sesuai dengan kebutuhan Anda.',
+      per: '/bulan',
+      popular: 'PALING POPULER',
       plans: [
-        { name: 'Starter', m: 0, a: 0, items: ['1 asisten AI', '500 pesan / bulan', 'Dukungan email'] },
-        { name: 'Growth', m: 299, a: 239, items: ['5 asisten AI', '10.000 pesan / bulan', 'Integrasi dokumen', 'Dukungan prioritas'], featured: true },
-        { name: 'Business', m: 999, a: 799, items: ['Asisten tak terbatas', 'Pesan tak terbatas', 'SLA & onboarding'] },
+        {
+          name: 'Growth',
+          sub: 'Untuk bisnis yang berkembang',
+          m: 299,
+          featured: true,
+          items: [
+            'Hingga 5.000 percakapan/bulan',
+            'Integrasi Kalender & Sheets',
+            'Custom gaya bicara brand',
+            'Dukungan prioritas',
+          ],
+          btnText: 'Mulai Sekarang',
+        },
+        {
+          name: 'Business',
+          sub: 'Untuk skala lebih besar',
+          m: 999,
+          items: [
+            'Percakapan tanpa batas',
+            'Multi-agen untuk beberapa nomor',
+            'Integrasi lanjutan (CRM, dll)',
+            'Dukungan prioritas 24/7',
+          ],
+          btnText: 'Hubungi Kami',
+        },
       ],
-      popular: 'Populer',
     },
     faq: {
-      eyebrow: 'Bantuan', title: 'Pertanyaan umum.',
+      eyebrow: 'PERTANYAAN YANG SERING DIAJUKAN',
+      title: 'Masih ada pertanyaan?',
+      viewAll: 'Lihat semua pertanyaan',
       items: [
-        { q: 'Apakah perlu paham teknologi?', a: 'Tidak. Ngobrol singkat dengan Arthur, lima menit kemudian asisten AI Anda siap bekerja.' },
-        { q: 'Apakah bisa pakai nomor WhatsApp saya?', a: 'Bisa. Scan QR sekali, AI langsung membalas dari nomor tersebut.' },
-        { q: 'Apakah cocok untuk kebutuhan pribadi?', a: 'Sangat. Leo bisa mengatur pengingat, merangkum email, dan mengurus hal kecil sehari-hari.' },
-        { q: 'Apakah data saya aman?', a: 'Data tersimpan di server pribadi Anda dan tidak digunakan untuk melatih model publik.' },
-        { q: 'Bisa berhenti kapan saja?', a: 'Bebas berhenti kapan saja. Tanpa kontrak, tanpa biaya tersembunyi.' },
+        {
+          q: 'Apa itu Clevio AI Staff?',
+          a: 'Clevio AI Staff adalah asisten AI terlatih yang berfungsi sebagai staf digital untuk bisnis Anda. Clevio menjawab chat pelanggan secara otomatis di WhatsApp, mengatur reservasi/jadwal, mengecek stok, hingga eskalasi ke staf manusia saat diperlukan.',
+        },
+        {
+          q: 'Apakah bisa terhubung ke nomor WhatsApp saya?',
+          a: 'Bisa. Anda cukup melakukan scan QR code WhatsApp Web satu kali melalui dashboard Clevio. Nomor WhatsApp yang Anda gunakan saat ini langsung aktif dikelola oleh AI tanpa perlu ganti nomor.',
+        },
+        {
+          q: 'Apakah sulit untuk memulai dan butuh paham teknis?',
+          a: 'Sama sekali tidak. Anda hanya perlu ngobrol santai dengan Arthur (AI Builder kami) selama 5 menit untuk menceritakan produk dan gaya bicara bisnis Anda. Tidak perlu coding atau konfigurasi teknis rumit.',
+        },
+        {
+          q: 'Data bisnis dan pelanggan saya aman tidak?',
+          a: 'Sangat aman. Seluruh data pelanggan dan riwayat percakapan bisnis Anda dienkripsi dengan standar enterprise dan disimpan di server privat yang aman. Data Anda tidak digunakan untuk melatih model AI publik.',
+        },
+        {
+          q: 'Apakah bisa dialihkan (eskalasi) ke admin manusia?',
+          a: 'Bisa kapan saja. AI secara otomatis memberi notifikasi jika ada pertanyaan spesifik, komplain, atau kondisi yang memerlukan penanganan staf manusia.',
+        },
+        {
+          q: 'Apakah perlu kartu kredit untuk mencoba?',
+          a: 'Tidak perlu. Anda bisa mulai dengan masa uji coba gratis tanpa perlu memasukkan kartu kredit atau data pembayaran apa pun.',
+        },
       ],
     },
-    cta: { title: 'Mulai hari ini.', sub: 'Gratis untuk dicoba. Tanpa kartu kredit.', btn: 'Mulai sekarang' },
+    cta: {
+      title: 'Mulai hari ini. Gratis untuk dicoba, tanpa kartu kredit.',
+      sub: 'Rasakan sendiri bagaimana Clevio AI Staff membantu bisnis Anda lebih responsif, profesional, dan efisien.',
+      btn: 'Mulai Sekarang',
+    },
     footer: {
-      clevio: 'Clevio AI Staff', dukungan: 'Dukungan', perusahaan: 'Perusahaan', legal: 'Legal',
+      clevio: 'Clevio AI Staff',
+      dukungan: 'Dukungan',
+      perusahaan: 'Perusahaan',
+      legal: 'Legal',
+      copyright: 'Dibuat di Indonesia.',
+      systems: 'Semua sistem normal',
       links: {
-        solusi: 'Solusi', cara: 'Cara kerja', harga: 'Harga',
-        faq: 'FAQ', kontak: 'Hubungi kami', status: 'Status sistem',
-        tentang: 'Tentang', karier: 'Karier', hubungi: 'Kontak',
-        privasi: 'Privasi', ketentuan: 'Ketentuan', keamanan: 'Keamanan',
+        solusi: 'Solusi',
+        cara: 'Cara Kerja',
+        harga: 'Harga',
+        blog: 'Blog',
+        pusatBantuan: 'Pusat Bantuan',
+        kontak: 'Hubungi Kami',
+        status: 'Status Sistem',
+        komunitas: 'Komunitas',
+        tentang: 'Tentang Kami',
+        karier: 'Karier',
+        media: 'Media',
+        mitra: 'Mitra',
+        privasi: 'Kebijakan Privasi',
+        ketentuan: 'Syarat & Ketentuan',
+        aiPolicy: 'Penggunaan AI yang Bertanggung Jawab',
       },
-      copyright: 'Dibuat di Indonesia.', systems: 'Semua sistem normal',
     },
     useCases: [
-      { key: 'shop', label: 'Toko Online', name: 'Mira',
+      {
+        key: 'shop',
+        label: 'Toko Online',
+        name: 'Toko Nadine',
+        title: 'Layani pelanggan, terima pesanan, dan kelola stok langsung dari WhatsApp.',
+        desc: 'Membantu pembeli memilih produk, memeriksa ketersediaan varian warna dan ukuran, serta mencatat detail pengiriman secara otomatis.',
+        bullets: [
+          'Jawab pertanyaan produk otomatis 24 jam',
+          'Cek stok dan harga real-time akurat',
+          'Terima pesanan dan konfirmasi pembayaran',
+          'Kirim info pengiriman & resi ke pelanggan',
+          'Terhubung langsung ke Google Sheets untuk pencatatan',
+        ],
         chat: [
-          { side: 'in', text: 'Ready Nike Air size 42?' },
-          { side: 'out', text: 'Ready 3 pcs Kak. Hitam atau putih?' },
-          { side: 'in', text: 'Putih.' },
-          { side: 'out', text: 'Rp 1.299.000, gratis ongkir. Checkout sekarang?' },
-        ] },
-      { key: 'clinic', label: 'Klinik', name: 'Sasha',
+          { side: 'user', text: 'Kak, ini ada yang ukuran M?', time: '10.01' },
+          { side: 'bot', text: 'Ada, kak. Ukuran M masih tersedia untuk semua warna. Mau order?', time: '10.01' },
+          { side: 'user', text: 'Boleh! Warna beige 1 ya. Berapa harganya?', time: '10.02' },
+          { side: 'bot', text: 'Untuk kaos oversize warna beige harganya Rp 99.000. Mau saya proses sekarang?', time: '10.02' },
+        ],
+      },
+      {
+        key: 'clinic',
+        label: 'Klinik',
+        name: 'Klinik dr. Sari',
+        title: 'Booking jadwal dokter dan konsultasi tanpa antre telepon.',
+        desc: 'Mengatur janji temu pasien, mengirim pengingat jadwal konsultasi, dan menjawab info prosedur atau jam operasional klinik.',
+        bullets: [
+          'Reservasi dan penjadwalan pasien otomatis',
+          'Sinkronisasi langsung dengan Google Calendar dokter',
+          'Pengingat jadwal otomatis H-1 sebelum konsultasi',
+          'Pemberitahuan syarat pra-tindakan medis',
+          'Eskalasi ke perawat/front-desk jika kasus darurat',
+        ],
         chat: [
-          { side: 'in', text: 'Booking dr. Sari hari Sabtu.' },
-          { side: 'out', text: 'Tersedia 13.00, 14.30, 16.00. Pilih yang mana?' },
-          { side: 'in', text: '14.30.' },
-          { side: 'out', text: 'Tercatat ✓ Boleh nama lengkapnya?' },
-        ] },
-      { key: 'property', label: 'Properti', name: 'Reza',
+          { side: 'user', text: 'Mau booking konsultasi dokter gigi untuk hari Sabtu.', time: '13.15' },
+          { side: 'bot', text: 'Halo! Jadwal dokter gigi hari Sabtu tersedia pukul 10.00, 14.30, dan 16.00. Mau jam berapa?', time: '13.15' },
+          { side: 'user', text: 'Jam 14.30 ya.', time: '13.16' },
+          { side: 'bot', text: 'Baik, jadwal pk 14.30 sudah dicatat atas nama Kakak ya. Boleh minta nama lengkapnya?', time: '13.16' },
+        ],
+      },
+      {
+        key: 'property',
+        label: 'Properti',
+        name: 'Reza BSD Agent',
+        title: 'Kualifikasi calon pembeli dan kirim brosur unit dalam hitungan detik.',
+        desc: 'Menyaring kriteria rumah idaman calon pembeli berdasarkan budget dan lokasi, serta otomatis menjadwalkan survei lokasi.',
+        bullets: [
+          'Kirim brosur PDF dan price list terkini seketika',
+          'Filter kebutuhan unit berdasarkan budget & area',
+          'Jadwalkan janji temu survei lokasi perumahan',
+          'Notifikasi instan ke agen untuk prospek panas',
+          'Follow up prospek secara teratur dan sopan',
+        ],
         chat: [
-          { side: 'in', text: 'Cari rumah 2 lantai di BSD, budget 2M.' },
-          { side: 'out', text: '4 unit cocok. Rekomendasi: Foresta 1.95M.' },
-          { side: 'in', text: 'Kirim brosurnya.' },
-          { side: 'out', text: 'Terkirim 📄 Mau jadwal survei akhir pekan?' },
-        ] },
-      { key: 'personal', label: 'Pribadi', name: 'Leo',
+          { side: 'user', text: 'Cari rumah 2 lantai di BSD, budget sekitar 2M.', time: '11.20' },
+          { side: 'bot', text: 'Halo Pak! Ada 3 cluster yang cocok. Salah satunya cluster Foresta di harga 1.95M. Mau saya kirim brosurnya?', time: '11.20' },
+          { side: 'user', text: 'Boleh, kirim brosur dan denahnya.', time: '11.21' },
+          { side: 'bot', text: 'Terkirim. Dokumen brosur dan denah siap dicek. Mau dijadwalkan survei lokasi hari Sabtu ini pk 10.00?', time: '11.21' },
+        ],
+      },
+      {
+        key: 'personal',
+        label: 'Pribadi',
+        name: 'Leo Personal Staff',
+        title: 'Asisten pribadi cerdas untuk jadwal, email, dan to-do list harian.',
+        desc: 'Membantu profesional dan eksekutif mengatur pengingat harian, merangkum pesan penting, dan mengurus tugas-tugas kecil.',
+        bullets: [
+          'Pengingat tagihan bulanan dan jadwal meeting',
+          'Rangkuman pesan dan email penting via chat',
+          'Pencatatan ide dan to-do list cepat via voice note',
+          'Sinkronisasi kalender pribadi',
+          'Tersedia 24 jam di nomor WhatsApp Anda',
+        ],
         chat: [
-          { side: 'in', text: 'Ingatkan bayar listrik tiap tanggal 25.' },
-          { side: 'out', text: 'Siap. Pengingat bulanan tanggal 25 dibuat.' },
-          { side: 'in', text: 'Rangkum email penting hari ini.' },
-          { side: 'out', text: '3 email penting. Mau saya bacakan?' },
-        ] },
+          { side: 'user', text: 'Ingatkan bayar listrik dan asuransi tiap tanggal 25.', time: '08.05' },
+          { side: 'bot', text: 'Siap! Pengingat bulanan sudah dibuat untuk tanggal 25 pukul 09.00 pagi.', time: '08.05' },
+          { side: 'user', text: 'Ada meeting apa aja hari ini?', time: '08.06' },
+          { side: 'bot', text: 'Hari ini ada 2 jadwal: 10.00 Sync Tim Produk, dan 14.00 Call Vendor.', time: '08.06' },
+        ],
+      },
     ],
   },
   en: {
-    nav: { solusi: 'Solutions', cara: 'How it works', harga: 'Pricing', bantuan: 'Help', masuk: 'Sign in' },
+    nav: { solusi: 'Solutions', cara: 'How It Works', bandingkan: 'Comparison', harga: 'Pricing', bantuan: 'Support', masuk: 'Sign In', cta: 'Start Free' },
     hero: {
-      eyebrow: 'Clevio AI Staff',
       title1: 'Clevio AI Staff',
       title2: 'for your WhatsApp.',
-      sub: 'Replies to customers, schedules appointments, handles small tasks — all day long. Ready in five minutes.',
-      cta: 'Start free',
-      learn: 'Learn more',
-      badge: 'Active now',
-      heroChat: [
-        { side: 'in', text: 'Hi, are you open?' },
-        { side: 'out', text: 'Hi! Open 24 hours 😊 How can I help?' },
-        { side: 'in', text: 'I want to order a birthday cake for tomorrow.' },
-        { side: 'out', text: 'Sure! What size and flavor?' },
-        { side: 'in', text: '20cm, chocolate.' },
-        { side: 'out', text: 'Got it! Delivery or pick-up?' },
+      sub: 'Replies to customers, schedules appointments, and handles orders throughout the day. Ready in five minutes.',
+      cta: 'Start Free',
+      learn: 'Learn More',
+      trust1: 'Fast & Consistent Replies',
+      trust2: 'Syncs with Calendars & Tools',
+      trust3: 'Secure & Enterprise-Grade',
+      chip1: '24/7 Automated Replies',
+      chip2: 'Connected to Calendar & Sheets',
+      simulatorHint: 'Quick questions:',
+      scenarios: [
+        {
+          key: 'shop',
+          label: 'Online Store',
+          shopName: 'Nadine Store',
+          initialChat: [
+            { side: 'user', text: 'Hi, do you still have the navy oversize t-shirt in stock?', time: '09:41' },
+            { side: 'bot', text: 'Hello! Yes, navy oversize is in stock.', time: '09:41' },
+            { side: 'user', text: 'Can I order 2 pcs in size L?', time: '09:42' },
+            { side: 'bot', text: 'Sure! Total is Rp 198,000. Ship to your previous address?', time: '09:42' },
+          ],
+          quickQuestions: [
+            { q: 'Any discounts or free shipping?', a: 'Yes! Orders of 2+ items receive free shipping across Jabodetabek and 5% cashback.' },
+            { q: 'Can you ship today?', a: 'Yes! Payments completed before 3 PM ship today via your preferred courier.' },
+            { q: 'Is Cash on Delivery available?', a: 'Absolutely! We support COD via SiCepat and J&T. Shall I confirm your order?' },
+          ],
+        },
+        {
+          key: 'clinic',
+          label: 'Clinic',
+          shopName: 'Dr. Sari Clinic',
+          initialChat: [
+            { side: 'user', text: 'Hello doctor, do you have slots for dental scaling this Saturday?', time: '10:15' },
+            { side: 'bot', text: 'Hi! Saturday scaling slots are open at 11:00 AM and 3:30 PM with Dr. Sari. Which works better?', time: '10:15' },
+          ],
+          quickQuestions: [
+            { q: 'How much is the treatment?', a: 'Scaling starts at Rp 250,000 including doctor consultation and dental checkup.' },
+            { q: 'Do you accept insurance?', a: 'Yes! We partner with AdMedika, Prudential, and all major insurance reimbursements.' },
+            { q: 'Can I book the 3:30 PM slot?', a: 'Done! The 3:30 PM Saturday slot is reserved for you. May I have your full name?' },
+          ],
+        },
+        {
+          key: 'property',
+          label: 'Property',
+          shopName: 'Reza BSD Property',
+          initialChat: [
+            { side: 'user', text: 'Looking for a 2-story home in BSD with a 2B budget, any ready units?', time: '11:20' },
+            { side: 'bot', text: 'Hello! Cluster Foresta is ready at 1.95B. May I send you the PDF brochure and floor plan?', time: '11:20' },
+          ],
+          quickQuestions: [
+            { q: 'Send brochure and floor plan', a: 'Sent! Brochure and floor plan for Foresta are ready. DP subsidy of 15 million applies this month.' },
+            { q: 'Can we visit this Saturday?', a: 'Certainly! We have scheduled a site walkthrough this Saturday at 10:00 AM with our agent.' },
+            { q: 'Mortgage monthly estimate?', a: 'With 10% down payment (195M), monthly installments start around 12M fixed 3 years.' },
+          ],
+        },
+        {
+          key: 'personal',
+          label: 'Personal',
+          shopName: 'Leo Personal Staff',
+          initialChat: [
+            { side: 'user', text: 'Please remind me to pay electricity and insurance on the 25th.', time: '08:05' },
+            { side: 'bot', text: 'Done! Automatic reminder scheduled for the 25th at 9:00 AM.', time: '08:05' },
+          ],
+          quickQuestions: [
+            { q: 'What meetings do I have today?', a: 'You have 2 meetings today: 10:00 AM Product Sync, and 2:30 PM Vendor Call on Google Meet.' },
+            { q: 'Note down video content idea', a: 'Saved to your task list: Educational video on Clevio AI Staff. Synced to your calendar.' },
+            { q: 'Summarize urgent emails', a: 'You have 1 priority email from Corporate Client regarding contract draft sign-off.' },
+          ],
+        },
       ],
     },
     how: {
-      eyebrow: 'How it works', title: 'Five minutes, then done.',
+      eyebrow: 'HOW IT WORKS',
+      title: 'Five minutes, then done.',
+      sub: 'Activate your business AI WhatsApp assistant in three simple steps.',
       steps: [
-        { n: '01', t: 'Talk to Arthur', d: 'Describe your business in plain words. Arthur takes care of the rest.' },
-        { n: '02', t: 'Connect WhatsApp', d: 'Scan a QR once. Your number is now staffed by AI.' },
-        { n: '03', t: 'AI gets to work', d: 'Customers get replied automatically — in your tone.' },
+        { n: '01', t: 'Talk to Arthur', d: 'Describe your business in plain words without any technical jargon.' },
+        { n: '02', t: 'Connect WhatsApp', d: 'Scan the QR code once, your number is immediately staffed by AI.' },
+        { n: '03', t: 'AI Gets to Work', d: 'Customers are replied automatically in your brand tone and style.' },
+      ],
+    },
+    comparison: {
+      eyebrow: 'WHY CLEVIO AI STAFF',
+      title: 'Ditch rigid chatbots. Upgrade to natural conversational AI.',
+      sub: 'WhatsApp customers want to converse with staff who understand context, not robots forcing them to type numbers.',
+      botBadge: 'LEGACY CHATBOTS (RULE-BASED)',
+      botTitle: 'Rigid & Frustrating for Real Buyers',
+      botDesc: 'Built on static button logic. The moment a customer types naturally, the chatbot breaks down.',
+      botBad: [
+        'Only works if customers type exact numbers (Press 1, 2, 3)',
+        'Fails completely on slang, typos, or natural questions',
+        'Frustrates customers and drives them to competitors',
+      ],
+      botChat: [
+        { side: 'user', text: 'Hi! Any promo for navy polo shirts?', time: '14:10' },
+        { side: 'bot', text: 'Invalid format. Reply 1 for catalog, 2 for store hours, 3 for complaints.', time: '14:10' },
+      ],
+      clevioBadge: 'CLEVIO AI STAFF (CONTEXTUAL & HELPFUL)',
+      clevioTitle: 'Intelligent, Empathetic, and Always Ready to Sell',
+      clevioDesc: 'Trained to understand conversational nuances, WhatsApp shopping habits, and proactive closing.',
+      clevioGood: [
+        'Understands natural phrasing, slang, typos, and conversational context',
+        'Proactively recommends promo bundles and logs orders to Google Sheets',
+        'Smoothly escalates to human staff whenever complex issues arise',
+      ],
+      clevioChat: [
+        { side: 'user', text: 'Hi! Any promo for navy polo shirts?', time: '14:10' },
+        { side: 'bot', text: 'Hi! Yes! 10% off + free shipping on 2 pcs today. Sizes M-XL ready, which would you like?', time: '14:10' },
       ],
     },
     arthur: {
-      eyebrow: 'Arthur', title1: 'Build an AI assistant', title2: 'by chatting.',
-      body: 'Arthur turns your needs into a ready-to-use AI assistant. No long forms, no technical jargon.',
-      role: 'Assistant Builder',
-      cta: 'See pricing',
-      chat: [
-        { side: 'in', text: 'What kind of business do you run?' },
-        { side: 'out', text: 'Online shoe store on WhatsApp.' },
-        { side: 'in', text: 'Give this assistant a name.' },
-        { side: 'out', text: 'Mira.' },
-        { side: 'in', text: 'Mira is active. Ready for orders.' },
-      ] as Msg[],
+      eyebrow: 'SPOTLIGHT ARTHUR',
+      title: 'Build an AI Assistant by Chatting.',
+      body: 'Arthur translates your business requirements into a production-ready AI staff. No long forms, no complex code. Just chat casually, and your digital staff is ready.',
+      cta: 'Try Chatting with Arthur',
     },
     solusi: {
-      eyebrow: 'Solutions', title: 'Built for anything.',
-      sub: 'One platform — for your business or personal needs.',
-      bullets: ['Answers product & pricing questions', 'Handles bookings and follow-ups', 'Escalates to you when needed'],
-      heading: (name: string, label: string) => `${name}, your AI assistant for ${label.toLowerCase()}.`,
-      body: 'Knows your products, prices, and schedule. Speaks in a brand-matched tone — never sounds like a robot.',
-    },
-    testimonial: {
-      eyebrow: 'Customer stories', title: 'Proven, not promised.',
-      items: [
-        { q: 'Orders tripled since switching to Clevio. The AI is more patient than I am.', a: 'Rina', r: 'Online Store Owner' },
-        { q: 'Three overwhelmed admins became one AI. The team now focuses on closing.', a: 'Budi', r: 'Beauty Clinic' },
-        { q: 'Ten minutes and done. I expected complexity, got a chat.', a: 'Andre', r: 'Property Agent' },
-      ],
+      eyebrow: 'SOLUTIONS FOR EVERY INDUSTRY',
+      title: 'One solution, endless possibilities.',
     },
     pricing: {
-      eyebrow: 'Pricing', title: 'Simple pricing.', sub: 'Start free. Upgrade anytime.',
-      monthly: 'Monthly', annual: 'Annual · save 20%',
-      per: '/mo', startFree: 'Start free', pick: 'Choose plan',
+      eyebrow: 'PLANS & PRICING',
+      title: 'Choose the plan that fits your business.',
+      per: '/mo',
+      popular: 'MOST POPULAR',
       plans: [
-        { name: 'Starter', m: 0, a: 0, items: ['1 AI assistant', '500 messages / month', 'Email support'] },
-        { name: 'Growth', m: 299, a: 239, items: ['5 AI assistants', '10,000 messages / month', 'Document integration', 'Priority support'], featured: true },
-        { name: 'Business', m: 999, a: 799, items: ['Unlimited assistants', 'Unlimited messages', 'SLA & onboarding'] },
+        {
+          name: 'Growth',
+          sub: 'For growing businesses',
+          m: 299,
+          featured: true,
+          items: [
+            'Up to 5,000 conversations/mo',
+            'Calendar & Google Sheets sync',
+            'Custom brand tone & vocabulary',
+            'Priority support',
+          ],
+          btnText: 'Get Started',
+        },
+        {
+          name: 'Business',
+          sub: 'For scaling teams',
+          m: 999,
+          items: [
+            'Unlimited conversations',
+            'Multi-agent on multiple numbers',
+            'Advanced integrations (CRM, webhooks)',
+            '24/7 Priority SLA support',
+          ],
+          btnText: 'Contact Us',
+        },
       ],
-      popular: 'Popular',
     },
     faq: {
-      eyebrow: 'Help', title: 'Common questions.',
+      eyebrow: 'FREQUENTLY ASKED QUESTIONS',
+      title: 'Still have questions?',
+      viewAll: 'View all questions',
       items: [
-        { q: 'Do I need to be tech-savvy?', a: 'No. A short chat with Arthur, then your AI assistant is ready in five minutes.' },
-        { q: 'Can I use my own WhatsApp number?', a: 'Yes. Scan a QR once and AI replies from your number.' },
-        { q: 'Does it work for personal use?', a: 'Absolutely. Leo can set reminders, summarize emails, and handle small daily tasks.' },
-        { q: 'Is my data safe?', a: 'Stored on your private server and never used to train public models.' },
-        { q: 'Can I cancel anytime?', a: 'Cancel anytime. No contracts, no hidden fees.' },
+        {
+          q: 'What is Clevio AI Staff?',
+          a: 'Clevio AI Staff is a trained AI assistant that acts as a digital team member for your business. It automatically replies to customer WhatsApp messages, handles bookings, checks inventory, and escalates to human staff when needed.',
+        },
+        {
+          q: 'Can I connect my existing WhatsApp number?',
+          a: 'Yes. Simply scan the WhatsApp Web QR code once from your Clevio dashboard. Your current number is instantly staffed by AI without needing a new SIM card.',
+        },
+        {
+          q: 'Do I need technical skills to get started?',
+          a: 'Not at all. You only need a 5-minute chat with Arthur (our AI Builder) to explain your products and preferences. No coding required.',
+        },
+        {
+          q: 'Is my business and customer data secure?',
+          a: 'Extremely secure. All customer chats and business data are encrypted to enterprise standards and stored on private, secure servers. Your data is never used to train public AI models.',
+        },
+        {
+          q: 'Can chats be escalated to human staff?',
+          a: 'Yes, anytime. The AI automatically detects when a customer requires human attention or requests a manager, and immediately notifies your team.',
+        },
+        {
+          q: 'Do I need a credit card to try it?',
+          a: 'No. You can start with our free trial without entering any payment or credit card details.',
+        },
       ],
     },
-    cta: { title: 'Start today.', sub: 'Free to try. No credit card.', btn: 'Get started' },
+    cta: {
+      title: 'Start today. Free to try, no credit card required.',
+      sub: 'Experience how Clevio AI Staff makes your business more responsive, professional, and efficient.',
+      btn: 'Get Started Now',
+    },
     footer: {
-      clevio: 'Clevio AI Staff', dukungan: 'Support', perusahaan: 'Company', legal: 'Legal',
+      clevio: 'Clevio AI Staff',
+      dukungan: 'Support',
+      perusahaan: 'Company',
+      legal: 'Legal',
+      copyright: 'Made in Indonesia.',
+      systems: 'All systems normal',
       links: {
-        solusi: 'Solutions', cara: 'How it works', harga: 'Pricing',
-        faq: 'FAQ', kontak: 'Contact us', status: 'System status',
-        tentang: 'About', karier: 'Careers', hubungi: 'Contact',
-        privasi: 'Privacy', ketentuan: 'Terms', keamanan: 'Security',
+        solusi: 'Solutions',
+        cara: 'How It Works',
+        harga: 'Pricing',
+        blog: 'Blog',
+        pusatBantuan: 'Help Center',
+        kontak: 'Contact Us',
+        status: 'System Status',
+        komunitas: 'Community',
+        tentang: 'About Us',
+        karier: 'Careers',
+        media: 'Media',
+        mitra: 'Partners',
+        privasi: 'Privacy Policy',
+        ketentuan: 'Terms of Service',
+        aiPolicy: 'Responsible AI Policy',
       },
-      copyright: 'Made in Indonesia.', systems: 'All systems normal',
     },
     useCases: [
-      { key: 'shop', label: 'Online Store', name: 'Mira',
+      {
+        key: 'shop',
+        label: 'Online Store',
+        name: 'Nadine Store',
+        title: 'Serve customers, take orders, and manage stock directly in WhatsApp.',
+        desc: 'Assists buyers with product choices, checks real-time color and size availability, and records delivery details automatically.',
+        bullets: [
+          'Automatic 24/7 product inquiries handling',
+          'Accurate real-time inventory and pricing checks',
+          'Order capture and payment verification',
+          'Shipping status and tracking link delivery',
+          'Live synchronization with Google Sheets',
+        ],
         chat: [
-          { side: 'in', text: 'Nike Air size 42 in stock?' },
-          { side: 'out', text: '3 pcs ready. Black or white?' },
-          { side: 'in', text: 'White.' },
-          { side: 'out', text: 'Rp 1,299,000, free shipping. Checkout now?' },
-        ] },
-      { key: 'clinic', label: 'Clinic', name: 'Sasha',
+          { side: 'user', text: 'Hi! Do you have size M in stock?', time: '10:01' },
+          { side: 'bot', text: 'Hi! Yes, size M is available in all colors. Would you like to order?', time: '10:01' },
+          { side: 'user', text: 'Yes, 1 beige please! How much is it?', time: '10:02' },
+          { side: 'bot', text: 'The beige oversize tee is Rp 99,000. Shall I process your order now?', time: '10:02' },
+        ],
+      },
+      {
+        key: 'clinic',
+        label: 'Clinic',
+        name: 'Dr. Sari Clinic',
+        title: 'Appointment scheduling and consultations without busy phone lines.',
+        desc: 'Schedules patient consultations, sends appointment reminders, and provides clinic guidelines and working hours.',
+        bullets: [
+          'Automated patient appointment bookings',
+          'Direct synchronization with doctor Google Calendars',
+          'Automatic appointment reminder 24h prior',
+          'Pre-consultation guidance and medical requirements',
+          'Instant escalation to front desk for emergency inquiries',
+        ],
         chat: [
-          { side: 'in', text: 'Book dr. Sari, Saturday.' },
-          { side: 'out', text: 'Available at 1pm, 2:30pm, 4pm. Which?' },
-          { side: 'in', text: '2:30pm.' },
-          { side: 'out', text: 'Saved ✓ Your full name?' },
-        ] },
-      { key: 'property', label: 'Property', name: 'Reza',
+          { side: 'user', text: 'I want to book a dental checkup for Saturday.', time: '13:15' },
+          { side: 'bot', text: 'Hello! Dental slots on Saturday are available at 10:00 AM, 2:30 PM, and 4:00 PM. Which one suits you?', time: '13:15' },
+          { side: 'user', text: '2:30 PM works great.', time: '13:16' },
+          { side: 'bot', text: 'Perfect! The 2:30 PM slot has been reserved for you. May I have your full name?', time: '13:16' },
+        ],
+      },
+      {
+        key: 'property',
+        label: 'Property',
+        name: 'Reza BSD Agent',
+        title: 'Qualify buyer leads and send unit brochures in seconds.',
+        desc: 'Filters prospective buyer criteria by budget and preferred area, and automatically schedules on-site property walkthroughs.',
+        bullets: [
+          'Instant PDF brochure and price list delivery',
+          'Automated lead qualification by budget & preference',
+          'Effortless on-site inspection visit bookings',
+          'Hot-lead instant alerts to real estate agents',
+          'Courteous, consistent automated follow-ups',
+        ],
         chat: [
-          { side: 'in', text: 'Two-floor home in BSD, 2B budget.' },
-          { side: 'out', text: '4 units match. Top pick: Foresta 1.95B.' },
-          { side: 'in', text: 'Send brochure.' },
-          { side: 'out', text: 'Sent 📄 Schedule a visit this weekend?' },
-        ] },
-      { key: 'personal', label: 'Personal', name: 'Leo',
+          { side: 'user', text: 'Looking for a 2-story home in BSD, budget around 2 Billion.', time: '11:20' },
+          { side: 'bot', text: 'Hi! We have 3 clusters that match. One is Foresta at 1.95B. Would you like the brochure?', time: '11:20' },
+          { side: 'user', text: 'Sure, please send over the floor plan and brochure.', time: '11:21' },
+          { side: 'bot', text: 'Sent! Property brochure and layout are ready to view. Would you like to schedule a site visit this Saturday at 10 AM?', time: '11:21' },
+        ],
+      },
+      {
+        key: 'personal',
+        label: 'Personal',
+        name: 'Leo Personal Staff',
+        title: 'Smart executive assistant for schedules, emails, and daily reminders.',
+        desc: 'Helps busy founders and professionals keep track of monthly bills, meeting schedules, and urgent notifications.',
+        bullets: [
+          'Monthly bill payments and meeting alerts',
+          'Urgent email summaries delivered via WhatsApp chat',
+          'Quick task note-taking via voice and text',
+          'Personal calendar synchronization',
+          'Available 24/7 on your WhatsApp number',
+        ],
         chat: [
-          { side: 'in', text: 'Remind me to pay electricity on the 25th.' },
-          { side: 'out', text: 'Done. Monthly reminder set for the 25th.' },
-          { side: 'in', text: 'Summarize my important emails today.' },
-          { side: 'out', text: '3 important emails. Want me to read them?' },
-        ] },
+          { side: 'user', text: 'Remind me to pay electricity and insurance on the 25th.', time: '08:05' },
+          { side: 'bot', text: 'Done! Monthly reminder set for the 25th at 9:00 AM.', time: '08:05' },
+          { side: 'user', text: 'What meetings do I have scheduled today?', time: '08:06' },
+          { side: 'bot', text: 'You have 2 meetings today: 10:00 AM Product Sync, and 2:00 PM Vendor Call.', time: '08:06' },
+        ],
+      },
     ],
   },
-}
-
-function FadeUp({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [visible, setVisible] = useState(false)
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const io = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) setVisible(true) },
-      { threshold: 0.1, rootMargin: '0px 0px -8% 0px' },
-    )
-    io.observe(el)
-    return () => io.disconnect()
-  }, [])
-  return (
-    <div
-      ref={ref}
-      style={{ animationDelay: `${delay}ms`, opacity: visible ? undefined : 0 }}
-      className={`${visible ? 'fade-up' : ''} ${className}`.trim()}
-    >
-      {children}
-    </div>
-  )
-}
-
-function Arrow() { return <span className="inline-block translate-y-[-1px] ml-0.5">›</span> }
-
-function WaBubble({ side, text, delay = 0 }: { side: 'in' | 'out'; text: string; delay?: number }) {
-  const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-  const cls = side === 'in'
-    ? 'self-start bg-white text-[#111] rounded-tl-[2px]'
-    : 'self-end bg-[#d9fdd3] text-[#111] rounded-tr-[2px]'
-  return (
-    <div
-      style={{ animationDelay: `${delay}ms`, opacity: 0, animation: `pop 0.5s cubic-bezier(0.22,1,0.36,1) ${delay}ms forwards` }}
-      className={`relative max-w-[82%] px-[10px] py-[6px] rounded-[10px] text-[13px] leading-snug shadow-[0_1px_0.5px_rgba(11,20,26,0.13)] ${cls}`}
-    >
-      <span>{text}</span>
-      <span className="block text-[10px] text-black/40 text-right mt-[3px] leading-none float-right ml-2">
-        {time}{side === 'out' && <span className="text-[#53bdeb] ml-0.5">✓✓</span>}
-      </span>
-    </div>
-  )
-}
-
-function IPhoneMockup({ messages }: { messages: Msg[] }) {
-  return (
-    <div className="relative w-[280px] mx-auto" style={{ aspectRatio: '312/642' }}>
-      {/* phone body */}
-      <div
-        className="relative w-full h-full rounded-[48px] p-[10px]"
-        style={{
-          background: 'linear-gradient(145deg, #2a2a2e, #0c0c0e)',
-          boxShadow: '0 30px 80px -32px rgba(10,37,64,0.30), 0 0 0 2px rgba(255,255,255,0.04) inset',
-          animation: 'phonefloat 7s ease-in-out infinite',
-        }}
-      >
-        {/* side button */}
-        <div className="absolute left-[-2px] top-[130px] w-[3px] h-[58px] rounded bg-[#1a1a1c]"
-          style={{ boxShadow: '0 -80px 0 #1a1a1c, 0 80px 0 #1a1a1c' }} />
-        {/* screen */}
-        <div className="relative w-full h-full rounded-[38px] overflow-hidden" style={{ background: '#efeae2' }}>
-          {/* dynamic island */}
-          <div className="absolute top-[10px] left-1/2 -translate-x-1/2 w-[80px] h-[24px] bg-black rounded-[14px] z-10" />
-          {/* status bar */}
-          <div className="absolute top-[12px] left-0 right-0 flex items-center justify-between px-5 pt-1 text-[11px] font-semibold text-white z-10" style={{ paddingTop: '2px' }}>
-            <span>9:41</span>
-            <span className="flex items-center gap-1">
-              <svg viewBox="0 0 24 24" className="w-3 h-3" fill="currentColor"><path d="M2 16h3v4H2zm5-3h3v7H7zm5-4h3v11h-3zm5-4h3v15h-3z"/></svg>
-              <svg viewBox="0 0 24 24" className="w-3 h-3" fill="currentColor"><path d="M12 6c3 0 5.7 1.2 7.6 3.1l-1.4 1.4A8.6 8.6 0 0 0 12 8a8.6 8.6 0 0 0-6.2 2.5L4.4 9.1A10.6 10.6 0 0 1 12 6zm0 4c1.9 0 3.6.8 4.8 2l-1.4 1.4A4.6 4.6 0 0 0 12 12c-1.3 0-2.5.5-3.4 1.4L7.2 12A6.6 6.6 0 0 1 12 10zm0 4c.8 0 1.5.3 2 .8L12 17l-2-2.2c.5-.5 1.2-.8 2-.8z"/></svg>
-              <svg viewBox="0 0 28 24" className="w-4 h-3" fill="currentColor"><rect x="1" y="7" width="22" height="10" rx="3" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.5"/><rect x="3" y="9" width="16" height="6" rx="1.5"/><rect x="24" y="10" width="2" height="4" rx="1"/></svg>
-            </span>
-          </div>
-          {/* WA header */}
-          <div className="absolute top-0 left-0 right-0 flex items-center gap-2 px-3 pt-[46px] pb-[10px]" style={{ background: '#075e54', zIndex: 5 }}>
-            <span className="text-white text-[18px] leading-none">‹</span>
-            <span className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white text-[13px] font-medium">M</span>
-            <div className="flex-1 min-w-0">
-              <div className="text-white text-[13px] font-medium leading-tight truncate">Mira</div>
-              <div className="text-white/70 text-[11px] leading-tight">online</div>
-            </div>
-            <svg viewBox="0 0 24 24" className="w-4 h-4 text-white/80" fill="currentColor"><path d="M15.5 14h-.8l-.3-.3a6.5 6.5 0 1 0-.7.7l.3.3v.8l5 5 1.5-1.5-5-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
-            <svg viewBox="0 0 24 24" className="w-4 h-4 text-white/80" fill="currentColor"><path d="M12 2a2 2 0 0 0-2 2 2 2 0 0 0 4 0 2 2 0 0 0-2-2zm0 6a2 2 0 0 0-2 2 2 2 0 0 0 4 0 2 2 0 0 0-2-2zm0 6a2 2 0 0 0-2 2 2 2 0 0 0 4 0 2 2 0 0 0-2-2z"/></svg>
-          </div>
-          {/* chat area */}
-          <div className="absolute left-0 right-0 bottom-[52px] top-[96px] overflow-hidden flex flex-col justify-end gap-[6px] px-[10px] py-[10px]">
-            {messages.map((m, i) => (
-              <WaBubble key={i} side={m.side} text={m.text} delay={i * 260} />
-            ))}
-          </div>
-          {/* input bar */}
-          <div className="absolute bottom-0 left-0 right-0 flex items-center gap-2 px-3 py-[10px]" style={{ background: '#f0f0f0' }}>
-            <div className="flex-1 bg-white rounded-full px-3 py-1.5 text-[11px] text-[#999]">Ketik pesan</div>
-            <div className="w-[30px] h-[30px] rounded-full flex items-center justify-center" style={{ background: '#075e54' }}>
-              <svg viewBox="0 0 24 24" className="w-[14px] h-[14px] text-white" fill="currentColor"><path d="M3 20.5 21 12 3 3.5 3 10l13 2-13 2z"/></svg>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function ConversationCard({ name, messages }: { name: string; messages: Msg[] }) {
-  return (
-    <div className="relative rounded-[24px] bg-white border border-ink-100 overflow-hidden shadow-[0_24px_64px_-24px_rgba(10,37,64,0.18)]">
-      <div className="bg-[#075e54] text-white px-4 py-3 flex items-center gap-2">
-        <span className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-[13px] font-medium">{name[0]}</span>
-        <div className="flex-1 min-w-0">
-          <div className="text-[13px] font-medium truncate">{name}</div>
-          <div className="text-[11px] text-white/70">online</div>
-        </div>
-      </div>
-      <div className="flex flex-col gap-[6px] px-4 py-4 min-h-[260px]"
-        style={{ backgroundColor: '#efeae2', backgroundImage: 'radial-gradient(rgba(0,0,0,0.04) 1px, transparent 1px)', backgroundSize: '12px 12px' }}>
-        {messages.map((m, i) => (
-          <WaBubble key={i} side={m.side} text={m.text} delay={i * 200} />
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function StepIcon({ kind }: { kind: 'chat' | 'qr' | 'spark' }) {
-  if (kind === 'chat') {
-    return (
-      <svg viewBox="0 0 64 64" className="w-full h-full" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M14 18a4 4 0 0 1 4-4h28a4 4 0 0 1 4 4v18a4 4 0 0 1-4 4H30l-8 8v-8h-4a4 4 0 0 1-4-4Z" />
-        <path d="M24 24h16M24 30h12" />
-      </svg>
-    )
-  }
-  if (kind === 'qr') {
-    return (
-      <svg viewBox="0 0 64 64" className="w-full h-full" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round">
-        <rect x="12" y="12" width="16" height="16" rx="2" />
-        <rect x="36" y="12" width="16" height="16" rx="2" />
-        <rect x="12" y="36" width="16" height="16" rx="2" />
-        <rect x="18" y="18" width="4" height="4" fill="currentColor" stroke="none" />
-        <rect x="42" y="18" width="4" height="4" fill="currentColor" stroke="none" />
-        <rect x="18" y="42" width="4" height="4" fill="currentColor" stroke="none" />
-        <path d="M36 36h4v4M44 36v4M36 44h4M48 36v8M44 48h8M36 50v2" />
-      </svg>
-    )
-  }
-  return (
-    <svg viewBox="0 0 64 64" className="w-full h-full" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M32 10v8M32 46v8M10 32h8M46 32h8M16 16l5 5M43 43l5 5M16 48l5-5M43 21l5-5" />
-      <circle cx="32" cy="32" r="8" fill="currentColor" stroke="none" opacity="0.1" />
-      <circle cx="32" cy="32" r="8" />
-      <path d="M28 32l3 3 5-6" />
-    </svg>
-  )
-}
-
-function LangSwitch({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void }) {
-  return (
-    <div className="inline-flex items-center border border-ink-200 rounded-full p-0.5 text-[11px]">
-      {(['id', 'en'] as Lang[]).map((l) => (
-        <button key={l} onClick={() => setLang(l)}
-          className={`px-2.5 py-0.5 rounded-full transition uppercase tracking-wider ${
-            lang === l ? 'bg-ink-900 text-white' : 'text-ink-500 hover:text-ink-900'
-          }`}>
-          {l}
-        </button>
-      ))}
-    </div>
-  )
 }
 
 export default function Landing() {
   const [lang, setLang] = useState<Lang>(() => (localStorage.getItem('clevio_lang') as Lang) || 'id')
-  useEffect(() => { localStorage.setItem('clevio_lang', lang) }, [lang])
-
   useEffect(() => {
-    document.body.dataset.landing = 'true'
-    return () => { delete document.body.dataset.landing }
-  }, [])
+    localStorage.setItem('clevio_lang', lang)
+  }, [lang])
 
   const t = COPY[lang]
   const [tab, setTab] = useState<string>(t.useCases[0].key)
-  const [billing, setBilling] = useState<'monthly' | 'annual'>('monthly')
   const [openFaq, setOpenFaq] = useState<number | null>(0)
-  const active = t.useCases.find((u) => u.key === tab) || t.useCases[0]
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [comparisonTab, setComparisonTab] = useState<'clevio' | 'bot'>('clevio')
+
+  // Interactive Hero Simulator State
+  const [heroScenarioIndex, setHeroScenarioIndex] = useState(0)
+  const currentScenario = t.hero.scenarios[heroScenarioIndex] || t.hero.scenarios[0]
+  const [simulatedChat, setSimulatedChat] = useState<Msg[]>(currentScenario.initialChat)
+  const [isAiTyping, setIsAiTyping] = useState(false)
+  const chatContainerRef = useRef<HTMLDivElement | null>(null)
+
+  // Auto-scroll ONLY inside phone chat container (prevents window jumping)
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth',
+      })
+    }
+  }, [simulatedChat, isAiTyping])
+
+  // Sync simulated chat whenever scenario or language changes
+  useEffect(() => {
+    setSimulatedChat(currentScenario.initialChat)
+    setIsAiTyping(false)
+  }, [heroScenarioIndex, lang])
+
+  const handleSendQuickAction = (question: string, answer: string, e?: React.MouseEvent) => {
+    e?.preventDefault()
+    e?.stopPropagation()
+    if (isAiTyping) return
+    const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+
+    // Append customer (user) message: green bubble on right
+    setSimulatedChat((prev) => [...prev, { side: 'user', text: question, time: timeNow }])
+    setIsAiTyping(true)
+
+    // Simulate AI staff (bot) typing response: white bubble on left
+    setTimeout(() => {
+      setSimulatedChat((prev) => [...prev, { side: 'bot', text: answer, time: timeNow }])
+      setIsAiTyping(false)
+    }, 700)
+  }
+
+  const activeUseCase = t.useCases.find((u) => u.key === tab) || t.useCases[0]
 
   return (
-    <div className="min-h-screen bg-white text-ink-900">
-
-      {/* NAV — glassmorphism sticky */}
-      <nav className="sticky top-0 z-40 border-b border-ink-100"
-        style={{ background: 'rgba(255,255,255,0.72)', backdropFilter: 'saturate(180%) blur(20px)', WebkitBackdropFilter: 'saturate(180%) blur(20px)' }}>
-        <div className="max-w-[1080px] mx-auto px-6 h-14 flex items-center justify-between">
-          <Link to="/" className="text-[17px] font-semibold tracking-[-0.02em] flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-[#0071e3]" />
-            Clevio AI Staff
+    <div className="min-h-screen bg-white text-black font-sans selection:bg-[#1C2974] selection:text-white overflow-x-clip w-full">
+      {/* 1. STICKY NAVBAR */}
+      <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-15 sm:h-16 md:h-22 flex items-center justify-between">
+          <Link to="/" className="flex items-center group">
+            <ClevioLogo size="md" className="sm:hidden" variant="dark" />
+            <ClevioLogo size="lg" className="hidden sm:inline-flex" variant="dark" />
           </Link>
-          <div className="hidden md:flex items-center gap-8 text-[14px] text-ink-700">
-            <a href="#solusi" className="hover:text-ink-900 transition-colors">{t.nav.solusi}</a>
-            <a href="#cara" className="hover:text-ink-900 transition-colors">{t.nav.cara}</a>
-            <a href="#harga" className="hover:text-ink-900 transition-colors">{t.nav.harga}</a>
-            <a href="#faq" className="hover:text-ink-900 transition-colors">{t.nav.bantuan}</a>
+
+          {/* Center Links (Desktop) */}
+          <div className="hidden md:flex items-center gap-9 text-[15px] font-semibold text-gray-700">
+            <a href="#solusi" className="hover:text-black transition-colors">{t.nav.solusi}</a>
+            <a href="#cara" className="hover:text-black transition-colors">{t.nav.cara}</a>
+            <a href="#perbandingan" className="hover:text-black transition-colors">{t.nav.bandingkan}</a>
+            <a href="#harga" className="hover:text-black transition-colors">{t.nav.harga}</a>
+            <a href="#faq" className="hover:text-black transition-colors">{t.nav.bantuan}</a>
           </div>
-          <div className="flex items-center gap-4">
-            <LangSwitch lang={lang} setLang={setLang} />
-            <Link to="/login" className="text-[14px] text-ink-700 hover:text-ink-900 transition-colors">{t.nav.masuk}</Link>
+
+          {/* Right Action */}
+          <div className="flex items-center gap-2.5 sm:gap-5">
+            {/* Lang Switch */}
+            <div className="inline-flex items-center bg-gray-100 p-1 rounded-full text-xs font-bold">
+              <button
+                onClick={() => setLang('id')}
+                className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full transition-all ${lang === 'id' ? 'bg-[#000000] text-white shadow-sm' : 'text-gray-500 hover:text-black'}`}
+              >
+                ID
+              </button>
+              <button
+                onClick={() => setLang('en')}
+                className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full transition-all ${lang === 'en' ? 'bg-[#000000] text-white shadow-sm' : 'text-gray-500 hover:text-black'}`}
+              >
+                EN
+              </button>
+            </div>
+
+            <a
+              href="#harga"
+              className="hidden sm:inline-block text-[15px] font-semibold text-gray-700 hover:text-black transition-colors"
+            >
+              {t.nav.masuk}
+            </a>
+
+            <a
+              href="#harga"
+              className="hidden xs:inline-flex items-center justify-center rounded-xl bg-[#1C2974] hover:bg-[#141d54] text-white px-4 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-sm md:text-[15px] font-semibold transition-all shadow-md shadow-[#1C2974]/20 hover:-translate-y-0.5"
+            >
+              {t.nav.cta}
+            </a>
+
+            {/* Mobile Hamburger Toggle */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden flex items-center justify-center w-10 h-10 rounded-xl text-gray-700 hover:text-black hover:bg-gray-100 transition-colors"
+              aria-label="Toggle navigation menu"
+            >
+              {isMobileMenuOpen ? <XIcon className="w-5 h-5" /> : <MenuIcon className="w-5 h-5" />}
+            </button>
           </div>
         </div>
+
+        {/* Mobile Navigation Drawer */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden border-t border-gray-100 bg-white/98 backdrop-blur-md px-5 py-4 space-y-1 animate-fade-in shadow-xl">
+            <a
+              href="#solusi"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center justify-between py-2.5 px-3 rounded-xl text-sm font-semibold text-gray-800 hover:text-[#1C2974] hover:bg-gray-50 active:bg-gray-100 transition-colors group"
+            >
+              <span>{t.nav.solusi}</span>
+              <ChevronLeftIcon className="w-4 h-4 rotate-180 text-gray-400 group-hover:text-[#1C2974] transition-colors" />
+            </a>
+            <a
+              href="#cara"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center justify-between py-2.5 px-3 rounded-xl text-sm font-semibold text-gray-800 hover:text-[#1C2974] hover:bg-gray-50 active:bg-gray-100 transition-colors group"
+            >
+              <span>{t.nav.cara}</span>
+              <ChevronLeftIcon className="w-4 h-4 rotate-180 text-gray-400 group-hover:text-[#1C2974] transition-colors" />
+            </a>
+            <a
+              href="#perbandingan"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center justify-between py-2.5 px-3 rounded-xl text-sm font-semibold text-gray-800 hover:text-[#1C2974] hover:bg-gray-50 active:bg-gray-100 transition-colors group"
+            >
+              <span>{t.nav.bandingkan}</span>
+              <ChevronLeftIcon className="w-4 h-4 rotate-180 text-gray-400 group-hover:text-[#1C2974] transition-colors" />
+            </a>
+            <a
+              href="#harga"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center justify-between py-2.5 px-3 rounded-xl text-sm font-semibold text-gray-800 hover:text-[#1C2974] hover:bg-gray-50 active:bg-gray-100 transition-colors group"
+            >
+              <span>{t.nav.harga}</span>
+              <ChevronLeftIcon className="w-4 h-4 rotate-180 text-gray-400 group-hover:text-[#1C2974] transition-colors" />
+            </a>
+            <a
+              href="#faq"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center justify-between py-2.5 px-3 rounded-xl text-sm font-semibold text-gray-800 hover:text-[#1C2974] hover:bg-gray-50 active:bg-gray-100 transition-colors group"
+            >
+              <span>{t.nav.bantuan}</span>
+              <ChevronLeftIcon className="w-4 h-4 rotate-180 text-gray-400 group-hover:text-[#1C2974] transition-colors" />
+            </a>
+            <div className="pt-3 border-t border-gray-100 flex flex-col gap-2">
+              <a
+                href="#harga"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="py-2.5 text-center text-sm font-semibold text-gray-700 hover:text-black rounded-xl hover:bg-gray-50"
+              >
+                {t.nav.masuk}
+              </a>
+              <a
+                href="#harga"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="w-full inline-flex items-center justify-center rounded-xl bg-[#1C2974] hover:bg-[#141d54] text-white py-3 text-sm font-semibold shadow-md shadow-[#1C2974]/20 active:scale-[0.98] transition-all"
+              >
+                {t.nav.cta}
+              </a>
+            </div>
+          </div>
+        )}
       </nav>
 
-      {/* HERO */}
-      <section className="snap-section relative overflow-hidden bg-white" id="top">
-        {/* single soft orb — tasteful, not AI-gimmick */}
-        <div className="absolute top-[-10%] right-[-8%] w-[600px] h-[600px] rounded-full pointer-events-none"
-          style={{ background: 'radial-gradient(circle at 60% 40%, rgba(0,113,227,0.10), rgba(0,113,227,0) 65%)', filter: 'blur(1px)' }} />
+      {/* 2. HERO SECTION WITH INTERACTIVE CHAT SIMULATOR */}
+      <section id="hero" className="relative border-b border-gray-100 scroll-mt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full">
+          <div className="grid lg:grid-cols-12 gap-8 lg:gap-10 items-center lg:h-[calc(100vh-4.5rem)] lg:max-h-[calc(100vh-4.5rem)]">
 
-        <div className="relative max-w-[1080px] mx-auto px-6 pt-20 md:pt-28 pb-20 md:pb-32">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-
-            {/* LEFT copy */}
-            <div className="text-center lg:text-left">
-              <FadeUp>
-                <span className="inline-flex items-center gap-2 px-3 py-[5px] rounded-full border border-ink-200 bg-white/60 text-[13px] text-ink-700"
-                  style={{ backdropFilter: 'blur(12px)' }}>
-                  <span className="relative w-[6px] h-[6px] flex-none">
-                    <span className="absolute inset-0 rounded-full bg-[#0071e3] opacity-35" style={{ animation: 'ping 2.4s cubic-bezier(0.22,1,0.36,1) infinite', inset: '-3px' }} />
-                    <span className="relative w-full h-full rounded-full block bg-[#0071e3]" />
-                  </span>
-                  {t.hero.eyebrow}
-                </span>
-              </FadeUp>
-              <FadeUp delay={80}>
-                <h1 className="mt-6 font-semibold tracking-[-0.035em] leading-[1.0]"
-                  style={{ fontSize: 'clamp(44px, 6.6vw, 72px)' }}>
-                  {t.hero.title1}<br />{t.hero.title2}
+            {/* Left Column (Headline, CTAs, and Trust points - Exactly 1 full screen on mobile) */}
+            <div className="lg:col-span-7 snap-section h-[calc(100dvh-3.75rem)] lg:h-auto flex flex-col justify-center py-6 sm:py-8 lg:py-0">
+              <div>
+                <h1 className="font-heading font-bold text-[28px] xs:text-3xl sm:text-4xl md:text-5xl lg:text-[48px] xl:text-[54px] text-black tracking-tight leading-[1.14]">
+                  {t.hero.title1}<br />
+                  <span className="text-[#1C2974]">{t.hero.title2}</span>
                 </h1>
-              </FadeUp>
-              <FadeUp delay={160}>
-                <p className="mt-6 text-[19px] md:text-[21px] text-ink-500 max-w-[420px] mx-auto lg:mx-0" style={{ lineHeight: 1.45 }}>
+
+                <p className="mt-3.5 sm:mt-5 text-[15px] sm:text-lg text-gray-600 leading-relaxed max-w-xl">
                   {t.hero.sub}
                 </p>
-              </FadeUp>
-              <FadeUp delay={240}>
-                <div className="mt-9 flex items-center justify-center lg:justify-start gap-6 flex-wrap">
-                  <Link to="/login"
-                    className="inline-flex items-center justify-center rounded-full text-white text-[15px] font-medium px-6 py-3 transition-all hover:-translate-y-px"
-                    style={{ background: '#0071e3' }}
-                    onMouseEnter={e => (e.currentTarget.style.background = '#0058b9')}
-                    onMouseLeave={e => (e.currentTarget.style.background = '#0071e3')}>
+
+                {/* Action Buttons */}
+                <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+                  <a
+                    href="#harga"
+                    className="inline-flex items-center justify-center rounded-xl bg-[#1C2974] hover:bg-[#141d54] text-white px-7 py-3.5 sm:px-8 sm:py-4 text-sm sm:text-base font-semibold shadow-md shadow-[#1C2974]/20 hover:-translate-y-0.5 active:scale-[0.98] transition-all text-center"
+                  >
                     {t.hero.cta}
-                  </Link>
-                  <a href="#cara" className="inline-flex items-center gap-1 text-[15px] text-ink-900 hover:text-ink-700 transition-colors">
-                    {t.hero.learn}<Arrow />
+                  </a>
+                  <a
+                    href="#simulator-mobile"
+                    className="lg:hidden inline-flex items-center justify-center gap-1.5 text-xs font-semibold text-[#1C2974] py-2 text-center"
+                  >
+                    <span>Coba Simulasi Chat WhatsApp ↓</span>
+                  </a>
+                  <a
+                    href="#perbandingan"
+                    className="hidden lg:inline-flex items-center justify-center gap-1.5 text-sm sm:text-base font-semibold text-[#1C2974] hover:text-[#141d54] transition-colors py-2 text-center"
+                  >
+                    <span>{t.hero.learn}</span>
+                    <ArrowRightIcon className="w-4 h-4" />
                   </a>
                 </div>
-              </FadeUp>
-            </div>
-
-            {/* RIGHT — iPhone mockup */}
-            <FadeUp delay={200} className="relative flex justify-center lg:justify-end">
-              {/* floating glass chip 1 — top left */}
-              <div className="absolute top-[60px] left-[-20px] lg:left-[-40px] flex items-center gap-2 px-3 py-2.5 rounded-2xl text-[13px] font-medium z-20 hidden md:flex"
-                style={{ background: 'rgba(255,255,255,0.78)', backdropFilter: 'blur(12px)', border: '1px solid rgba(0,0,0,0.06)', boxShadow: '0 1px 2px rgba(0,0,0,0.04), 0 12px 32px -16px rgba(10,37,64,0.14)', animation: 'phonefloat 7s ease-in-out infinite', whiteSpace: 'nowrap' }}>
-                <svg viewBox="0 0 24 24" className="w-[18px] h-[18px] flex-none" fill="none" stroke="#0071e3" strokeWidth="2" strokeLinecap="round">
-                  <path d="M12 22c5.52 0 10-4.48 10-10S17.52 2 12 2 2 6.48 2 12s4.48 10 10 10z"/><path d="M12 6v6l4 2"/>
-                </svg>
-                <span className="text-ink-800">Balas otomatis 24 jam</span>
-              </div>
-              {/* floating glass chip 2 — bottom right */}
-              <div className="absolute bottom-[90px] right-[-10px] lg:right-[-36px] flex items-center gap-2 px-3 py-2.5 rounded-2xl text-[13px] font-medium z-20 hidden md:flex"
-                style={{ background: 'rgba(255,255,255,0.78)', backdropFilter: 'blur(12px)', border: '1px solid rgba(0,0,0,0.06)', boxShadow: '0 1px 2px rgba(0,0,0,0.04), 0 12px 32px -16px rgba(10,37,64,0.14)', animation: 'phonefloat 7.5s ease-in-out 0.5s infinite', whiteSpace: 'nowrap' }}>
-                <svg viewBox="0 0 24 24" className="w-[18px] h-[18px] flex-none" fill="none" stroke="#0071e3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-                </svg>
-                <span className="text-ink-800">Siap dalam 5 menit</span>
               </div>
 
-              <IPhoneMockup messages={t.hero.heroChat} />
-            </FadeUp>
-          </div>
-        </div>
-      </section>
-
-      {/* HOW */}
-      <section id="cara" className="snap-section bg-ink-50 border-y border-ink-100">
-        <div className="max-w-[1000px] mx-auto px-6 py-24 md:py-32">
-          <FadeUp>
-            <div className="text-center mb-16">
-              <p className="text-[13px] tracking-[0.18em] uppercase text-[#0071e3] font-medium">{t.how.eyebrow}</p>
-              <h2 className="mt-3 font-semibold tracking-[-0.02em] leading-[1.05]" style={{ fontSize: 'clamp(34px, 5vw, 52px)' }}>{t.how.title}</h2>
+              {/* 3 Trust points below buttons */}
+              <div className="mt-8 pt-5 sm:pt-6 border-t border-gray-100 grid grid-cols-1 sm:flex sm:flex-wrap items-center gap-2.5 sm:gap-6 text-xs text-gray-700">
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-lg bg-blue-50 text-[#1C2974] flex items-center justify-center flex-none">
+                    <LightningIcon className="w-3.5 h-3.5" />
+                  </span>
+                  <span className="text-xs font-semibold text-gray-800">
+                    {t.hero.trust1}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-lg bg-blue-50 text-[#1C2974] flex items-center justify-center flex-none">
+                    <CalendarIcon className="w-3.5 h-3.5" />
+                  </span>
+                  <span className="text-xs font-semibold text-gray-800">
+                    {t.hero.trust2}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-lg bg-blue-50 text-[#1C2974] flex items-center justify-center flex-none">
+                    <ShieldCheckIcon className="w-3.5 h-3.5" />
+                  </span>
+                  <span className="text-xs font-semibold text-gray-800">
+                    {t.hero.trust3}
+                  </span>
+                </div>
+              </div>
             </div>
-          </FadeUp>
-          <div className="grid md:grid-cols-3 gap-6">
-            {t.how.steps.map((s, i) => {
-              const kind: 'chat' | 'qr' | 'spark' = i === 0 ? 'chat' : i === 1 ? 'qr' : 'spark'
-              return (
-                <FadeUp key={s.n} delay={i * 80}>
-                  <div className="relative rounded-[24px] bg-white border border-ink-100 p-8 h-full overflow-hidden">
-                    <div className="absolute -top-12 -right-12 w-40 h-40 rounded-full blur-2xl opacity-50 pointer-events-none"
-                      style={{ background: 'radial-gradient(circle, rgba(0,113,227,0.18), rgba(0,113,227,0) 70%)' }} />
-                    <div className="relative">
-                      <div className="flex items-center justify-between">
-                        <div className="inline-flex items-center justify-center w-9 h-9 rounded-full text-[12px] font-medium text-[#0071e3]"
-                          style={{ background: 'rgba(0,113,227,0.08)', border: '1px solid rgba(0,113,227,0.15)' }}>{s.n}</div>
-                        <div className="w-14 h-14 text-[#0071e3]">
-                          <StepIcon kind={kind} />
-                        </div>
+
+            {/* Right Column: Interactive Simulator Island (Dedicated full screen on mobile, right column on desktop) */}
+            <div id="simulator-mobile" className="lg:col-span-5 snap-section h-[calc(100dvh-3.75rem)] lg:h-auto flex flex-col justify-center items-center py-4 lg:py-0 w-full scroll-mt-14">
+
+              {/* Mobile-only header above simulator */}
+              <div className="lg:hidden text-center mb-2">
+                <p className="text-[10px] font-bold text-[#1C2974] tracking-wider uppercase">SIMULASI INTERAKTIF</p>
+                <h2 className="text-sm font-bold text-black mt-0.5">Pilih Skenario Bisnis Anda</h2>
+              </div>
+
+              {/* Scenario Selector Tabs on Top of Phone */}
+              <div className="w-full max-w-[340px] sm:max-w-[360px] mx-auto mb-2 sm:mb-2.5 grid grid-cols-4 gap-1 bg-gray-100/90 p-1 rounded-xl border border-gray-200/60 shadow-2xs">
+                {t.hero.scenarios.map((sc, idx) => {
+                  const ScIcon = sc.key === 'shop' ? ShoppingBagIcon : sc.key === 'clinic' ? ClinicIcon : sc.key === 'property' ? PropertyIcon : UserIcon
+                  const isSelected = heroScenarioIndex === idx
+                  return (
+                    <button
+                      key={sc.key}
+                      type="button"
+                      onClick={() => setHeroScenarioIndex(idx)}
+                      className={`flex flex-col sm:flex-row items-center justify-center gap-1 py-1.5 px-1 rounded-lg text-[10px] sm:text-xs font-semibold transition-all min-h-[34px] sm:min-h-[36px] ${isSelected
+                        ? 'bg-white text-[#1C2974] shadow-xs font-bold'
+                        : 'text-gray-500 hover:text-black'
+                        }`}
+                      title={sc.label}
+                    >
+                      <ScIcon className={`w-3.5 h-3.5 flex-none ${isSelected ? 'text-[#1C2974]' : 'text-gray-400'}`} />
+                      <span className="truncate">{sc.label}</span>
+                    </button>
+                  )
+                })}
+              </div>
+
+              {/* Native WhatsApp Card (Mobile) & Authentic iPhone Frame (Desktop) */}
+              <div className="relative w-full max-w-[340px] sm:max-w-[360px] mx-auto rounded-2xl sm:rounded-[44px] p-0 sm:p-2.5 bg-white sm:bg-gradient-to-b sm:from-gray-900 sm:to-black shadow-md sm:shadow-2xl border border-gray-200/90 sm:border-4 sm:border-gray-800 overflow-hidden sm:overflow-visible">
+                {/* Dynamic Island - only on tablet/desktop */}
+                <div className="hidden sm:block absolute top-4 left-1/2 -translate-x-1/2 w-24 h-5 bg-black rounded-full z-30" />
+
+                {/* Phone Screen */}
+                <div className="relative w-full rounded-2xl sm:rounded-[36px] overflow-hidden bg-[#EFEAE2] flex flex-col h-[420px] sm:h-[480px] lg:h-[500px]">
+                  {/* WhatsApp Header */}
+                  <div className="bg-[#075E54] text-white pt-2.5 sm:pt-8 pb-2 sm:pb-2.5 px-3 sm:px-3.5 flex items-center gap-2.5 shadow-sm z-10 flex-none">
+                    <div className="text-white/80 p-0.5">
+                      <ChevronLeftIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                    </div>
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold flex-none">
+                      {currentScenario.shopName.slice(0, 2).toUpperCase()}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-xs leading-tight truncate">{currentScenario.shopName}</div>
+                      <div className="text-[10px] text-white/80 leading-tight flex items-center gap-1 mt-0.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
+                        <span>Online · Clevio AI</span>
                       </div>
-                      <h3 className="mt-7 text-[22px] font-semibold tracking-tight">{s.t}</h3>
-                      <p className="mt-2 text-[15px] text-ink-500 leading-relaxed">{s.d}</p>
+                    </div>
+                    <div className="flex items-center gap-2.5 sm:gap-3 text-white/90">
+                      <PhoneIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                      <VideoIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </div>
                   </div>
-                </FadeUp>
-              )
-            })}
+
+                  {/* Chat Bubbles Scroll Area */}
+                  <div ref={chatContainerRef} className="flex-1 p-3 sm:p-3.5 space-y-2 overflow-y-auto text-xs touch-pan-y no-scrollbar flex flex-col">
+                    <div className="text-center mb-1">
+                      <span className="inline-block bg-white/70 backdrop-blur-xs text-[10px] font-medium text-gray-500 px-2 py-0.5 rounded-md shadow-2xs">
+                        {lang === 'id' ? 'HARI INI' : 'TODAY'}
+                      </span>
+                    </div>
+
+                    {simulatedChat.map((msg, i) => (
+                      <div
+                        key={i}
+                        className={`max-w-[85%] rounded-xl px-3 py-1.5 sm:py-2 leading-relaxed shadow-xs relative animate-fade-in ${msg.side === 'user'
+                          ? 'self-end bg-[#D9FDD3] text-gray-900 rounded-tr-sm ml-auto'
+                          : 'self-start bg-white text-gray-900 rounded-tl-sm border border-gray-100/50'
+                          }`}
+                      >
+                        <p className="text-[11px] sm:text-[12px]">{msg.text}</p>
+                        <div className="text-[9px] sm:text-[10px] text-gray-500 text-right mt-0.5 sm:mt-1 flex items-center justify-end gap-1">
+                          <span>{msg.time}</span>
+                          {msg.side === 'user' && <DoubleCheckIcon className="w-3 h-2 sm:w-3.5 sm:h-2.5 text-[#53BDEB]" />}
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* AI Typing Indicator */}
+                    {isAiTyping && (
+                      <div className="self-start bg-white border border-gray-100 rounded-xl rounded-tl-sm px-3 py-1.5 shadow-xs flex items-center gap-1.5 w-fit">
+                        <span className="w-1.5 h-1.5 rounded-full bg-gray-400 typing-dot" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-gray-400 typing-dot" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-gray-400 typing-dot" />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Interactive Quick Action Questions INSIDE Phone */}
+                  <div className="px-2.5 sm:px-3 py-2 bg-[#EFEAE2]/95 border-t border-black/5 flex flex-col gap-1.5 flex-none">
+                    <div className="flex items-center justify-between text-[10px] text-gray-500 font-medium px-0.5">
+                      <span className="flex items-center gap-1 font-semibold text-[#075E54]">
+                        <SparklesIcon className="w-2.5 h-2.5" />
+                        {lang === 'id' ? 'Tes Respon AI (Klik coba):' : 'Test AI Response (Tap to try):'}
+                      </span>
+                    </div>
+                    {/* Compact Horizontal Scrollable WhatsApp Quick Reply Pills on Mobile / Vertical on Desktop */}
+                    <div className="flex sm:flex-col gap-1.5 overflow-x-auto no-scrollbar py-0.5 sm:py-0">
+                      {currentScenario.quickQuestions.map((qItem, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={(e) => handleSendQuickAction(qItem.q, qItem.a, e)}
+                          disabled={isAiTyping}
+                          className="flex-none sm:w-full text-left bg-white/95 hover:bg-white active:scale-[0.98] border border-gray-200/90 hover:border-[#075E54] rounded-full sm:rounded-xl px-2.5 py-1 sm:py-1.5 text-[10px] sm:text-[11px] font-medium text-gray-800 transition-all shadow-2xs flex items-center justify-between gap-1.5 group disabled:opacity-50 whitespace-nowrap sm:whitespace-normal"
+                        >
+                          <span className="truncate max-w-[210px] sm:max-w-none">{qItem.q}</span>
+                          <span className="text-[#075E54] flex-none group-hover:translate-x-0.5 transition-transform">
+                            <SendIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* WhatsApp Input Bar */}
+                  <div className="bg-[#F0F2F5] px-2.5 sm:px-3 py-1.5 sm:py-2 flex items-center gap-2 border-t border-gray-200/80 flex-none">
+                    <div className="text-gray-500 p-0.5">
+                      <SmileIcon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                    </div>
+                    <div className="flex-1 bg-white rounded-full px-2.5 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-[11px] text-gray-400 truncate">
+                      {lang === 'id' ? 'Pilih pertanyaan di atas...' : 'Select a question above...'}
+                    </div>
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#075E54] text-white flex items-center justify-center text-xs flex-none shadow-xs">
+                      <SendIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
           </div>
         </div>
       </section>
 
-      {/* ARTHUR */}
-      <section className="snap-section bg-white">
-        <div className="max-w-[1000px] mx-auto px-6 py-24 md:py-32">
-          <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
-            <FadeUp>
-              <p className="text-[13px] tracking-[0.18em] uppercase text-[#0071e3] font-medium">{t.arthur.eyebrow}</p>
-              <h2 className="mt-3 font-semibold tracking-[-0.02em] leading-[1.05]" style={{ fontSize: 'clamp(34px, 4.5vw, 48px)' }}>
-                {t.arthur.title1}<br />{t.arthur.title2}
-              </h2>
-              <p className="mt-5 text-[17px] text-ink-500 max-w-md leading-relaxed">{t.arthur.body}</p>
-              <a href="#harga" className="inline-flex items-center gap-1 text-[15px] text-[#0071e3] hover:text-[#0058b9] mt-6 transition-colors">
-                {t.arthur.cta}<Arrow />
-              </a>
-            </FadeUp>
-            <FadeUp delay={100}>
-              <div className="rounded-[24px] bg-white p-6 md:p-8 border border-ink-100 shadow-[0_24px_64px_-24px_rgba(10,37,64,0.12)]">
-                <div className="flex items-center gap-2 mb-4 pb-3 border-b border-ink-100">
-                  <span className="w-7 h-7 rounded-full bg-[#0071e3] text-white flex items-center justify-center text-[12px] font-medium">A</span>
-                  <div>
-                    <div className="text-[13px] font-medium">Arthur</div>
-                    <div className="text-[11px] text-ink-400">{t.arthur.role}</div>
+      {/* 3. SECTION: CARA KERJA (How It Works) */}
+      <section id="cara" className="snap-section relative min-h-[calc(100vh-4.5rem)] lg:h-[calc(100vh-4.5rem)] lg:max-h-[calc(100vh-4.5rem)] flex flex-col justify-center py-6 lg:py-6 bg-[#F8FAFC] border-b border-gray-100 scroll-mt-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full my-auto">
+          <div className="text-center max-w-2xl mx-auto mb-4 lg:mb-6">
+            <p className="font-heading font-bold text-[11px] tracking-[0.2em] text-[#1C2974] uppercase">
+              {t.how.eyebrow}
+            </p>
+            <h2 className="mt-1 font-heading font-bold text-xl sm:text-2xl lg:text-3xl text-black">
+              {t.how.title}
+            </h2>
+            <p className="mt-1 text-xs sm:text-sm text-gray-600">
+              {t.how.sub}
+            </p>
+          </div>
+
+          {/* Mobile: Single Connected Stepper Island (Zero Clutter, 1 Cohesive Module) */}
+          <div className="md:hidden bg-white rounded-2xl border border-gray-200/80 p-4 shadow-xs">
+            <div className="space-y-4 relative">
+              {/* Continuous vertical connector line */}
+              <div className="absolute left-[15px] top-4 bottom-4 w-0.5 bg-blue-100 -z-0" />
+
+              {t.how.steps.map((step, idx) => (
+                <div key={step.n} className="relative z-10 flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-[#1C2974] text-white font-heading font-bold flex items-center justify-center text-xs flex-none shadow-xs ring-4 ring-white">
+                    {step.n}
+                  </div>
+                  <div className="flex-1 pt-0.5">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className="w-5 h-5 rounded-md bg-blue-50 text-[#1C2974] flex items-center justify-center flex-none">
+                        {idx === 0 ? <MessageSquareIcon className="w-3 h-3" /> : idx === 1 ? <QrCodeIcon className="w-3 h-3" /> : <SparklesIcon className="w-3 h-3" />}
+                      </span>
+                      <h3 className="font-heading font-bold text-sm text-black">
+                        {step.t}
+                      </h3>
+                    </div>
+                    <p className="text-xs text-gray-600 leading-relaxed">
+                      {step.d}
+                    </p>
                   </div>
                 </div>
-                <div className="flex flex-col gap-3">
-                  {t.arthur.chat.map((m, i) => (
-                    <div key={i} className={`text-[14px] px-3.5 py-2 rounded-[18px] max-w-[80%] ${
-                      m.side === 'in'
-                        ? 'self-start bg-ink-50 border border-ink-100 text-ink-900'
-                        : 'self-end text-white'
-                    }`} style={m.side === 'out' ? { background: '#0071e3' } : {}}>
-                      {m.text}
+              ))}
+            </div>
+          </div>
+
+          {/* Desktop & Tablet: 3-Column Grid (100% 1:1 Desktop Parity) */}
+          <div className="hidden md:grid md:grid-cols-3 gap-4 lg:gap-6">
+            {t.how.steps.map((step, idx) => (
+              <div
+                key={step.n}
+                className="bg-white rounded-2xl p-5 lg:p-6 border border-gray-200/80 shadow-xs hover:shadow-md transition-shadow relative"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <span className="w-9 h-9 rounded-xl bg-blue-50 text-[#1C2974] font-heading font-bold flex items-center justify-center text-xs">
+                    {step.n}
+                  </span>
+                  <span className="w-9 h-9 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center text-[#1C2974]">
+                    {idx === 0 ? <MessageSquareIcon className="w-4 h-4" /> : idx === 1 ? <QrCodeIcon className="w-4 h-4" /> : <SparklesIcon className="w-4 h-4" />}
+                  </span>
+                </div>
+                <h3 className="font-heading font-bold text-base lg:text-lg text-black mb-1">
+                  {step.t}
+                </h3>
+                <p className="text-xs lg:text-sm text-gray-600 leading-relaxed">
+                  {step.d}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 4. SECTION: PERBANDINGAN CHATBOT LAMA VS CLEVIO AI STAFF */}
+      <section id="perbandingan" className="snap-section relative min-h-[calc(100vh-4.5rem)] lg:h-[calc(100vh-4.5rem)] lg:max-h-[calc(100vh-4.5rem)] flex flex-col justify-center py-6 lg:py-4 bg-white border-b border-gray-100 scroll-mt-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full my-auto">
+          <div className="text-center max-w-3xl mx-auto mb-3 lg:mb-4">
+            <p className="font-heading font-bold text-[11px] tracking-[0.2em] text-[#1C2974] uppercase">
+              {t.comparison.eyebrow}
+            </p>
+            <h2 className="mt-1 font-heading font-bold text-xl sm:text-2xl lg:text-3xl text-black">
+              {t.comparison.title}
+            </h2>
+            <p className="mt-1 text-xs sm:text-sm text-gray-600 leading-normal max-w-2xl mx-auto">
+              {t.comparison.sub}
+            </p>
+          </div>
+
+          {/* Mobile Segmented Switch (clean 1-screen comparison on mobile) */}
+          <div className="lg:hidden flex items-center justify-center mb-3">
+            <div className="inline-flex bg-gray-100 p-1 rounded-xl border border-gray-200/90 w-full max-w-sm">
+              <button
+                type="button"
+                onClick={() => setComparisonTab('bot')}
+                className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all ${comparisonTab === 'bot'
+                  ? 'bg-white text-red-700 shadow-xs'
+                  : 'text-gray-500 hover:text-black'
+                  }`}
+              >
+                Chatbot Lama
+              </button>
+              <button
+                type="button"
+                onClick={() => setComparisonTab('clevio')}
+                className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all ${comparisonTab === 'clevio'
+                  ? 'bg-[#1C2974] text-white shadow-xs'
+                  : 'text-gray-500 hover:text-black'
+                  }`}
+              >
+                Clevio AI Staff
+              </button>
+            </div>
+          </div>
+
+          {/* Comparison Cards (Side-by-side on desktop, switched on mobile for zero scroll fatigue) */}
+          <div className="grid lg:grid-cols-2 gap-3.5 sm:gap-4 lg:gap-6 items-stretch">
+
+            {/* Card 1: Chatbot Lama */}
+            <div className={`rounded-2xl p-4 sm:p-5 border border-red-200 bg-red-50/20 flex-col justify-between ${comparisonTab === 'bot' ? 'flex' : 'hidden'} lg:flex`}>
+              <div>
+                <span className="inline-block px-2.5 py-0.5 rounded-full bg-red-100 text-red-700 text-[10px] font-bold tracking-wider mb-1.5">
+                  {t.comparison.botBadge}
+                </span>
+                <h3 className="font-heading font-bold text-base sm:text-lg lg:text-xl text-gray-900 mb-0.5">
+                  {t.comparison.botTitle}
+                </h3>
+                <p className="text-xs text-gray-600 mb-2 leading-snug line-clamp-2">
+                  {t.comparison.botDesc}
+                </p>
+
+                {/* Simulated Chat Dialogue */}
+                <div className="rounded-xl p-2.5 bg-gray-100/90 border border-gray-200 mb-2 space-y-1.5 text-xs font-sans">
+                  {t.comparison.botChat.map((m, i) => (
+                    <div
+                      key={i}
+                      className={`max-w-[88%] rounded-xl px-2.5 py-1 leading-relaxed ${m.side === 'user'
+                        ? 'self-end bg-gray-300 text-gray-900 ml-auto'
+                        : 'self-start bg-white text-gray-800'
+                        }`}
+                    >
+                      <p className="text-[11px]">{m.text}</p>
+                      <span className="text-[9px] text-gray-500 block text-right mt-0.5">{m.time}</span>
                     </div>
                   ))}
                 </div>
+
+                {/* Pain points */}
+                <ul className="space-y-1.5 text-xs text-gray-700">
+                  {t.comparison.botBad.map((bad, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="w-4 h-4 rounded-full bg-red-100 text-red-600 flex items-center justify-center flex-none mt-0.5">
+                        <CloseIcon className="w-2.5 h-2.5" />
+                      </span>
+                      <span>{bad}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-            </FadeUp>
+            </div>
+
+            {/* Card 2: Clevio AI Staff */}
+            <div className={`rounded-2xl p-4 sm:p-5 border-2 border-[#1C2974] bg-white shadow-xl shadow-[#1C2974]/10 flex-col justify-between relative ${comparisonTab === 'clevio' ? 'flex' : 'hidden'} lg:flex`}>
+              <span className="absolute -top-3 right-6 bg-[#1C2974] text-white text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full">
+                REKOMENDASI BISNIS
+              </span>
+
+              <div>
+                <span className="inline-block px-2.5 py-0.5 rounded-full bg-blue-50 text-[#1C2974] text-[10px] font-bold tracking-wider mb-1.5">
+                  {t.comparison.clevioBadge}
+                </span>
+                <h3 className="font-heading font-bold text-base sm:text-lg lg:text-xl text-black mb-0.5">
+                  {t.comparison.clevioTitle}
+                </h3>
+                <p className="text-xs text-gray-600 mb-2 leading-snug line-clamp-2">
+                  {t.comparison.clevioDesc}
+                </p>
+
+                {/* Simulated Chat Dialogue */}
+                <div className="rounded-xl p-2.5 bg-[#EFEAE2] border border-gray-200 mb-2 space-y-1.5 text-xs font-sans">
+                  {t.comparison.clevioChat.map((m, i) => (
+                    <div
+                      key={i}
+                      className={`max-w-[88%] rounded-xl px-2.5 py-1 leading-relaxed shadow-xs ${m.side === 'user'
+                        ? 'self-end bg-[#D9FDD3] text-gray-900 ml-auto'
+                        : 'self-start bg-white text-gray-900'
+                        }`}
+                    >
+                      <p className="text-[11px]">{m.text}</p>
+                      <div className="text-[9px] text-gray-500 text-right mt-0.5 flex items-center justify-end gap-1">
+                        <span>{m.time}</span>
+                        {m.side === 'user' && <DoubleCheckIcon className="w-3 h-2 text-[#53BDEB]" />}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Advantages */}
+                <ul className="space-y-1.5 text-xs text-gray-800">
+                  {t.comparison.clevioGood.map((good, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="w-4 h-4 rounded-full bg-blue-50 text-[#1C2974] flex items-center justify-center flex-none mt-0.5">
+                        <CheckIcon className="w-2.5 h-2.5" />
+                      </span>
+                      <span>{good}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="mt-2.5 pt-2.5 border-t border-gray-100">
+                <a
+                  href="#harga"
+                  className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#1C2974] hover:bg-[#141d54] text-white py-2 px-4 text-xs font-semibold transition-all shadow-md active:scale-[0.98]"
+                >
+                  <span>Coba Clevio AI Sekarang</span>
+                  <ArrowRightIcon className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
 
-      {/* SOLUSI */}
-      <section id="solusi" className="snap-section bg-ink-50 border-y border-ink-100">
-        <div className="max-w-[1000px] mx-auto px-6 py-24 md:py-32">
-          <FadeUp>
-            <div className="text-center mb-14">
-              <p className="text-[13px] tracking-[0.18em] uppercase text-[#0071e3] font-medium">{t.solusi.eyebrow}</p>
-              <h2 className="mt-3 font-semibold tracking-[-0.02em] leading-[1.05]" style={{ fontSize: 'clamp(34px, 5vw, 52px)' }}>{t.solusi.title}</h2>
-              <p className="mt-4 text-[19px] text-ink-500 max-w-md mx-auto">{t.solusi.sub}</p>
+      {/* 5. SECTION: SPOTLIGHT ARTHUR (WITH EMBED YOUTUBE VIDEO) */}
+      <section id="arthur" className="snap-section relative min-h-[calc(100vh-4.5rem)] lg:h-[calc(100vh-4.5rem)] lg:max-h-[calc(100vh-4.5rem)] flex flex-col justify-center py-6 lg:py-6 bg-[#F8FAFC] border-b border-gray-100 scroll-mt-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full my-auto">
+          <div className="grid lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-10 items-center">
+
+            {/* Left Copy */}
+            <div className="lg:col-span-5">
+              <p className="font-heading font-bold text-[11px] tracking-[0.2em] text-[#1C2974] uppercase">
+                {t.arthur.eyebrow}
+              </p>
+              <h2 className="mt-1 font-heading font-bold text-xl sm:text-2xl lg:text-3xl text-black leading-tight">
+                {t.arthur.title}
+              </h2>
+              <p className="mt-2 text-xs sm:text-sm text-gray-600 leading-relaxed">
+                {t.arthur.body}
+              </p>
+              <div className="mt-4 sm:mt-5">
+                <a
+                  href="#harga"
+                  className="inline-flex items-center justify-center rounded-xl bg-[#1C2974] hover:bg-[#141d54] text-white px-6 py-2.5 text-xs sm:text-sm font-semibold shadow-sm transition-all"
+                >
+                  {t.arthur.cta}
+                </a>
+              </div>
             </div>
-          </FadeUp>
-          <div className="flex justify-center mb-14">
-            <div className="inline-flex bg-white border border-ink-200 rounded-full p-1 gap-0.5">
-              {t.useCases.map((u) => (
-                <button key={u.key} onClick={() => setTab(u.key)}
-                  className="px-5 py-2 rounded-full text-[14px] transition-all"
-                  style={tab === u.key
-                    ? { background: '#0071e3', color: '#fff' }
-                    : { color: '#424245' }}
-                  onMouseEnter={e => { if (tab !== u.key) e.currentTarget.style.color = '#1d1d1f' }}
-                  onMouseLeave={e => { if (tab !== u.key) e.currentTarget.style.color = '#424245' }}>
-                  {u.label}
-                </button>
-              ))}
+
+            {/* Right: Embed YouTube Video */}
+            <div className="lg:col-span-7">
+              <div className="relative rounded-2xl overflow-hidden border border-gray-200 shadow-xl bg-black aspect-video max-h-[340px] mx-auto">
+                <iframe
+                  className="w-full h-full"
+                  src="https://www.youtube.com/embed/p1hM4oHnngc"
+                  title="Clevio AI Staff Arthur Demo"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+              <p className="text-center text-[11px] text-gray-500 mt-2">
+                Tonton video demo singkat bagaimana Arthur merangkum kebutuhan bisnis Anda.
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* 6. SECTION: SOLUSI UNTUK BERBAGAI INDUSTRI (Use Cases) */}
+      <section id="solusi" className="snap-section relative min-h-[calc(100vh-4.5rem)] lg:h-[calc(100vh-4.5rem)] lg:max-h-[calc(100vh-4.5rem)] flex flex-col justify-center py-6 lg:py-4 bg-white border-b border-gray-100 scroll-mt-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full my-auto">
+          <div className="text-center max-w-2xl mx-auto mb-2.5 lg:mb-3">
+            <p className="font-heading font-bold text-[11px] tracking-[0.2em] text-[#1C2974] uppercase">
+              {t.solusi.eyebrow}
+            </p>
+            <h2 className="mt-1 font-heading font-bold text-xl sm:text-2xl lg:text-3xl text-black">
+              {t.solusi.title}
+            </h2>
+          </div>
+
+          {/* Pill Tabs with SVG Icons (Clean centered wrap on tablet/desktop, smooth contained scroll on mobile) */}
+          <div className="w-full flex justify-center mb-3 lg:mb-4 px-2 overflow-hidden">
+            <div className="inline-flex max-w-full bg-gray-100 p-1 rounded-xl border border-gray-200/80 gap-1 overflow-x-auto no-scrollbar">
+              {t.useCases.map((u) => {
+                const IconComponent = u.key === 'shop' ? ShoppingBagIcon : u.key === 'clinic' ? ClinicIcon : u.key === 'property' ? PropertyIcon : UserIcon
+                const isSelected = tab === u.key
+                return (
+                  <button
+                    key={u.key}
+                    type="button"
+                    onClick={() => setTab(u.key)}
+                    className={`inline-flex items-center gap-1.5 px-3 sm:px-5 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${
+                      isSelected
+                        ? 'bg-[#1C2974] text-white shadow-xs'
+                        : 'text-gray-600 hover:text-black hover:bg-white'
+                    }`}
+                  >
+                    <IconComponent className={`w-3.5 h-3.5 flex-none ${isSelected ? 'text-white' : 'text-gray-500'}`} />
+                    <span>{u.label}</span>
+                  </button>
+                )
+              })}
             </div>
           </div>
-          <div key={active.key + lang} className="grid md:grid-cols-2 gap-10 md:gap-14 items-center">
-            <FadeUp>
-              <div className="text-[12px] tracking-[0.18em] uppercase text-ink-400 font-medium">{active.label}</div>
-              <h3 className="mt-3 font-semibold tracking-[-0.02em] leading-[1.08]" style={{ fontSize: 'clamp(28px, 3.5vw, 40px)' }}>
-                {t.solusi.heading(active.name, active.label)}
+
+          {/* Split Content: Bullet points & WhatsApp Demo Card */}
+          <div className="bg-[#F8FAFC] rounded-2xl p-4 sm:p-5 lg:p-6 border border-gray-200/80 shadow-xs grid lg:grid-cols-12 gap-5 sm:gap-6 lg:gap-8 items-center">
+
+            {/* Left: Bullets */}
+            <div className="lg:col-span-7">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-blue-50 text-[#1C2974] text-[10px] font-bold uppercase tracking-wider mb-2">
+                {activeUseCase.key === 'shop' && <ShoppingBagIcon className="w-3.5 h-3.5 text-[#1C2974]" />}
+                {activeUseCase.key === 'clinic' && <ClinicIcon className="w-3.5 h-3.5 text-[#1C2974]" />}
+                {activeUseCase.key === 'property' && <PropertyIcon className="w-3.5 h-3.5 text-[#1C2974]" />}
+                {activeUseCase.key === 'personal' && <UserIcon className="w-3.5 h-3.5 text-[#1C2974]" />}
+                <span>{activeUseCase.label}</span>
+              </span>
+              <h3 className="font-heading font-bold text-lg sm:text-2xl md:text-3xl text-black leading-snug">
+                {activeUseCase.title}
               </h3>
-              <p className="mt-5 text-[16px] text-ink-500 leading-relaxed max-w-md">{t.solusi.body}</p>
-              <ul className="mt-7 space-y-3 text-[15px] text-ink-700">
-                {t.solusi.bullets.map((it) => (
-                  <li key={it} className="flex items-start gap-3">
-                    <span className="flex-none w-[22px] h-[22px] rounded-full flex items-center justify-center mt-[1px]"
-                      style={{ background: 'rgba(0,113,227,0.08)' }}>
-                      <svg viewBox="0 0 12 12" className="w-3 h-3" fill="none" stroke="#0071e3" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M2 6l3 3 5-5"/>
-                      </svg>
+              <p className="mt-2.5 sm:mt-4 text-xs sm:text-base text-gray-600 leading-relaxed">
+                {activeUseCase.desc}
+              </p>
+
+              <ul className="mt-5 sm:mt-8 space-y-2 sm:space-y-3.5">
+                {activeUseCase.bullets.map((bullet, idx) => (
+                  <li key={idx} className="flex items-start gap-2.5 sm:gap-3 text-xs sm:text-sm text-gray-800">
+                    <span className="flex-none w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full bg-blue-50 text-[#1C2974] flex items-center justify-center text-xs mt-0.5">
+                      <CheckIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     </span>
-                    {it}
+                    <span>{bullet}</span>
                   </li>
                 ))}
               </ul>
-            </FadeUp>
-            <FadeUp delay={100}>
-              <ConversationCard name={active.name} messages={active.chat} />
-            </FadeUp>
-          </div>
-        </div>
-      </section>
-
-      {/* TESTIMONIALS */}
-      <section className="snap-section bg-white">
-        <div className="max-w-[1000px] mx-auto px-6 py-24 md:py-32">
-          <FadeUp>
-            <div className="text-center mb-14">
-              <p className="text-[13px] tracking-[0.18em] uppercase text-[#0071e3] font-medium">{t.testimonial.eyebrow}</p>
-              <h2 className="mt-3 font-semibold tracking-[-0.02em] leading-[1.05]" style={{ fontSize: 'clamp(34px, 5vw, 52px)' }}>{t.testimonial.title}</h2>
             </div>
-          </FadeUp>
-          <div className="grid md:grid-cols-3 gap-6">
-            {t.testimonial.items.map((it, i) => (
-              <FadeUp key={i} delay={i * 60}>
-                <figure className="h-full p-8 rounded-[20px] bg-ink-50 border border-ink-100">
-                  <blockquote className="text-[18px] text-ink-900 leading-snug tracking-tight">&ldquo;{it.q}&rdquo;</blockquote>
-                  <figcaption className="mt-6 flex items-center gap-3">
-                    <span className="w-9 h-9 rounded-full bg-ink-200" />
-                    <div>
-                      <div className="text-[14px] font-medium">{it.a}</div>
-                      <div className="text-[12px] text-ink-500">{it.r}</div>
+
+            {/* Right: WhatsApp Dialogue Box */}
+            <div className="lg:col-span-5">
+              <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-md bg-[#EFEAE2] flex flex-col h-[280px] sm:h-[360px] md:h-[400px]">
+                {/* Header */}
+                <div className="bg-[#075E54] text-white px-3 sm:px-4 py-2 sm:py-3 flex items-center gap-2.5 sm:gap-3">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/20 flex items-center justify-center font-bold text-xs">
+                    {activeUseCase.name.slice(0, 2).toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-semibold text-xs truncate">{activeUseCase.name}</div>
+                    <div className="text-[10px] text-white/80">Online</div>
+                  </div>
+                  <div className="flex gap-2.5 text-xs text-white/90">
+                    <PhoneIcon className="w-3.5 h-3.5" />
+                    <VideoIcon className="w-3.5 h-3.5" />
+                  </div>
+                </div>
+
+                {/* Chat items (touch safe: thumb swipe scrolls page on mobile) */}
+                <div className="flex-1 p-3 sm:p-4 space-y-2 sm:space-y-3 overflow-y-auto pointer-events-none sm:pointer-events-auto flex flex-col justify-end text-xs touch-pan-y">
+                  {activeUseCase.chat.map((msg, i) => (
+                    <div
+                      key={i}
+                      className={`max-w-[85%] rounded-xl px-2.5 sm:px-3.5 py-1.5 sm:py-2 leading-relaxed shadow-xs relative ${msg.side === 'user'
+                        ? 'self-end bg-[#D9FDD3] text-gray-900 rounded-tr-sm'
+                        : 'self-start bg-white text-gray-900 rounded-tl-sm border border-gray-100/50'
+                        }`}
+                    >
+                      <p className="text-[11px] sm:text-xs">{msg.text}</p>
+                      <div className="text-[9px] sm:text-[10px] text-gray-400 text-right mt-0.5 sm:mt-1 flex items-center justify-end gap-1">
+                        <span>{msg.time}</span>
+                        {msg.side === 'user' && <DoubleCheckIcon className="w-3 h-2 sm:w-3.5 sm:h-2.5 text-[#53BDEB]" />}
+                      </div>
                     </div>
-                  </figcaption>
-                </figure>
-              </FadeUp>
-            ))}
+                  ))}
+                </div>
+
+                {/* Input stub */}
+                <div className="bg-[#F0F2F5] px-3 py-1.5 sm:py-2 flex items-center gap-2 border-t border-gray-200">
+                  <div className="flex-1 bg-white rounded-full px-3 py-1 text-[10px] sm:text-[11px] text-gray-400 truncate">
+                    Ketik pesan...
+                  </div>
+                  <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#075E54] text-white flex items-center justify-center text-[10px]">
+                    <SendIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
 
-      {/* PRICING */}
-      <section id="harga" className="snap-section bg-ink-50 border-y border-ink-100">
-        <div className="max-w-[1000px] mx-auto px-6 py-24 md:py-32">
-          <FadeUp>
-            <div className="text-center mb-8">
-              <p className="text-[13px] tracking-[0.18em] uppercase text-[#0071e3] font-medium">{t.pricing.eyebrow}</p>
-              <h2 className="mt-3 font-semibold tracking-[-0.02em] leading-[1.05]" style={{ fontSize: 'clamp(34px, 5vw, 52px)' }}>{t.pricing.title}</h2>
-              <p className="mt-4 text-[19px] text-ink-500">{t.pricing.sub}</p>
-            </div>
-          </FadeUp>
-          <div className="flex justify-center mt-4 mb-12">
-            <div className="inline-flex border border-ink-200 rounded-full p-1 bg-white gap-0.5">
-              {(['monthly', 'annual'] as const).map((b) => (
-                <button key={b} onClick={() => setBilling(b)}
-                  className="px-5 py-2 rounded-full text-[13px] transition-all"
-                  style={billing === b ? { background: '#0071e3', color: '#fff' } : { color: '#424245' }}>
-                  {b === 'monthly' ? t.pricing.monthly : t.pricing.annual}
-                </button>
-              ))}
-            </div>
+      {/* 7. SECTION: PAKET & HARGA (Pricing) */}
+      <section id="harga" className="snap-section relative min-h-[calc(100vh-4.5rem)] lg:h-[calc(100vh-4.5rem)] lg:max-h-[calc(100vh-4.5rem)] flex flex-col justify-center py-6 lg:py-4 bg-[#F8FAFC] border-b border-gray-100 scroll-mt-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 w-full my-auto">
+          <div className="text-center max-w-2xl mx-auto mb-3 lg:mb-5">
+            <p className="font-heading font-bold text-[11px] tracking-[0.2em] text-[#1C2974] uppercase">
+              {t.pricing.eyebrow}
+            </p>
+            <h2 className="mt-1 font-heading font-bold text-xl sm:text-2xl lg:text-3xl text-black">
+              {t.pricing.title}
+            </h2>
           </div>
-          <div className="grid md:grid-cols-3 gap-5">
+
+          {/* 2 Pricing Cards (Growth & Business) */}
+          <div className="grid md:grid-cols-2 max-w-3xl mx-auto gap-4 sm:gap-6 items-stretch">
             {t.pricing.plans.map((p) => {
-              const price = billing === 'monthly' ? p.m : p.a
+              const priceVal = p.m
               return (
-                <FadeUp key={p.name} delay={t.pricing.plans.indexOf(p) * 60}>
-                  <div className={`relative rounded-[20px] p-9 h-full flex flex-col bg-white border transition-all hover:-translate-y-1 ${
-                    p.featured ? 'border-[#0071e3] shadow-[0_0_0_1px_#0071e3]' : 'border-ink-100'
-                  }`} style={{ boxShadow: p.featured ? '0 0 0 1px #0071e3, 0 1px 2px rgba(0,0,0,0.04), 0 12px 32px -16px rgba(10,37,64,0.14)' : undefined }}>
-                    {p.featured && (
-                      <span className="absolute -top-[12px] left-1/2 -translate-x-1/2 text-[11px] tracking-[0.04em] font-medium bg-[#0071e3] text-white px-[14px] py-[5px] rounded-full">
-                        {t.pricing.popular}
+                <div
+                  key={p.name}
+                  className={`rounded-2xl p-5 sm:p-6 lg:p-7 flex flex-col justify-between transition-all relative ${p.featured
+                    ? 'border-2 border-[#1C2974] bg-white shadow-xl shadow-[#1C2974]/10 lg:-translate-y-1'
+                    : 'border border-gray-200/90 bg-white shadow-xs hover:shadow-md'
+                    }`}
+                >
+                  {p.featured && (
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#1C2974] text-white text-[10px] font-bold uppercase tracking-wider px-3 py-0.5 rounded-full">
+                      {t.pricing.popular}
+                    </span>
+                  )}
+
+                  <div>
+                    <h3 className="font-heading font-bold text-base sm:text-xl text-black">{p.name}</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">{p.sub}</p>
+
+                    <div className="mt-3 mb-3 flex items-baseline gap-1.5">
+                      <span className="font-heading font-bold text-2xl sm:text-3xl lg:text-4xl text-black">
+                        {priceVal === 0 ? 'Rp 0' : `Rp ${priceVal}k`}
                       </span>
-                    )}
-                    <div className="text-[14px] text-ink-500">{p.name}</div>
-                    <div className="mt-3 flex items-baseline gap-1">
-                      <span className="text-[46px] font-semibold tracking-[-0.03em]">
-                        {price === 0 ? (lang === 'id' ? 'Rp 0' : '$0') : (lang === 'id' ? `Rp ${price}k` : `$${price}`)}
-                      </span>
-                      <span className="text-[14px] text-ink-400">{t.pricing.per}</span>
+                      <span className="text-xs text-gray-500">{t.pricing.per}</span>
                     </div>
-                    <ul className="mt-7 space-y-3.5 text-[15px] text-ink-700 flex-1">
-                      {p.items.map((it) => (
-                        <li key={it} className="flex items-start gap-3">
-                          <span className="flex-none w-5 h-5 rounded-full flex items-center justify-center mt-[1px]"
-                            style={{ background: 'rgba(0,113,227,0.08)' }}>
-                            <svg viewBox="0 0 12 12" className="w-3 h-3" fill="none" stroke="#0071e3" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M2 6l3 3 5-5"/>
-                            </svg>
+
+                    <ul className="space-y-2 text-xs sm:text-sm text-gray-700 border-t border-gray-100 pt-3">
+                      {p.items.map((item, idx) => (
+                        <li key={idx} className="flex items-start gap-2">
+                          <span className="w-4 h-4 rounded-full bg-blue-50 text-[#1C2974] flex items-center justify-center flex-none mt-0.5">
+                            <CheckIcon className="w-2.5 h-2.5" />
                           </span>
-                          {it}
+                          <span>{item}</span>
                         </li>
                       ))}
                     </ul>
-                    <Link to="/login"
-                      className="mt-8 w-full inline-flex items-center justify-center rounded-full text-[15px] font-medium py-3 transition-all"
-                      style={p.featured
-                        ? { background: '#0071e3', color: '#fff' }
-                        : { border: '1px solid #d2d2d7', background: '#fff', color: '#1d1d1f' }}>
-                      {price === 0 ? t.pricing.startFree : t.pricing.pick}
-                    </Link>
                   </div>
-                </FadeUp>
+
+                  <div className="mt-4 pt-3 border-t border-gray-100">
+                    <a
+                      href="https://wa.me/?text=Halo%20Clevio,%20saya%20tertarik%20mencoba%20layanan%20Clevio%20AI%20Staff"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`w-full inline-flex items-center justify-center rounded-xl py-2.5 text-xs sm:text-sm font-semibold transition-all ${p.featured
+                        ? 'bg-[#1C2974] hover:bg-[#141d54] text-white shadow-md'
+                        : 'bg-gray-100 hover:bg-gray-200 text-black'
+                        }`}
+                    >
+                      {p.btnText}
+                    </a>
+                  </div>
+                </div>
               )
             })}
           </div>
         </div>
       </section>
 
-      {/* FAQ */}
-      <section id="faq" className="snap-section bg-white">
-        <div className="max-w-[760px] mx-auto px-6 py-24 md:py-32">
-          <FadeUp>
-            <div className="text-center mb-14">
-              <p className="text-[13px] tracking-[0.18em] uppercase text-[#0071e3] font-medium">{t.faq.eyebrow}</p>
-              <h2 className="mt-3 font-semibold tracking-[-0.02em] leading-[1.05]" style={{ fontSize: 'clamp(34px, 5vw, 52px)' }}>{t.faq.title}</h2>
-            </div>
-          </FadeUp>
-          <div className="border-t border-ink-100">
-            {t.faq.items.map((f, i) => (
-              <button key={i} onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                className="w-full text-left border-b border-ink-100 py-[26px] px-1 flex items-start gap-6">
-                <span className="flex-1">
-                  <span className="block text-[19px] font-medium tracking-[-0.01em] leading-snug">{f.q}</span>
-                  {openFaq === i && (
-                    <span className="block mt-3 text-[15px] text-ink-500 leading-relaxed">{f.a}</span>
+      {/* 8. SECTION: PERTANYAAN YANG SERING DIAJUKAN (FAQ) */}
+      <section id="faq" className="snap-section relative min-h-[calc(100vh-4.5rem)] lg:h-[calc(100vh-4.5rem)] lg:max-h-[calc(100vh-4.5rem)] flex flex-col justify-center py-6 lg:py-4 bg-white border-b border-gray-100 scroll-mt-20">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 w-full my-auto">
+          <div className="text-center mb-3 lg:mb-4">
+            <p className="font-heading font-bold text-[11px] tracking-[0.2em] text-[#1C2974] uppercase">
+              {t.faq.eyebrow}
+            </p>
+            <h2 className="mt-1 font-heading font-bold text-xl sm:text-2xl lg:text-3xl text-black">
+              {t.faq.title}
+            </h2>
+            <p className="mt-1 text-xs sm:text-sm text-gray-600 max-w-xl mx-auto">
+              {lang === 'id'
+                ? 'Semua jawaban penting tentang integrasi WhatsApp, keamanan data, dan pengelolaan Clevio AI Staff.'
+                : 'All essential answers regarding WhatsApp integration, data privacy, and managing Clevio AI Staff.'}
+            </p>
+          </div>
+
+          {/* Clean, Refined Single-Column Accordion Island */}
+          <div className="bg-white rounded-2xl border border-gray-200/90 divide-y divide-gray-100 p-2 sm:p-4 shadow-xs">
+            {t.faq.items.map((item, idx) => {
+              const isOpen = openFaq === idx
+              return (
+                <div key={idx} className="transition-colors">
+                  <button
+                    type="button"
+                    onClick={() => setOpenFaq(isOpen ? null : idx)}
+                    className="w-full py-2.5 sm:py-3.5 flex items-start justify-between gap-3 text-left group transition-colors"
+                    aria-expanded={isOpen}
+                  >
+                    <span className="font-heading font-bold text-xs sm:text-sm md:text-base text-black group-hover:text-[#1C2974] transition-colors leading-snug">
+                      {item.q}
+                    </span>
+                    <span
+                      className={`flex-none w-6 h-6 rounded-full bg-gray-100 group-hover:bg-blue-50 text-[#1C2974] flex items-center justify-center transition-transform duration-200 mt-0.5 ${isOpen ? 'rotate-180 bg-blue-50' : ''
+                        }`}
+                    >
+                      <ChevronDownIcon className="w-3 h-3" />
+                    </span>
+                  </button>
+
+                  {isOpen && (
+                    <div className="pb-2.5 sm:pb-3 pr-3 text-xs sm:text-sm text-gray-600 leading-relaxed font-sans animate-fade-in">
+                      {item.a}
+                    </div>
                   )}
-                </span>
-                <span className="text-[#0071e3] mt-0.5 text-2xl leading-none font-light flex-none">{openFaq === i ? '−' : '+'}</span>
-              </button>
-            ))}
+                </div>
+              )
+            })}
+          </div>
+
+          <div className="mt-3 sm:mt-4 text-center">
+            <p className="text-xs text-gray-500">
+              {lang === 'id' ? 'Punya pertanyaan spesifik untuk bisnis Anda?' : 'Have a specific question for your business?'}{' '}
+              <a
+                href="#cara"
+                className="text-[#1C2974] font-semibold hover:underline inline-flex items-center gap-1 ml-1"
+              >
+                <span>{t.faq.viewAll}</span>
+                <ArrowRightIcon className="w-3 h-3" />
+              </a>
+            </p>
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="snap-section bg-[#0a2540] text-white relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none opacity-[0.05]"
-          style={{
-            backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)',
-            backgroundSize: '28px 28px',
-            maskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)',
-          }} />
-        <div className="relative max-w-[860px] mx-auto px-6 py-24 md:py-32 text-center">
-          <FadeUp>
-            <h2 className="font-semibold tracking-[-0.025em] leading-[1.05]" style={{ fontSize: 'clamp(40px, 6vw, 64px)' }}>{t.cta.title}</h2>
-            <p className="mt-5 text-[18px] text-white/70">{t.cta.sub}</p>
-            <div className="mt-10">
-              <Link to="/login"
-                className="inline-flex items-center justify-center rounded-full bg-white text-[#0a2540] px-7 py-3 text-[15px] font-medium transition-all hover:bg-ink-100 hover:-translate-y-px">
+      {/* 9. SECTION: FINAL CALL TO ACTION */}
+      <section className="py-8 sm:py-14 md:py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="bg-[#1C2974] rounded-2xl sm:rounded-3xl p-5 sm:p-10 md:p-14 text-white shadow-xl flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 sm:gap-8">
+            <div className="max-w-2xl">
+              <h2 className="font-heading font-bold text-xl sm:text-3xl md:text-4xl text-white leading-tight">
+                {t.cta.title}
+              </h2>
+              <p className="mt-2 sm:mt-4 text-xs sm:text-base md:text-lg text-white/80 leading-relaxed">
+                {t.cta.sub}
+              </p>
+            </div>
+            <div className="flex-none">
+              <a
+                href="#harga"
+                className="inline-flex items-center justify-center rounded-xl bg-white hover:bg-gray-100 text-[#1C2974] font-semibold text-xs sm:text-base px-6 py-3 sm:px-8 sm:py-4 shadow-lg hover:scale-[1.02] transition-all w-full sm:w-auto text-center"
+              >
                 {t.cta.btn}
-              </Link>
+              </a>
             </div>
-          </FadeUp>
+          </div>
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="bg-ink-50 border-t border-ink-100">
-        <div className="max-w-[1000px] mx-auto px-6 py-12 text-[12px] text-ink-500">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pb-10">
+      {/* 10. FOOTER */}
+      <footer className="bg-[#F8FAFC] border-t border-gray-200/80 py-8 sm:py-12 md:py-16 text-sm text-gray-600">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-6 sm:gap-10 pb-8 sm:pb-12 border-b border-gray-200">
+            {/* Logo column */}
+            <div className="col-span-2 md:col-span-1">
+              <ClevioLogo size="md" className="sm:hidden" variant="dark" />
+              <ClevioLogo size="lg" className="hidden sm:inline-flex" variant="dark" />
+              <div className="mt-3 sm:mt-4 flex items-center gap-2 text-xs text-gray-500">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>{t.footer.systems}</span>
+              </div>
+            </div>
+
+            {/* Column 1 */}
             <div>
-              <div className="text-ink-900 font-medium mb-3">{t.footer.clevio}</div>
-              <ul className="space-y-2">
-                <li><a href="#solusi" className="hover:text-ink-900 transition-colors">{t.footer.links.solusi}</a></li>
-                <li><a href="#cara" className="hover:text-ink-900 transition-colors">{t.footer.links.cara}</a></li>
-                <li><a href="#harga" className="hover:text-ink-900 transition-colors">{t.footer.links.harga}</a></li>
+              <h4 className="font-heading font-bold text-black text-xs uppercase tracking-wider mb-3 sm:mb-4">
+                {t.footer.clevio}
+              </h4>
+              <ul className="space-y-2 sm:space-y-2.5 text-xs text-gray-600">
+                <li><a href="#solusi" className="hover:text-black transition-colors">{t.footer.links.solusi}</a></li>
+                <li><a href="#cara" className="hover:text-black transition-colors">{t.footer.links.cara}</a></li>
+                <li><a href="#perbandingan" className="hover:text-black transition-colors">{t.footer.links.cara}</a></li>
+                <li><a href="#harga" className="hover:text-black transition-colors">{t.footer.links.harga}</a></li>
+                <li><a href="#" className="hover:text-black transition-colors">{t.footer.links.blog}</a></li>
               </ul>
             </div>
+
+            {/* Column 2 */}
             <div>
-              <div className="text-ink-900 font-medium mb-3">{t.footer.dukungan}</div>
-              <ul className="space-y-2">
-                <li><a href="#faq" className="hover:text-ink-900 transition-colors">{t.footer.links.faq}</a></li>
-                <li><a href="#" className="hover:text-ink-900 transition-colors">{t.footer.links.kontak}</a></li>
-                <li><a href="#" className="hover:text-ink-900 transition-colors">{t.footer.links.status}</a></li>
+              <h4 className="font-heading font-bold text-black text-xs uppercase tracking-wider mb-3 sm:mb-4">
+                {t.footer.dukungan}
+              </h4>
+              <ul className="space-y-2 sm:space-y-2.5 text-xs text-gray-600">
+                <li><a href="#faq" className="hover:text-black transition-colors">{t.footer.links.pusatBantuan}</a></li>
+                <li><a href="#" className="hover:text-black transition-colors">{t.footer.links.kontak}</a></li>
+                <li><a href="#" className="hover:text-black transition-colors">{t.footer.links.status}</a></li>
+                <li><a href="#" className="hover:text-black transition-colors">{t.footer.links.komunitas}</a></li>
               </ul>
             </div>
+
+            {/* Column 3 */}
             <div>
-              <div className="text-ink-900 font-medium mb-3">{t.footer.perusahaan}</div>
-              <ul className="space-y-2">
-                <li><a href="#" className="hover:text-ink-900 transition-colors">{t.footer.links.tentang}</a></li>
-                <li><a href="#" className="hover:text-ink-900 transition-colors">{t.footer.links.karier}</a></li>
-                <li><a href="#" className="hover:text-ink-900 transition-colors">{t.footer.links.hubungi}</a></li>
+              <h4 className="font-heading font-bold text-black text-xs uppercase tracking-wider mb-3 sm:mb-4">
+                {t.footer.perusahaan}
+              </h4>
+              <ul className="space-y-2 sm:space-y-2.5 text-xs text-gray-600">
+                <li><a href="#" className="hover:text-black transition-colors">{t.footer.links.tentang}</a></li>
+                <li><a href="#" className="hover:text-black transition-colors">{t.footer.links.karier}</a></li>
+                <li><a href="#" className="hover:text-black transition-colors">{t.footer.links.media}</a></li>
+                <li><a href="#" className="hover:text-black transition-colors">{t.footer.links.mitra}</a></li>
               </ul>
             </div>
+
+            {/* Column 4 */}
             <div>
-              <div className="text-ink-900 font-medium mb-3">{t.footer.legal}</div>
-              <ul className="space-y-2">
-                <li><Link to="/privacy" className="hover:text-ink-900 transition-colors">{t.footer.links.privasi}</Link></li>
-                <li><Link to="/terms" className="hover:text-ink-900 transition-colors">{t.footer.links.ketentuan}</Link></li>
-                <li><a href="#" className="hover:text-ink-900 transition-colors">{t.footer.links.keamanan}</a></li>
+              <h4 className="font-heading font-bold text-black text-xs uppercase tracking-wider mb-3 sm:mb-4">
+                {t.footer.legal}
+              </h4>
+              <ul className="space-y-2.5 text-xs text-gray-600">
+                <li><Link to="/privacy" className="hover:text-black transition-colors">{t.footer.links.privasi}</Link></li>
+                <li><Link to="/terms" className="hover:text-black transition-colors">{t.footer.links.ketentuan}</Link></li>
+                <li><a href="#" className="hover:text-black transition-colors">{t.footer.links.aiPolicy}</a></li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-ink-200 pt-6 flex flex-col md:flex-row items-center justify-between gap-2">
-            <div className="text-center md:text-left">
-              <div>© {new Date().getFullYear()} Clevio AI Staff. {t.footer.copyright}</div>
-              <div className="mt-1 text-[12px] text-ink-400">Application name: Clevio AI Staff · Operator: PT Clevio</div>
+
+          {/* Bottom Bar */}
+          <div className="pt-6 sm:pt-8 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-xs text-gray-500">
+            <div>
+              © {new Date().getFullYear()} Clevio AI Staff. {t.footer.copyright} Operator: PT Clevio.
             </div>
-            <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#0071e3]" />
-              {t.footer.systems}
+            <div className="flex items-center gap-4 text-gray-500">
+              <a href="#" aria-label="YouTube" className="hover:text-black transition-colors p-1">
+                <VideoIcon className="w-5 h-5" />
+              </a>
+              <a href="#" aria-label="Instagram" className="hover:text-black transition-colors p-1">
+                <InstagramIcon className="w-5 h-5" />
+              </a>
+              <a href="#" aria-label="LinkedIn" className="hover:text-black transition-colors p-1">
+                <LinkedInIcon className="w-5 h-5" />
+              </a>
             </div>
           </div>
         </div>
