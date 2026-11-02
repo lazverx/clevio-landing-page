@@ -4,9 +4,10 @@ interface ClevioLogoProps {
   className?: string
   variant?: 'dark' | 'light' | 'accent'
   size?: 'sm' | 'md' | 'lg'
+  sublabel?: string
 }
 
-export default function ClevioLogo({ className = '', variant = 'dark', size = 'md' }: ClevioLogoProps) {
+export default function ClevioLogo({ className = '', variant = 'dark', size = 'md', sublabel = 'AI Staff' }: ClevioLogoProps) {
   const isLight = variant === 'light'
   const textColor = isLight ? 'text-white' : 'text-black'
 
@@ -38,7 +39,7 @@ export default function ClevioLogo({ className = '', variant = 'dark', size = 'm
         <span>o</span>
       </span>
       <span className={`font-bold tracking-normal ${sizeStyles.staff} ml-0.5`}>
-        AI Staff
+        {sublabel}
       </span>
     </div>
   )
