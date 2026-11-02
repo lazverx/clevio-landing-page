@@ -137,20 +137,20 @@ const CONTENT: Record<Lang, ContentData> = {
       tag: 'EXECUTIVE WORKSHOP · AI THINKING & INNOVATION',
       h1Line1: 'Bukan diganti AI.',
       h1Line2: 'Tapi Memimpin AI.',
-      desc: 'Workshop 1 hari intensif bagi para pemimpin dan profesional untuk menguasai pemikiran strategis, mengorkestrasi asisten AI lintas divisi, dan melahirkan nilai bisnis nyata yang terukur.',
+      desc: 'Workshop 1 hari intensif bagi para pemimpin dan profesional untuk menguasai pemikiran strategis, mengorkestrasi asisten AI lintas fungsi, dan melahirkan nilai nyata bagi organisasi.',
       ctaPrimary: 'Daftar Workshop',
       ctaSecondary: 'Konsultasi via WhatsApp',
       metrics: [
         { label: 'Format Sesi', value: '1 Hari Penuh (09:00 - 17:00)' },
         { label: 'Siklus Transformasi', value: 'H-14 Pra-Sesi s/d H+14 Implementasi' },
-        { label: 'Metodologi', value: '100% Berbasis Studi Kasus Nyata' },
+        { label: 'Metodologi', value: '100% Berbasis Kasus Nyata' },
         { label: 'Hotline WhatsApp', value: '+62 822-2111-8860' },
       ],
     },
     mission: {
       label: 'Misi Kami',
-      quote: 'Membekali para pemimpin dengan cara berpikir kritis, orkestrasi AI, dan validasi inovasi berkecepatan tinggi agar tidak sekadar menjadi pengguna pasif, melainkan',
-      highlight: 'arsitek masa depan organisasi.',
+      quote: 'Membekali para pemimpin dengan cara berpikir kritis, orkestrasi AI, dan validasi inovasi berkecepatan tinggi agar tidak sekadar menjadi pengguna, melainkan',
+      highlight: 'arsitek nilai masa depan organisasi.',
       desc: 'AI hanya memproses pola dari masa lalu. Manusia memegang kendali atas empati, arah strategis, dan penciptaan nilai baru yang tidak tergantikan.',
     },
     benefits: {
@@ -172,7 +172,7 @@ const CONTENT: Record<Lang, ContentData> = {
         {
           num: '03',
           title: 'Hyper-Impactful: Mengubah Peluang Menjadi Hasil Nyata',
-          highlight: 'Inovasi yang berdampak finansial dan operasional',
+          highlight: 'Inovasi yang berdampak nyata',
           desc: 'Memadukan kepekaan empati manusia dengan ketajaman analisis AI untuk menghasilkan terobosan layanan serta efisiensi biaya yang terukur bagi pertumbuhan bisnis.',
         },
         {
@@ -412,7 +412,7 @@ const CONTENT: Record<Lang, ContentData> = {
         {
           num: '03',
           title: 'Hyper-Impactful: Convert Opportunities into Measurable Growth',
-          highlight: 'Innovation with bottom-line impact',
+          highlight: 'Innovation with real impact',
           desc: 'Unite human empathy with computational power to launch service breakthroughs and sustainable cost efficiencies that drive enterprise value.',
         },
         {
@@ -606,10 +606,6 @@ const CONTENT: Record<Lang, ContentData> = {
 const WA_URL =
   'https://wa.me/6282221118860?text=Halo%20Tim%20Clevio%20AI%20Pro%2C%20saya%20tertarik%20mendaftar%20Workshop%20Executive%20AI%20Thinking%20%26%20Innovation.';
 
-const ColorStop: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <span className="text-[#FF5522] font-inherit">{children}</span>
-);
-
 export default function ClevioPro() {
   const [lang, setLang] = useState<Lang>('id');
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
@@ -640,43 +636,185 @@ export default function ClevioPro() {
   }, [activeVideo]);
 
   return (
-    <div className="zeggo-theme bg-black text-white min-h-screen selection:bg-[#FF5522] selection:text-white font-sans antialiased">
+    <div className="zeggo-app bg-black text-white min-h-screen selection:bg-white selection:text-black font-sans antialiased">
       <style>{`
         :root {
-          --primary: #FF5522;
-          --gutter: clamp(1.25rem, 1rem + 2vw, 3.5rem);
+          --header-height: calc(var(--spacing, 0.25rem) * 16);
+          --gutter: clamp(1rem, 0.7rem + 1.5vw, 2.5rem);
+          --breakpoint-3xl: 120rem;
         }
-        .zeggo-gutter {
-          padding-left: var(--gutter);
-          padding-right: var(--gutter);
+
+        /* 1:1 ZEGGO Typography Scale */
+        .text-h0 {
+          letter-spacing: -0.04em;
+          font-size: 4.25rem;
+          line-height: 0.9;
         }
-        color-stop {
-          color: #FF5522;
-          font-weight: inherit;
+        @media (min-width: 48rem) {
+          .text-h0 {
+            font-size: 6rem;
+          }
         }
-        /* Custom smooth scrollbars */
+        @media (min-width: 64rem) {
+          .text-h0 {
+            font-size: 11rem;
+            line-height: 0.86;
+          }
+        }
+
+        .text-h1 {
+          letter-spacing: -0.03em;
+          font-size: 2.3125rem;
+          line-height: 1;
+        }
+        @media (min-width: 48rem) {
+          .text-h1 {
+            font-size: 3.625rem;
+            line-height: 0.9;
+          }
+        }
+        @media (min-width: 64rem) {
+          .text-h1 {
+            font-size: 6.5rem;
+          }
+        }
+
+        .text-h2 {
+          letter-spacing: -0.02em;
+          font-size: 1.6875rem;
+          line-height: 1.05;
+        }
+        @media (min-width: 48rem) {
+          .text-h2 {
+            font-size: 2.375rem;
+          }
+        }
+        @media (min-width: 64rem) {
+          .text-h2 {
+            font-size: 3.5rem;
+          }
+        }
+
+        .text-h3 {
+          letter-spacing: -0.01em;
+          font-size: 1.25rem;
+          line-height: 1.2;
+        }
+        @media (min-width: 48rem) {
+          .text-h3 {
+            font-size: 1.5rem;
+          }
+        }
+        @media (min-width: 64rem) {
+          .text-h3 {
+            font-size: 1.875rem;
+          }
+        }
+
+        .text-h4 {
+          letter-spacing: -0.01em;
+          font-size: 1.125rem;
+          line-height: 1.35;
+        }
+        @media (min-width: 48rem) {
+          .text-h4 {
+            font-size: 1.25rem;
+          }
+        }
+        @media (min-width: 64rem) {
+          .text-h4 {
+            font-size: 1.375rem;
+          }
+        }
+
+        /* 1:1 ZEGGO Section Structure (Each section 1 full screen) */
+        .zeggo-section {
+          min-height: 100dvh;
+          padding-top: calc(var(--header-height) + var(--gutter));
+          padding-bottom: var(--gutter);
+          padding-inline: var(--gutter);
+          width: 100%;
+          margin-inline: auto;
+          max-width: calc(var(--breakpoint-3xl) + (var(--gutter) * 2));
+          position: relative;
+          display: flex;
+          flex-direction: column;
+        }
+
+        /* 1:1 ZEGGO 12-Column Grid */
+        .zeggo-grid {
+          display: grid;
+          grid-template-columns: repeat(12, minmax(0, 1fr));
+          gap: 1.5rem;
+        }
+
+        /* 1:1 ZEGGO Pill Button System */
+        .zeggo-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 9999px;
+          padding-inline: 1.75rem;
+          height: 2.75rem;
+          font-size: 0.875rem;
+          font-weight: 500;
+          letter-spacing: -0.01em;
+          text-decoration: none;
+          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+          cursor: pointer;
+          white-space: nowrap;
+        }
+        .zeggo-btn-primary {
+          background-color: #ffffff;
+          color: #000000;
+        }
+        .zeggo-btn-primary:hover {
+          background-color: rgba(255, 255, 255, 0.82);
+          transform: translateY(-1px);
+        }
+        .zeggo-btn-secondary {
+          border: 1px solid rgba(255, 255, 255, 0.22);
+          color: #ffffff;
+        }
+        .zeggo-btn-secondary:hover {
+          border-color: #ffffff;
+          background-color: rgba(255, 255, 255, 0.08);
+          transform: translateY(-1px);
+        }
+
+        /* Pure black & white monochrome imagery */
+        .zeggo-img {
+          filter: grayscale(1);
+          transition: filter 0.5s ease, transform 0.5s ease;
+        }
+        .zeggo-img:hover {
+          filter: grayscale(0.2);
+          transform: scale(1.02);
+        }
+
+        /* Smooth scrolling */
         html {
-          scrollbar-width: thin;
-          scrollbar-color: #333333 #000000;
+          scroll-behavior: smooth;
         }
       `}</style>
 
       {/* =====================================================================
-          HEADER (Zeggo Header Style with Official Clevio Logo & ID/EN Switch)
+          HEADER (1:1 ZEGGO Header with Official Clevio Logo & ID/EN Switcher)
       ===================================================================== */}
       <header
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-          scrolled ? 'bg-black/90 backdrop-blur-md border-b border-white/10 py-3.5' : 'bg-transparent py-5'
+          scrolled ? 'bg-black/90 backdrop-blur-md border-b border-white/10 py-3' : 'bg-transparent py-5'
         }`}
+        style={{ height: 'var(--header-height)' }}
       >
-        <div className="zeggo-gutter max-w-7xl mx-auto flex items-center justify-between">
-          {/* Official Clevio AI Pro Logo from ClevioLogo Component */}
+        <div className="h-full px-[var(--gutter)] max-w-[calc(var(--breakpoint-3xl)+(var(--gutter)*2))] mx-auto flex items-center justify-between">
+          {/* Official Clevio Logo from ClevioLogo Component */}
           <a href="#" className="flex items-center gap-2 group focus:outline-none" aria-label="Clevio AI Pro Home">
             <ClevioLogo variant="light" size="md" sublabel="AI Pro" />
           </a>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-8 text-xs uppercase tracking-widest text-white/70">
+          <nav className="hidden lg:flex items-center gap-8 text-xs uppercase tracking-widest text-white/60">
             <a href="#tantangan" className="hover:text-white transition-colors">{t.nav.challenge}</a>
             <a href="#misi" className="hover:text-white transition-colors">{t.nav.mission}</a>
             <a href="#dampak" className="hover:text-white transition-colors">{t.nav.outcomes}</a>
@@ -687,15 +825,15 @@ export default function ClevioPro() {
             <a href="#dokumentasi" className="hover:text-white transition-colors">{t.nav.highlights}</a>
           </nav>
 
-          {/* Header Actions: Language Switcher + CTA Button + Mobile Toggle */}
+          {/* Actions: ID/EN Switcher + ZEGGO Pill CTA */}
           <div className="flex items-center gap-3 sm:gap-4">
-            {/* Language Switcher Pill */}
-            <div className="flex items-center text-xs tracking-wider border border-white/20 rounded-full p-0.5 bg-black/40">
+            {/* ID / EN Language Switcher */}
+            <div className="flex items-center text-xs tracking-wider border border-white/20 rounded-full p-0.5 bg-black">
               <button
                 type="button"
                 onClick={() => setLang('id')}
                 className={`px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer ${
-                  lang === 'id' ? 'bg-[#FF5522] text-white' : 'text-white/60 hover:text-white'
+                  lang === 'id' ? 'bg-white text-black' : 'text-white/60 hover:text-white'
                 }`}
               >
                 ID
@@ -704,24 +842,24 @@ export default function ClevioPro() {
                 type="button"
                 onClick={() => setLang('en')}
                 className={`px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer ${
-                  lang === 'en' ? 'bg-[#FF5522] text-white' : 'text-white/60 hover:text-white'
+                  lang === 'en' ? 'bg-white text-black' : 'text-white/60 hover:text-white'
                 }`}
               >
                 EN
               </button>
             </div>
 
-            {/* Zeggo Style Pill CTA */}
+            {/* Pill CTA Button */}
             <a
               href={WA_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:inline-flex items-center justify-center rounded-full px-5 py-2 text-xs font-semibold tracking-wider uppercase border border-white/20 bg-white text-black hover:bg-[#FF5522] hover:text-white hover:border-[#FF5522] transition-all"
+              className="hidden sm:inline-flex zeggo-btn zeggo-btn-primary !h-9 !px-5 !text-xs uppercase tracking-wider font-semibold"
             >
               {t.nav.cta}
             </a>
 
-            {/* Mobile Menu Button */}
+            {/* Mobile Menu Toggle */}
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -739,22 +877,22 @@ export default function ClevioPro() {
           </div>
         </div>
 
-        {/* Mobile Dropdown Menu */}
+        {/* Mobile Navigation Dropdown */}
         {mobileMenuOpen && (
           <div className="lg:hidden bg-black/95 border-b border-white/10 px-6 py-6 flex flex-col gap-4 text-sm uppercase tracking-wider">
-            <a href="#tantangan" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#FF5522]">{t.nav.challenge}</a>
-            <a href="#misi" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#FF5522]">{t.nav.mission}</a>
-            <a href="#dampak" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#FF5522]">{t.nav.outcomes}</a>
-            <a href="#mengapa" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#FF5522]">{t.nav.whyUs}</a>
-            <a href="#kurikulum" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#FF5522]">{t.nav.curriculum}</a>
-            <a href="#kompetensi" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#FF5522]">{t.nav.competencies}</a>
-            <a href="#mentor" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#FF5522]">{t.nav.mentor}</a>
-            <a href="#dokumentasi" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#FF5522]">{t.nav.highlights}</a>
+            <a href="#tantangan" onClick={() => setMobileMenuOpen(false)} className="hover:text-white/80">{t.nav.challenge}</a>
+            <a href="#misi" onClick={() => setMobileMenuOpen(false)} className="hover:text-white/80">{t.nav.mission}</a>
+            <a href="#dampak" onClick={() => setMobileMenuOpen(false)} className="hover:text-white/80">{t.nav.outcomes}</a>
+            <a href="#mengapa" onClick={() => setMobileMenuOpen(false)} className="hover:text-white/80">{t.nav.whyUs}</a>
+            <a href="#kurikulum" onClick={() => setMobileMenuOpen(false)} className="hover:text-white/80">{t.nav.curriculum}</a>
+            <a href="#kompetensi" onClick={() => setMobileMenuOpen(false)} className="hover:text-white/80">{t.nav.competencies}</a>
+            <a href="#mentor" onClick={() => setMobileMenuOpen(false)} className="hover:text-white/80">{t.nav.mentor}</a>
+            <a href="#dokumentasi" onClick={() => setMobileMenuOpen(false)} className="hover:text-white/80">{t.nav.highlights}</a>
             <a
               href={WA_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-2 text-center rounded-full py-2.5 bg-[#FF5522] text-white font-semibold"
+              className="mt-2 text-center rounded-full py-2.5 bg-white text-black font-semibold"
             >
               {t.nav.cta}
             </a>
@@ -763,94 +901,82 @@ export default function ClevioPro() {
       </header>
 
       {/* =====================================================================
-          SECTION 1: HERO SECTION (.section-hero)
+          SECTION 1: HERO (.section.section-hero 1:1 ZEGGO)
       ===================================================================== */}
-      <section id="tantangan" className="section-hero relative min-h-screen flex flex-col justify-end pb-16 md:pb-24 pt-32 zeggo-gutter max-w-7xl mx-auto">
-        <div className="max-w-4xl space-y-6">
-          <p className="text-xs sm:text-sm font-semibold tracking-widest uppercase text-[#FF5522]">
+      <section id="tantangan" className="zeggo-section justify-end pb-12 sm:pb-20">
+        <div className="mt-auto space-y-6 max-w-4xl">
+          <p className="text-xs uppercase tracking-widest text-white/50 font-mono">
             {t.hero.tag}
           </p>
 
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-medium tracking-tight leading-[1.05]">
+          <h1 className="text-h2 font-medium max-w-screen-md">
             <span className="block">{t.hero.h1Line1}</span>
-            <span className="block">
-              <ColorStop>{t.hero.h1Line2}</ColorStop>
-            </span>
+            <span className="block text-white font-bold">{t.hero.h1Line2}</span>
           </h1>
 
-          <p className="text-base sm:text-xl text-white/80 max-w-2xl leading-relaxed">
+          <p className="text-h4 max-w-screen-sm text-white/80">
             {t.hero.desc}
           </p>
 
           <div className="flex flex-wrap items-center gap-4 pt-4">
-            <a
-              href={WA_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-full px-8 py-3.5 text-sm font-semibold tracking-wide bg-white text-black hover:bg-[#FF5522] hover:text-white transition-all shadow-lg"
-            >
+            <a href={WA_URL} target="_blank" rel="noopener noreferrer" className="zeggo-btn zeggo-btn-primary">
               {t.hero.ctaPrimary}
             </a>
-            <a
-              href={WA_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-full px-7 py-3.5 text-sm font-semibold tracking-wide border border-white/20 text-white hover:bg-white/10 hover:border-white transition-all"
-            >
+            <a href={WA_URL} target="_blank" rel="noopener noreferrer" className="zeggo-btn zeggo-btn-secondary">
               {t.hero.ctaSecondary}
             </a>
           </div>
         </div>
 
-        {/* Real-Time Capability Ribbon */}
-        <div className="mt-16 md:mt-24 pt-8 border-t border-white/15 grid grid-cols-2 md:grid-cols-4 gap-6">
+        {/* Real-time Capability Ribbon at Bottom of Hero */}
+        <div className="mt-16 md:mt-24 pt-6 border-t border-white/10 grid grid-cols-2 md:grid-cols-4 gap-6">
           {t.hero.metrics.map((m, idx) => (
             <div key={idx} className="space-y-1">
-              <span className="block text-xs uppercase tracking-wider text-white/50">{m.label}</span>
-              <span className="block text-sm sm:text-base font-semibold text-white">{m.value}</span>
+              <span className="block text-xs uppercase tracking-wider text-white/40">{m.label}</span>
+              <span className="block text-sm sm:text-base font-medium text-white">{m.value}</span>
             </div>
           ))}
         </div>
       </section>
 
       {/* =====================================================================
-          SECTION 2: MISSION SECTION (.section-missions)
+          SECTION 2: MISSION (.section.section-missions 1:1 ZEGGO)
       ===================================================================== */}
-      <section id="misi" className="section-missions min-h-[60vh] flex flex-col justify-center py-24 md:py-36 border-t border-white/10 zeggo-gutter max-w-7xl mx-auto">
-        <div className="max-w-4xl space-y-6">
-          <span className="text-xs uppercase tracking-widest text-[#FF5522] font-semibold">{t.mission.label}</span>
-          <p className="text-2xl sm:text-4xl lg:text-5xl font-medium tracking-tight leading-tight">
-            {t.mission.quote} <ColorStop>{t.mission.highlight}</ColorStop>
+      <section id="misi" className="zeggo-section justify-end pb-24 border-t border-white/10">
+        <div className="mt-auto space-y-6 max-w-4xl">
+          <h2 className="text-h1">{t.mission.label}</h2>
+          <p className="text-h4 max-w-2xl text-white/90 leading-relaxed">
+            {t.mission.quote} <span className="text-white font-semibold underline decoration-white/40">{t.mission.highlight}</span>
           </p>
-          <p className="text-base sm:text-lg text-white/70 max-w-2xl leading-relaxed">
+          <p className="text-body max-w-xl text-white/60 leading-relaxed">
             {t.mission.desc}
           </p>
         </div>
       </section>
 
       {/* =====================================================================
-          SECTION 3: BENEFITS SECTION (.section-benefits)
+          SECTION 3: BENEFITS (.section.section-benefits 1:1 ZEGGO)
       ===================================================================== */}
-      <section id="dampak" className="section-benefits py-24 md:py-36 border-t border-white/10 zeggo-gutter max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+      <section id="dampak" className="zeggo-section justify-center border-t border-white/10 py-16">
+        <div className="zeggo-grid relative size-full items-start">
           {/* Left Column Sticky Header */}
-          <div className="lg:col-span-5 lg:sticky lg:top-32 space-y-4">
-            <span className="text-xs uppercase tracking-widest text-[#FF5522] font-semibold">{t.benefits.label}</span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-medium tracking-tight leading-tight">
+          <div className="col-span-12 lg:col-span-5 lg:sticky lg:top-32 space-y-4">
+            <span className="text-xs uppercase tracking-widest text-white/40 font-mono">{t.benefits.label}</span>
+            <h2 className="text-h2 sticky">
               {t.benefits.title}
             </h2>
           </div>
 
-          {/* Right Column Numbered Cards */}
-          <div className="lg:col-span-7 space-y-12">
+          {/* Right Column Numbered Items */}
+          <div className="col-span-12 lg:col-span-7 space-y-12">
             {t.benefits.items.map((item) => (
-              <div key={item.num} className="border-b border-white/15 pb-10 space-y-3">
-                <span className="text-xs font-mono text-[#FF5522] tracking-wider font-semibold">{item.num}</span>
-                <h3 className="text-xl sm:text-2xl font-medium tracking-tight text-white">
+              <div key={item.num} className="border-b border-white/10 pb-8 space-y-3">
+                <span className="text-xs font-mono text-white/50 tracking-wider font-semibold">{item.num}</span>
+                <h3 className="text-h3 text-white">
                   {item.title}
                 </h3>
-                <p className="text-sm sm:text-base text-white/80 leading-relaxed">
-                  <ColorStop>{item.highlight}.</ColorStop> {item.desc}
+                <p className="text-body text-white/70 max-w-xl">
+                  <span className="text-white font-medium">{item.highlight}.</span> {item.desc}
                 </p>
               </div>
             ))}
@@ -859,27 +985,25 @@ export default function ClevioPro() {
       </section>
 
       {/* =====================================================================
-          SECTION 4: WHY US SECTION (.section-why-us)
+          SECTION 4: WHY US (.section.section-why-us 1:1 ZEGGO)
       ===================================================================== */}
-      <section id="mengapa" className="section-why-us py-24 md:py-36 border-t border-white/10 zeggo-gutter max-w-7xl mx-auto">
-        <div className="space-y-12">
+      <section id="mengapa" className="zeggo-section justify-between border-t border-white/10 py-16">
+        <div className="space-y-12 w-full">
           <div className="space-y-2">
-            <span className="text-xs uppercase tracking-widest text-[#FF5522] font-semibold">{t.whyUs.label}</span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-medium tracking-tight">
-              {t.whyUs.title}
-            </h2>
+            <span className="text-xs uppercase tracking-widest text-white/40 font-mono">{t.whyUs.label}</span>
+            <h2 className="text-h1">{t.whyUs.title}</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="zeggo-grid w-full">
             {t.whyUs.items.map((item) => (
               <div
                 key={item.num}
-                className="p-8 rounded-2xl bg-white/[0.03] border border-white/10 space-y-4 hover:border-white/30 transition-all"
+                className="col-span-12 md:col-span-4 p-8 rounded-2xl bg-white/[0.02] border border-white/10 space-y-4 hover:border-white/25 transition-all"
               >
-                <span className="text-xs font-mono text-[#FF5522] font-semibold">{item.num}</span>
-                <h3 className="text-xl font-medium text-white">{item.title}</h3>
-                <p className="text-sm text-white/70 leading-relaxed">
-                  <ColorStop>{item.highlight}.</ColorStop> {item.desc}
+                <span className="text-xs font-mono text-white/40 font-semibold">{item.num}</span>
+                <h3 className="text-h3 text-white">{item.title}</h3>
+                <p className="text-body text-white/70 leading-relaxed">
+                  <span className="text-white font-medium">{item.highlight}.</span> {item.desc}
                 </p>
               </div>
             ))}
@@ -888,48 +1012,46 @@ export default function ClevioPro() {
       </section>
 
       {/* =====================================================================
-          SECTION 5: AI ORCHESTRATION SPOTLIGHT (.section-zegbot style)
+          SECTION 5: AI ORCHESTRATION SPOTLIGHT (.section.section-zegbot 1:1 ZEGGO)
       ===================================================================== */}
-      <section className="section-zegbot py-24 md:py-36 border-t border-white/10 zeggo-gutter max-w-7xl mx-auto">
-        <div className="space-y-6 mb-16">
-          <span className="text-xs uppercase tracking-widest text-[#FF5522] font-semibold">{t.aiStack.label}</span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-medium tracking-tight">
-            {t.aiStack.title}
-          </h2>
-          <p className="text-base sm:text-lg text-white/75 max-w-2xl leading-relaxed">
-            {t.aiStack.subtitle}
-          </p>
-        </div>
+      <section className="zeggo-section justify-end pb-20 border-t border-white/10">
+        <div className="mt-auto space-y-10 w-full">
+          <div className="space-y-4 max-w-3xl">
+            <span className="text-xs uppercase tracking-widest text-white/40 font-mono">{t.aiStack.label}</span>
+            <h2 className="text-h2">
+              {t.aiStack.title}
+            </h2>
+            <p className="text-h4 text-white/75">
+              {t.aiStack.subtitle}
+            </p>
+          </div>
 
-        {/* 3 Step Interactive Process Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {t.aiStack.steps.map((st, idx) => (
-            <div
-              key={idx}
-              className="p-8 rounded-2xl bg-gradient-to-b from-white/[0.06] to-transparent border border-white/15 space-y-4 relative overflow-hidden group hover:border-[#FF5522]/50 transition-all"
-            >
-              <div className="absolute top-0 right-0 w-24 h-24 bg-[#FF5522]/10 rounded-full blur-2xl group-hover:bg-[#FF5522]/20 transition-all" />
-              <span className="text-xs font-mono tracking-widest uppercase text-white/50">{st.num}</span>
-              <h3 className="text-xl font-medium text-white">{st.name}</h3>
-              <p className="text-sm text-white/70 leading-relaxed">{st.desc}</p>
-            </div>
-          ))}
+          <div className="zeggo-grid w-full">
+            {t.aiStack.steps.map((st, idx) => (
+              <div
+                key={idx}
+                className="col-span-12 md:col-span-4 p-8 rounded-2xl bg-white/[0.03] border border-white/10 space-y-4 hover:border-white/30 transition-all"
+              >
+                <span className="text-xs font-mono tracking-widest uppercase text-white/40">{st.num}</span>
+                <h3 className="text-h3 text-white">{st.name}</h3>
+                <p className="text-body text-white/70">{st.desc}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* =====================================================================
-          SECTION 6: CURRICULUM ARCHITECTURE (.section-solutions style)
+          SECTION 6: CURRICULUM ARCHITECTURE (.section.section-solutions 1:1 ZEGGO)
       ===================================================================== */}
-      <section id="kurikulum" className="section-solutions py-24 md:py-36 border-t border-white/10 zeggo-gutter max-w-7xl mx-auto">
-        <div className="space-y-12">
+      <section id="kurikulum" className="zeggo-section justify-center border-t border-white/10 py-16">
+        <div className="space-y-12 w-full">
           <div className="space-y-2">
-            <span className="text-xs uppercase tracking-widest text-[#FF5522] font-semibold">{t.curriculum.label}</span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-medium tracking-tight">
-              {t.curriculum.title}
-            </h2>
+            <span className="text-xs uppercase tracking-widest text-white/40 font-mono">{t.curriculum.label}</span>
+            <h2 className="text-h2">{t.curriculum.title}</h2>
           </div>
 
-          <div className="space-y-8">
+          <div className="space-y-6">
             {t.curriculum.stages.map((stg) => (
               <div
                 key={stg.stage}
@@ -937,22 +1059,22 @@ export default function ClevioPro() {
               >
                 <div className="flex-1 space-y-4">
                   <div className="flex items-center gap-3">
-                    <span className="text-xs font-mono px-3 py-1 rounded-full bg-[#FF5522]/20 text-[#FF5522] font-semibold">
+                    <span className="text-xs font-mono px-3 py-1 rounded-full bg-white/10 text-white font-semibold">
                       {stg.stage}
                     </span>
-                    <span className="text-xs text-white/60 tracking-wider uppercase font-mono">{stg.timing}</span>
+                    <span className="text-xs text-white/50 tracking-wider uppercase font-mono">{stg.timing}</span>
                   </div>
 
-                  <h3 className="text-2xl font-medium text-white">{stg.title}</h3>
+                  <h3 className="text-h3 text-white">{stg.title}</h3>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-white/10 text-xs sm:text-sm">
                     <div>
-                      <span className="block text-white/50 mb-1">Fokus Pelaksanaan:</span>
+                      <span className="block text-white/40 mb-1">Fokus Pelaksanaan:</span>
                       <p className="text-white/80">{stg.focus}</p>
                     </div>
                     <div>
-                      <span className="block text-white/50 mb-1">Output Konkret:</span>
-                      <p className="text-white/80 font-medium">{stg.output}</p>
+                      <span className="block text-white/40 mb-1">Output Konkret:</span>
+                      <p className="text-white font-medium">{stg.output}</p>
                     </div>
                   </div>
                 </div>
@@ -961,7 +1083,7 @@ export default function ClevioPro() {
                   <img
                     src={asset(stg.img)}
                     alt={stg.title}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover zeggo-img"
                   />
                 </div>
               </div>
@@ -971,63 +1093,29 @@ export default function ClevioPro() {
       </section>
 
       {/* =====================================================================
-          SECTION 7: CORE CAPABILITIES (.section-features style)
+          SECTION 7: FACILITATOR & RECOGNITION (.section.section-brands 1:1 ZEGGO)
       ===================================================================== */}
-      <section id="kompetensi" className="section-features py-24 md:py-36 border-t border-white/10 zeggo-gutter max-w-7xl mx-auto">
-        <div className="space-y-12">
-          <div className="space-y-2">
-            <span className="text-xs uppercase tracking-widest text-[#FF5522] font-semibold">{t.competencies.label}</span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-medium tracking-tight">
-              {t.competencies.title}
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {t.competencies.items.map((comp) => (
-              <div
-                key={comp.num}
-                className="p-8 rounded-2xl bg-white/[0.03] border border-white/10 flex flex-col justify-between space-y-6 hover:border-white/30 transition-all"
-              >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-mono text-[#FF5522] font-semibold">{comp.num}</span>
-                    <span className="text-[11px] px-2.5 py-0.5 rounded-full border border-white/15 text-white/60">
-                      {comp.tag}
-                    </span>
-                  </div>
-                  <h3 className="text-xl font-medium text-white">{comp.name}</h3>
-                  <p className="text-sm text-white/70 leading-relaxed">{comp.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* =====================================================================
-          SECTION 8: FACILITATOR & RECOGNITION (.section-brands style)
-      ===================================================================== */}
-      <section id="mentor" className="section-brands py-24 md:py-36 border-t border-white/10 zeggo-gutter max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          {/* Real Photo */}
-          <div className="lg:col-span-5 aspect-[4/5] rounded-2xl overflow-hidden bg-white/5 border border-white/15">
+      <section id="mentor" className="zeggo-section justify-center border-t border-white/10 py-16">
+        <div className="zeggo-grid items-center w-full">
+          {/* Photo */}
+          <div className="col-span-12 lg:col-span-5 aspect-[4/5] rounded-2xl overflow-hidden bg-white/5 border border-white/15">
             <img
               src={asset('aranggi-real.jpg')}
               alt={t.mentor.name}
-              className="w-full h-full object-cover object-top"
+              className="w-full h-full object-cover object-top zeggo-img"
             />
           </div>
 
-          {/* Bio & Accolades */}
-          <div className="lg:col-span-7 space-y-6">
-            <span className="text-xs uppercase tracking-widest text-[#FF5522] font-semibold">{t.mentor.label}</span>
-            <h2 className="text-3xl sm:text-4xl font-medium tracking-tight text-white">{t.mentor.name}</h2>
-            <p className="text-sm sm:text-base text-[#FF5522] font-medium">{t.mentor.title}</p>
-            <p className="text-sm sm:text-base text-white/80 leading-relaxed">{t.mentor.bio}</p>
+          {/* Bio & Recognition Badges */}
+          <div className="col-span-12 lg:col-span-7 space-y-6 lg:pl-6">
+            <span className="text-xs uppercase tracking-widest text-white/40 font-mono">{t.mentor.label}</span>
+            <h2 className="text-h2 text-white">{t.mentor.name}</h2>
+            <p className="text-h4 text-white/80 font-medium">{t.mentor.title}</p>
+            <p className="text-body text-white/70">{t.mentor.bio}</p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-6 border-t border-white/10">
               {t.mentor.accolades.map((acc, idx) => (
-                <div key={idx} className="space-y-1">
+                <div key={idx} className="space-y-1 p-4 rounded-xl bg-white/[0.02] border border-white/10">
                   <h4 className="text-sm font-semibold text-white">{acc.title}</h4>
                   <p className="text-xs text-white/60 leading-relaxed">{acc.desc}</p>
                 </div>
@@ -1038,32 +1126,62 @@ export default function ClevioPro() {
       </section>
 
       {/* =====================================================================
-          SECTION 9: VIDEO HIGHLIGHTS
+          SECTION 8: CORE CAPABILITIES (.section.section-features 1:1 ZEGGO)
       ===================================================================== */}
-      <section id="dokumentasi" className="py-24 md:py-36 border-t border-white/10 zeggo-gutter max-w-7xl mx-auto">
-        <div className="space-y-12">
+      <section id="kompetensi" className="zeggo-section justify-between border-t border-white/10 py-16">
+        <div className="space-y-12 w-full">
           <div className="space-y-2">
-            <span className="text-xs uppercase tracking-widest text-[#FF5522] font-semibold">{t.videos.label}</span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-medium tracking-tight">
-              {t.videos.title}
-            </h2>
+            <span className="text-xs uppercase tracking-widest text-white/40 font-mono">{t.competencies.label}</span>
+            <h2 className="text-h2">{t.competencies.title}</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="zeggo-grid w-full">
+            {t.competencies.items.map((comp) => (
+              <div
+                key={comp.num}
+                className="col-span-12 md:col-span-6 lg:col-span-4 p-8 rounded-2xl bg-white/[0.02] border border-white/10 flex flex-col justify-between space-y-6 hover:border-white/30 transition-all"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-mono text-white/40 font-semibold">{comp.num}</span>
+                    <span className="text-[11px] px-2.5 py-0.5 rounded-full border border-white/15 text-white/60">
+                      {comp.tag}
+                    </span>
+                  </div>
+                  <h3 className="text-h3 text-white">{comp.name}</h3>
+                  <p className="text-body text-white/70">{comp.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* =====================================================================
+          SECTION 9: VIDEO DOCUMENTATION
+      ===================================================================== */}
+      <section id="dokumentasi" className="zeggo-section justify-center border-t border-white/10 py-16">
+        <div className="space-y-12 w-full">
+          <div className="space-y-2">
+            <span className="text-xs uppercase tracking-widest text-white/40 font-mono">{t.videos.label}</span>
+            <h2 className="text-h2">{t.videos.title}</h2>
+          </div>
+
+          <div className="zeggo-grid w-full">
             {t.videos.items.map((vid) => (
               <div
                 key={vid.id}
                 onClick={() => setActiveVideo(vid.id)}
-                className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-white/30 transition-all cursor-pointer group space-y-4"
+                className="col-span-12 md:col-span-6 p-6 rounded-2xl bg-white/[0.02] border border-white/10 hover:border-white/30 transition-all cursor-pointer group space-y-4"
               >
-                <div className="aspect-video rounded-xl overflow-hidden bg-black/60 relative">
+                <div className="aspect-video rounded-xl overflow-hidden bg-black relative">
                   <img
                     src={asset(vid.thumb)}
                     alt={vid.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80"
                   />
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                    <span className="w-14 h-14 rounded-full bg-white text-black flex items-center justify-center group-hover:scale-110 group-hover:bg-[#FF5522] group-hover:text-white transition-all shadow-xl">
+                    <span className="w-14 h-14 rounded-full bg-white text-black flex items-center justify-center group-hover:scale-110 transition-all shadow-xl">
                       <svg className="w-6 h-6 fill-current ml-0.5" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z" />
                       </svg>
@@ -1072,11 +1190,11 @@ export default function ClevioPro() {
                 </div>
 
                 <div className="space-y-1">
-                  <div className="flex items-center justify-between text-xs text-white/50">
-                    <span className="text-[#FF5522] font-semibold">{vid.category}</span>
+                  <div className="flex items-center justify-between text-xs text-white/40">
+                    <span className="text-white font-medium">{vid.category}</span>
                     <span>{vid.duration}</span>
                   </div>
-                  <h3 className="text-lg font-medium text-white group-hover:text-[#FF5522] transition-colors">
+                  <h3 className="text-h3 text-white group-hover:underline">
                     {vid.title}
                   </h3>
                 </div>
@@ -1087,54 +1205,50 @@ export default function ClevioPro() {
       </section>
 
       {/* =====================================================================
-          SECTION 10: GOALS / FINAL CTA (.section-goals style)
+          SECTION 10: GOALS / FINAL CTA (.section.section-goals 1:1 ZEGGO)
       ===================================================================== */}
-      <section className="section-goals py-28 md:py-40 border-t border-white/10 zeggo-gutter max-w-7xl mx-auto text-center">
-        <div className="max-w-3xl mx-auto space-y-8">
-          <span className="text-xs uppercase tracking-widest text-[#FF5522] font-semibold">{t.goal.label}</span>
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-medium tracking-tight leading-tight">
+      <section className="zeggo-section justify-between border-t border-white/10 py-16">
+        <div className="relative">
+          <span className="text-xs uppercase tracking-widest text-white/40 font-mono block mb-2">
+            {t.goal.label}
+          </span>
+          <p className="text-h2 leading-none max-w-4xl">
             {t.goal.title}
-          </h2>
-          <p className="text-base sm:text-xl text-white/75 leading-relaxed">
-            {t.goal.desc}
           </p>
+        </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
-            <a
-              href={WA_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-full px-9 py-4 text-sm font-semibold tracking-wide bg-white text-black hover:bg-[#FF5522] hover:text-white transition-all shadow-xl"
-            >
-              {t.goal.ctaPrimary}
-            </a>
-            <a
-              href={WA_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-full px-8 py-4 text-sm font-semibold tracking-wide border border-white/20 text-white hover:bg-white/10 hover:border-white transition-all"
-            >
-              {t.goal.ctaSecondary}
-            </a>
+        <div className="zeggo-grid border-t border-white/10 pt-10 items-end">
+          <div className="col-span-12 md:col-span-6 space-y-2">
+            <span className="text-sm text-white/60 font-mono">Executive Program & Corporate In-House</span>
+            <p className="text-body text-white/50">{t.goal.hours}</p>
           </div>
 
-          <div className="pt-8 text-xs text-white/50 space-y-1">
-            <p>Hotline WhatsApp: <span className="text-white font-medium">{t.goal.hotline}</span></p>
-            <p>{t.goal.hours}</p>
+          <div className="col-span-12 md:col-span-6 space-y-6">
+            <p className="text-h4 text-white/80">
+              {t.goal.desc}
+            </p>
+            <div className="flex flex-wrap items-center gap-4">
+              <a href={WA_URL} target="_blank" rel="noopener noreferrer" className="zeggo-btn zeggo-btn-primary">
+                {t.goal.ctaPrimary}
+              </a>
+              <a href={WA_URL} target="_blank" rel="noopener noreferrer" className="zeggo-btn zeggo-btn-secondary">
+                {t.goal.ctaSecondary}
+              </a>
+            </div>
           </div>
         </div>
       </section>
 
       {/* =====================================================================
-          FOOTER (Zeggo Style with Giant Brand Wordmark)
+          FOOTER (1:1 ZEGGO Pure Black & White Footer with Sleek SVG Wordmark)
       ===================================================================== */}
-      <footer className="border-t border-white/10 bg-black pt-16 pb-12 zeggo-gutter">
-        <div className="max-w-7xl mx-auto space-y-16">
+      <footer className="border-t border-white/10 bg-black pt-16 pb-12 px-[var(--gutter)] max-w-[calc(var(--breakpoint-3xl)+(var(--gutter)*2))] mx-auto">
+        <div className="space-y-16">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 pb-10 border-b border-white/10">
             {/* Official Logo */}
             <ClevioLogo variant="light" size="md" sublabel="AI Pro" />
 
-            <div className="flex flex-wrap items-center gap-6 text-xs text-white/60">
+            <div className="flex flex-wrap items-center gap-6 text-xs text-white/50">
               <a href={WA_URL} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
                 {t.footer.contact}
               </a>
@@ -1154,8 +1268,8 @@ export default function ClevioPro() {
             </a>
           </div>
 
-          {/* Giant ZEGGO-style SVG wordmark stretching across screen */}
-          <div className="w-full overflow-hidden select-none opacity-90 pt-8" aria-hidden="true">
+          {/* Giant ZEGGO-style SVG wordmark: Pure monochrome white stroke (No orange!) */}
+          <div className="w-full overflow-hidden select-none pt-4" aria-hidden="true">
             <svg viewBox="0 0 1400 130" className="w-full h-auto" fill="none" xmlns="http://www.w3.org/2000/svg">
               <text
                 x="50%"
@@ -1163,8 +1277,10 @@ export default function ClevioPro() {
                 textAnchor="middle"
                 fontSize="120"
                 fontWeight="800"
-                letterSpacing="4"
-                fill="#FF5522"
+                letterSpacing="6"
+                fill="none"
+                stroke="rgba(255, 255, 255, 0.12)"
+                strokeWidth="1.5"
                 style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
               >
                 CLEVIO AI PRO
@@ -1181,7 +1297,7 @@ export default function ClevioPro() {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-4"
           onClick={() => setActiveVideo(null)}
         >
           <div
@@ -1191,7 +1307,7 @@ export default function ClevioPro() {
             <button
               type="button"
               onClick={() => setActiveVideo(null)}
-              className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-[#FF5522] transition-colors cursor-pointer"
+              className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer"
               aria-label="Close video"
             >
               <svg className="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24">
