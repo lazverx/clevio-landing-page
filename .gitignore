@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Vite cache
+.vite/
+*.tsbuildinfo
+
+# Env (secrets — keep .env.example tracked)
+.env
+.env.local
+.env.*.local
+deploy/.env.prod
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor / OS
+.DS_Store
+.vscode/
+.idea/
+.vercel
+
+# Agent instructions & scratch
+.agents/
+AGENTS.md
+GEMINI.md
+antislop.md
+AI-docs/
+Oauth-google-preparation/
+deploy/
+docs/
+*.csv
+*.xlsx
