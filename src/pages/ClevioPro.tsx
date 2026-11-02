@@ -28,6 +28,7 @@ export default function ClevioPro() {
     }
   })
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [activeStage, setActiveStage] = useState<number>(0)
   const [activeVideo, setActiveVideo] = useState<'workshop' | 'mentor' | null>(null)
 
   const isEn = lang === 'en'
@@ -62,22 +63,72 @@ export default function ClevioPro() {
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [])
 
+  const stages = [
+    {
+      num: '01',
+      badge: isEn ? 'PRE-SESSION · D-14' : 'PRA-SESI · H-14',
+      title: isEn ? 'Understand your business context' : 'Pahami konteks bisnis Anda',
+      summary: isEn
+        ? 'Mapping real organisational challenges and expectations before the workshop begins.'
+        : 'Memetakan tantangan dan ekspektasi nyata organisasi sebelum sesi tatap muka dimulai.',
+      detail: isEn
+        ? 'Participants do not arrive empty-handed. Two weeks prior to the workshop, our AI learning assistant guides you in identifying high-priority business bottlenecks and framing the right questions to bring into the room.'
+        : 'Peserta tidak datang dengan tangan kosong. Dua minggu sebelum sesi, asisten pembelajaran membantu mengidentifikasi hambatan prioritas di tempat kerja Anda agar siap dibedah di ruang workshop.',
+      deliverable: isEn
+        ? 'Context Brief & Priority Problem Statement'
+        : 'Peta Konteks Bisnis & Rumusan Masalah Prioritas',
+      img: './clevio-pro/unsplash-challenge.jpg',
+    },
+    {
+      num: '02',
+      badge: isEn ? 'CORE WORKSHOP · 1 FULL DAY' : 'SESI INTI · 1 HARI PENUH',
+      title: isEn ? 'Design solutions with AI' : 'Rancang solusi dengan AI',
+      summary: isEn
+        ? 'Hands-on problem deconstruction with Design Thinking and rapid AI prototyping.'
+        : 'Bedah akar masalah dengan Design Thinking dan rancang prototipe solusi bersama AI.',
+      detail: isEn
+        ? 'Guided directly by Aranggi Soemardjan, participants combine human empathy, Higher-Order Thinking (HOTS), and cross-functional AI orchestration to turn raw challenges into working solution prototypes within a single day.'
+        : 'Dipandu langsung oleh Bpk. Aranggi Soemardjan, peserta memadukan empati pengguna, penalaran kritis (HOTS), dan orkestrasi asisten AI untuk mengubah masalah nyata menjadi prototipe solusi dalam satu hari.',
+      deliverable: isEn
+        ? 'Working AI-Assisted Solution Prototype'
+        : 'Prototipe Solusi Berbasis AI yang Siap Diuji',
+      img: './clevio-pro/unsplash-process.jpg',
+    },
+    {
+      num: '03',
+      badge: isEn ? 'IMPLEMENTATION · D+14' : 'IMPLEMENTASI · H+14',
+      title: isEn
+        ? 'Validate and iterate for execution'
+        : 'Validasi dan iterasi untuk implementasi',
+      summary: isEn
+        ? 'Testing assumptions in your actual workplace and refining the execution roadmap.'
+        : 'Menguji asumsi langsung di lingkungan kerja dan menyempurnakan langkah eksekusi.',
+      detail: isEn
+        ? 'True impact happens after the classroom. Over the two weeks following the workshop, participants test their prototypes with real stakeholders, gather feedback, iterate, and lock in an actionable implementation plan.'
+        : 'Dampak sejati diukur di lapangan kerja. Selama dua minggu pasca-sesi, peserta menguji prototipe kepada pengguna nyata, mengumpulkan umpan balik, melakukan iterasi, dan mengunci rencana implementasi.',
+      deliverable: isEn
+        ? 'Validated Prototype & Organisational Action Plan'
+        : 'Prototipe Tervalidasi & Rencana Eksekusi Nyata',
+      img: './clevio-pro/unsplash-gallery-2.jpg',
+    },
+  ]
+
   return (
     <div
       id="top"
-      className="min-h-screen bg-[#FAF9F5] text-[#141413] selection:bg-[#141413] selection:text-[#FAF9F5] overflow-x-clip w-full"
-      style={{ fontFamily: '"Source Sans 3", "Inter", sans-serif' }}
+      className="min-h-screen bg-[#F4F1EA] text-[#101614] selection:bg-[#B8502B] selection:text-white overflow-x-clip w-full"
+      style={{ fontFamily: '"Plus Jakarta Sans", "Manrope", sans-serif' }}
     >
-      <header className="sticky top-0 z-40 bg-[#FAF9F5]/95 backdrop-blur-md border-b border-[#E2E0D8]">
-        <div className="max-w-[1240px] mx-auto px-6 sm:px-10 h-[72px] flex items-center justify-between gap-4">
+      <header className="sticky top-0 z-40 bg-[#F4F1EA]/90 backdrop-blur-md border-b border-[#DED9CE]">
+        <div className="max-w-[1320px] mx-auto px-5 sm:px-8 h-[72px] flex items-center justify-between gap-4">
           <a
             href="#top"
-            className="inline-flex items-baseline gap-1.5 mr-auto focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#141413]"
+            className="inline-flex items-baseline gap-1.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#101614]"
           >
             <ClevioLogo size="md" variant="dark" sublabel="" />
             <span
-              className="text-xl font-medium tracking-[-0.03em] text-[#575651] -ml-1"
-              style={{ fontFamily: '"Manrope", sans-serif' }}
+              className="text-2xl italic font-normal text-[#B8502B] -ml-0.5"
+              style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
             >
               AI Pro
             </span>
@@ -85,128 +136,120 @@ export default function ClevioPro() {
 
           <nav
             aria-label={isEn ? 'Main navigation' : 'Navigasi utama'}
-            className="hidden lg:flex items-center gap-6 text-[13px] font-semibold text-[#4A4945]"
-            style={{ fontFamily: '"Manrope", sans-serif' }}
+            className="hidden xl:flex items-center gap-1 bg-[#E8E3D8] p-1 rounded-full border border-[#D8D2C5]"
           >
-            <a href="#tantangan" className="hover:text-[#141413] transition-colors py-1">
-              {isEn ? 'Challenge' : 'Tantangan'}
-            </a>
-            <a href="#hasil" className="hover:text-[#141413] transition-colors py-1">
-              {isEn ? '3H Outcomes' : 'Hasil 3H'}
-            </a>
-            <a href="#kurikulum" className="hover:text-[#141413] transition-colors py-1">
-              {isEn ? 'Curriculum' : 'Kurikulum'}
-            </a>
-            <a href="#kompetensi" className="hover:text-[#141413] transition-colors py-1">
-              {isEn ? 'Capabilities' : 'Kompetensi'}
-            </a>
-            <a href="#mentor" className="hover:text-[#141413] transition-colors py-1">
-              {isEn ? 'Facilitator' : 'Mentor'}
-            </a>
-            <a href="#galeri" className="hover:text-[#141413] transition-colors py-1">
-              {isEn ? 'Gallery' : 'Galeri'}
-            </a>
-            <a href="#kontak" className="hover:text-[#141413] transition-colors py-1">
-              {isEn ? 'Contact' : 'Kontak'}
-            </a>
+            {[
+              { href: '#tantangan', num: '01', label: isEn ? 'Challenge' : 'Realita' },
+              { href: '#hasil', num: '02', label: isEn ? '3H Impact' : 'Dampak 3H' },
+              { href: '#kurikulum', num: '03', label: isEn ? 'Process' : 'Alur 3 Tahap' },
+              { href: '#kompetensi', num: '04', label: isEn ? 'Capabilities' : 'Kompetensi' },
+              { href: '#mentor', num: '05', label: isEn ? 'Facilitator' : 'Fasilitator' },
+              { href: '#galeri', num: '06', label: isEn ? 'Gallery' : 'Galeri' },
+            ].map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#2C3330] hover:bg-white hover:text-[#101614] transition-all flex items-center gap-1.5"
+              >
+                <span className="text-[10px] font-bold text-[#B8502B] tabular-nums">
+                  {item.num}
+                </span>
+                <span>{item.label}</span>
+              </a>
+            ))}
           </nav>
 
-          <div className="hidden lg:flex items-center">
+          <div className="flex items-center gap-3">
+            <div
+              role="group"
+              aria-label={isEn ? 'Language selection' : 'Pilihan bahasa'}
+              className="inline-flex items-center bg-[#E8E3D8] p-0.5 rounded-full border border-[#D8D2C5] text-[11px] font-bold"
+            >
+              <button
+                type="button"
+                onClick={() => changeLang('id')}
+                aria-pressed={lang === 'id'}
+                aria-label="Bahasa Indonesia"
+                className={`min-w-[34px] min-h-[34px] px-2.5 rounded-full inline-flex items-center justify-center transition-all ${
+                  lang === 'id'
+                    ? 'bg-[#101614] text-white shadow-xs'
+                    : 'text-[#525855] hover:text-[#101614]'
+                }`}
+              >
+                ID
+              </button>
+              <button
+                type="button"
+                onClick={() => changeLang('en')}
+                aria-pressed={lang === 'en'}
+                aria-label="English"
+                className={`min-w-[34px] min-h-[34px] px-2.5 rounded-full inline-flex items-center justify-center transition-all ${
+                  lang === 'en'
+                    ? 'bg-[#101614] text-white shadow-xs'
+                    : 'text-[#525855] hover:text-[#101614]'
+                }`}
+              >
+                EN
+              </button>
+            </div>
+
             <a
               href={waHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="min-h-[40px] inline-flex items-center justify-center gap-2.5 bg-[#141413] hover:bg-[#2C2C2A] text-white px-5 py-2 text-[12px] font-bold tracking-wide transition-colors"
-              style={{ fontFamily: '"Manrope", sans-serif' }}
+              className="hidden sm:inline-flex min-h-[40px] items-center justify-center gap-2 rounded-full bg-[#B8502B] hover:bg-[#9E4120] text-white px-5 py-2 text-xs font-bold tracking-wide transition-colors"
             >
               <span>{isEn ? 'Register Workshop' : 'Daftar Workshop'}</span>
               <ArrowRightIcon className="w-3.5 h-3.5" />
             </a>
-          </div>
 
-          <div
-            role="group"
-            aria-label={isEn ? 'Language selection' : 'Pilihan bahasa'}
-            className="inline-flex items-center flex-shrink-0 gap-0.5 text-[11px] font-bold text-[#6E6D68]"
-            style={{ fontFamily: '"Manrope", sans-serif' }}
-          >
             <button
               type="button"
-              onClick={() => changeLang('id')}
-              aria-pressed={lang === 'id'}
-              aria-label="Bahasa Indonesia"
-              className={`min-w-[30px] min-h-[44px] px-1.5 inline-flex items-center justify-center transition-colors ${
-                lang === 'id'
-                  ? 'text-[#141413] underline underline-offset-[6px]'
-                  : 'hover:text-[#141413]'
-              }`}
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-expanded={mobileMenuOpen}
+              aria-label={
+                isEn
+                  ? mobileMenuOpen
+                    ? 'Close menu'
+                    : 'Open menu'
+                  : mobileMenuOpen
+                    ? 'Tutup menu'
+                    : 'Buka menu'
+              }
+              className="xl:hidden w-10 h-10 rounded-full border border-[#D8D2C5] bg-white flex flex-col items-center justify-center gap-1.5"
             >
-              ID
-            </button>
-            <span aria-hidden="true">/</span>
-            <button
-              type="button"
-              onClick={() => changeLang('en')}
-              aria-pressed={lang === 'en'}
-              aria-label="English"
-              className={`min-w-[30px] min-h-[44px] px-1.5 inline-flex items-center justify-center transition-colors ${
-                lang === 'en'
-                  ? 'text-[#141413] underline underline-offset-[6px]'
-                  : 'hover:text-[#141413]'
-              }`}
-            >
-              EN
+              <span
+                className={`w-4 h-px bg-[#101614] transition-transform ${
+                  mobileMenuOpen ? 'translate-y-[3.5px] rotate-45' : ''
+                }`}
+              />
+              <span
+                className={`w-4 h-px bg-[#101614] transition-transform ${
+                  mobileMenuOpen ? '-translate-y-[3.5px] -rotate-45' : ''
+                }`}
+              />
             </button>
           </div>
-
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-expanded={mobileMenuOpen}
-            aria-label={
-              isEn
-                ? mobileMenuOpen
-                  ? 'Close menu'
-                  : 'Open menu'
-                : mobileMenuOpen
-                  ? 'Tutup menu navigasi'
-                  : 'Buka menu navigasi'
-            }
-            className="lg:hidden w-11 h-11 border border-[#D9D7CE] flex flex-col items-center justify-center gap-1.5"
-          >
-            <span
-              className={`w-4 h-px bg-[#141413] transition-transform ${
-                mobileMenuOpen ? 'translate-y-[3.5px] rotate-45' : ''
-              }`}
-            />
-            <span
-              className={`w-4 h-px bg-[#141413] transition-transform ${
-                mobileMenuOpen ? '-translate-y-[3.5px] -rotate-45' : ''
-              }`}
-            />
-          </button>
         </div>
 
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-[#E2E0D8] bg-[#FAF9F5] px-6 py-4 space-y-1 shadow-lg">
+          <div className="xl:hidden border-t border-[#DED9CE] bg-[#F4F1EA] px-6 py-4 space-y-1 shadow-xl">
             {[
               { href: '#tantangan', label: isEn ? '01 · Current Challenge' : '01 · Tantangan Saat Ini' },
               { href: '#hasil', label: isEn ? '02 · 3H Outcomes' : '02 · Hasil yang Dicapai (3H)' },
-              { href: '#kurikulum', label: isEn ? '03 · Workshop Programme' : '03 · Program Workshop' },
+              { href: '#kurikulum', label: isEn ? '03 · 3-Step Programme' : '03 · Alur Program 3 Langkah' },
               { href: '#kompetensi', label: isEn ? '04 · Capabilities & Format' : '04 · Kompetensi & Format' },
-              { href: '#mentor', label: isEn ? '05 · Facilitator Profile' : '05 · Profil Mentor' },
-              { href: '#galeri', label: isEn ? '06 · Gallery' : '06 · Galeri' },
-              { href: '#kontak', label: isEn ? '07 · Contact & Registration' : '07 · Kontak & Pendaftaran' },
+              { href: '#mentor', label: isEn ? '05 · Facilitator Profile' : '05 · Profil Fasilitator' },
+              { href: '#galeri', label: isEn ? '06 · Gallery & Contact' : '06 · Galeri & Pendaftaran' },
             ].map((item) => (
               <a
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className="min-h-[46px] flex items-center justify-between text-sm font-semibold text-[#141413] border-b border-[#E2E0D8]/60 last:border-b-0"
-                style={{ fontFamily: '"Manrope", sans-serif' }}
+                className="min-h-[46px] flex items-center justify-between text-sm font-bold text-[#101614] border-b border-[#DED9CE]/60 last:border-b-0"
               >
                 <span>{item.label}</span>
-                <ArrowRightIcon className="w-4 h-4 text-[#6E6D68]" />
+                <ArrowRightIcon className="w-4 h-4 text-[#B8502B]" />
               </a>
             ))}
             <div className="pt-3">
@@ -215,8 +258,7 @@ export default function ClevioPro() {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full min-h-[46px] inline-flex items-center justify-center gap-2 bg-[#141413] text-white text-sm font-bold"
-                style={{ fontFamily: '"Manrope", sans-serif' }}
+                className="w-full min-h-[46px] rounded-full inline-flex items-center justify-center gap-2 bg-[#B8502B] text-white text-sm font-bold"
               >
                 <span>{isEn ? 'Register Workshop' : 'Daftar Workshop'}</span>
                 <ArrowRightIcon className="w-4 h-4" />
@@ -227,51 +269,57 @@ export default function ClevioPro() {
       </header>
 
       <main>
-        <section className="min-h-[calc(100svh-72px)] flex flex-col justify-between bg-[#FAF9F5] border-b border-[#E2E0D8]">
-          <div className="flex-1 flex items-center max-w-[1240px] w-full mx-auto px-6 sm:px-10 py-10 lg:py-12">
-            <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center w-full">
-              <div className="lg:col-span-7">
-                <p
-                  className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#6E6D68] mb-5"
-                  style={{ fontFamily: '"Manrope", sans-serif' }}
-                >
+        {/* SCREEN 01: ASYMMETRIC BENTO HERO */}
+        <section className="min-h-[calc(100svh-72px)] flex flex-col justify-center py-6 sm:py-8 px-4 sm:px-8 max-w-[1320px] mx-auto">
+          <div className="grid lg:grid-cols-12 gap-4 sm:gap-5 flex-1 items-stretch">
+            <div className="lg:col-span-7 rounded-2xl bg-[#101614] text-[#F4F1EA] p-7 sm:p-11 lg:p-14 flex flex-col justify-between relative overflow-hidden">
+              <div>
+                <p className="text-[11px] font-bold tracking-[0.22em] uppercase text-[#D98260] mb-6">
                   {isEn
                     ? 'AI THINKING & INNOVATION WORKSHOP'
                     : 'WORKSHOP AI THINKING & INNOVATION'}
                 </p>
 
-                <h1
-                  className="font-extrabold text-[42px] sm:text-[58px] lg:text-[72px] leading-[1.03] tracking-[-0.05em] text-[#141413]"
-                  style={{ fontFamily: '"Manrope", sans-serif' }}
-                >
+                <h1 className="font-extrabold text-[40px] sm:text-[56px] lg:text-[68px] leading-[1.02] tracking-[-0.04em] text-white">
                   {isEn ? (
                     <>
                       Not replaced by AI.
                       <br />
-                      <span className="text-[#575651]">Lead with AI.</span>
+                      <span
+                        className="italic font-normal text-[#E8C5B0]"
+                        style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
+                      >
+                        But leading with AI.
+                      </span>
                     </>
                   ) : (
                     <>
                       Bukan diganti AI.
                       <br />
-                      <span className="text-[#575651]">Tapi Memimpin AI.</span>
+                      <span
+                        className="italic font-normal text-[#E8C5B0]"
+                        style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
+                      >
+                        Tapi Memimpin AI.
+                      </span>
                     </>
                   )}
                 </h1>
 
-                <p className="mt-6 text-[18px] sm:text-[21px] text-[#4A4945] leading-[1.48] max-w-[44ch]">
+                <p className="mt-6 text-base sm:text-lg lg:text-[19px] text-[#B8C0BC] leading-relaxed max-w-[44ch]">
                   {isEn
-                    ? 'A one-day intensive workshop for leaders, managers, and professionals ready to create tangible organisational value with AI.'
-                    : 'Workshop intensif 1 hari untuk pemimpin, manajer, dan profesional yang siap menciptakan nilai nyata dengan AI.'}
+                    ? 'A one-day intensive workshop for leaders and professionals ready to turn AI potential into real organisational value.'
+                    : 'Workshop 1 hari untuk pemimpin dan profesional yang siap menciptakan nilai nyata dengan AI.'}
                 </p>
+              </div>
 
-                <div className="mt-8 flex flex-wrap items-center gap-4">
+              <div className="mt-10 pt-8 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+                <div className="flex flex-wrap items-center gap-3.5">
                   <a
                     href={waHref}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="min-h-[52px] inline-flex items-center justify-center gap-3.5 bg-[#141413] hover:bg-[#2C2C2A] text-white px-7 py-4 text-[13px] font-bold transition-colors"
-                    style={{ fontFamily: '"Manrope", sans-serif' }}
+                    className="min-h-[50px] inline-flex items-center justify-center gap-3 rounded-full bg-[#B8502B] hover:bg-[#9E4120] text-white px-7 py-3.5 text-sm font-bold transition-colors"
                   >
                     <span>{isEn ? 'Register Workshop' : 'Daftar Workshop'}</span>
                     <ArrowRightIcon className="w-4 h-4" />
@@ -280,1071 +328,1003 @@ export default function ClevioPro() {
                   <button
                     type="button"
                     onClick={() => setActiveVideo('workshop')}
-                    className="min-h-[52px] inline-flex items-center justify-center gap-2.5 border border-[#C8C6BC] bg-white hover:border-[#141413] text-[#141413] px-6 py-4 text-[13px] font-bold transition-colors"
-                    style={{ fontFamily: '"Manrope", sans-serif' }}
+                    className="min-h-[50px] inline-flex items-center justify-center gap-2.5 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 text-white px-6 py-3.5 text-sm font-semibold transition-colors"
                   >
-                    <span>{isEn ? 'Watch Session Preview' : 'Lihat Cuplikan Sesi'}</span>
-                    <span aria-hidden="true" className="text-xs">
+                    <span>{isEn ? 'Watch Preview' : 'Cuplikan Sesi'}</span>
+                    <span aria-hidden="true" className="text-xs text-[#D98260]">
                       ▶
                     </span>
                   </button>
                 </div>
-              </div>
 
-              <div className="lg:col-span-5">
-                <div className="bg-white border border-[#DCDAD0] p-3.5 shadow-xs">
-                  <div className="aspect-[4/4.2] w-full overflow-hidden bg-[#141413]">
-                    <img
-                      src="./clevio-pro/unsplash-hero.jpg"
-                      alt={
-                        isEn
-                          ? 'Strategic leadership architecture in the age of AI'
-                          : 'Arsitektur kepemimpinan strategis di era AI'
-                      }
-                      className="w-full h-full object-cover grayscale contrast-120"
-                    />
-                  </div>
-                  <div className="pt-3.5 px-1 flex items-center justify-between text-xs text-[#575651]">
-                    <span>
-                      {isEn
-                        ? 'Human perspective. Technological potential.'
-                        : 'Perspektif manusia. Potensi teknologi.'}
-                    </span>
-                    <span
-                      className="font-bold text-[#141413]"
-                      style={{ fontFamily: '"Manrope", sans-serif' }}
-                    >
-                      Clevio AI Pro
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-[#E2E0D8] bg-white">
-            <div className="max-w-[1240px] mx-auto px-6 sm:px-10 py-4 grid grid-cols-2 sm:grid-cols-4 gap-6 items-center">
-              <div>
-                <p
-                  className="text-[10px] font-bold tracking-[0.16em] uppercase text-[#7A7974]"
-                  style={{ fontFamily: '"Manrope", sans-serif' }}
-                >
-                  {isEn ? 'PROGRAMME DURATION' : 'DURASI PROGRAM'}
-                </p>
-                <p
-                  className="mt-0.5 text-xs sm:text-sm font-bold text-[#141413]"
-                  style={{ fontFamily: '"Manrope", sans-serif' }}
-                >
-                  {isEn ? '1 Full Day' : '1 Hari Penuh'}
-                </p>
-              </div>
-              <div className="sm:border-l sm:border-[#E2E0D8] sm:pl-6">
-                <p
-                  className="text-[10px] font-bold tracking-[0.16em] uppercase text-[#7A7974]"
-                  style={{ fontFamily: '"Manrope", sans-serif' }}
-                >
-                  {isEn ? 'SESSION FORMAT' : 'FORMAT SESI'}
-                </p>
-                <p
-                  className="mt-0.5 text-xs sm:text-sm font-bold text-[#141413]"
-                  style={{ fontFamily: '"Manrope", sans-serif' }}
-                >
-                  In-Person / Hybrid
-                </p>
-              </div>
-              <div className="sm:border-l sm:border-[#E2E0D8] sm:pl-6">
-                <p
-                  className="text-[10px] font-bold tracking-[0.16em] uppercase text-[#7A7974]"
-                  style={{ fontFamily: '"Manrope", sans-serif' }}
-                >
-                  {isEn ? 'LEARNING CYCLE' : 'SIKLUS PENDAMPINGAN'}
-                </p>
-                <p
-                  className="mt-0.5 text-xs sm:text-sm font-bold text-[#141413] tabular-nums"
-                  style={{ fontFamily: '"Manrope", sans-serif' }}
-                >
-                  {isEn ? 'D-14 to D+14' : 'H-14 s/d H+14'}
-                </p>
-              </div>
-              <div className="sm:border-l sm:border-[#E2E0D8] sm:pl-6 flex items-center justify-end">
                 <a
                   href="#tantangan"
-                  className="inline-flex items-center gap-2 text-xs font-bold text-[#141413] hover:opacity-70"
-                  style={{ fontFamily: '"Manrope", sans-serif' }}
+                  className="text-xs font-semibold text-[#949E99] hover:text-white inline-flex items-center gap-1.5"
                 >
-                  <span>{isEn ? 'Next: Current Challenge' : 'Lanjut: Tantangan Saat Ini'}</span>
+                  <span>{isEn ? 'Explore below' : ' Eksplorasi'}</span>
                   <span aria-hidden="true">↓</span>
                 </a>
               </div>
             </div>
+
+            <div className="lg:col-span-5 flex flex-col gap-4 sm:gap-5">
+              <div className="relative flex-1 min-h-[260px] rounded-2xl overflow-hidden border border-[#D8D2C5] bg-[#1C2421]">
+                <img
+                  src="./clevio-pro/unsplash-hero.jpg"
+                  alt={
+                    isEn
+                      ? 'Executive architecture representing leadership in the age of AI'
+                      : 'Arsitektur kepemimpinan strategis di era AI'
+                  }
+                  className="w-full h-full object-cover sepia-[.12] contrast-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#101614]/90 via-[#101614]/20 to-transparent p-6 flex flex-col justify-end">
+                  <span className="inline-block w-fit px-2.5 py-1 rounded-md bg-white/15 backdrop-blur-xs text-[10px] font-bold tracking-[0.16em] uppercase text-white mb-2">
+                    {isEn ? 'EXECUTIVE BRIEF' : 'PRINSIP EKSEKUTIF'}
+                  </span>
+                  <p className="text-sm sm:text-base font-medium text-white leading-snug">
+                    {isEn
+                      ? 'AI processes past patterns. Humans define empathy, direction, and new value creation.'
+                      : 'AI mengolah data masa lalu. Manusia menentukan empati, arah, dan penciptaan nilai baru.'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3 sm:gap-4">
+                <div className="rounded-2xl bg-white border border-[#DED9CE] p-4 sm:p-5">
+                  <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-[#757A77]">
+                    {isEn ? 'FORMAT' : 'FORMAT'}
+                  </p>
+                  <p
+                    className="mt-1 text-lg sm:text-xl font-extrabold text-[#101614]"
+                    style={{ fontFamily: '"Manrope", sans-serif' }}
+                  >
+                    {isEn ? '1 Full Day' : '1 Hari'}
+                  </p>
+                  <p className="text-[11px] text-[#5C615E] mt-0.5">In-Person / Hybrid</p>
+                </div>
+
+                <div className="rounded-2xl bg-white border border-[#DED9CE] p-4 sm:p-5">
+                  <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-[#757A77]">
+                    {isEn ? 'CYCLE' : 'SIKLUS'}
+                  </p>
+                  <p
+                    className="mt-1 text-lg sm:text-xl font-extrabold text-[#101614] tabular-nums"
+                    style={{ fontFamily: '"Manrope", sans-serif' }}
+                  >
+                    H-14 · H+14
+                  </p>
+                  <p className="text-[11px] text-[#5C615E] mt-0.5">Flipped Learning</p>
+                </div>
+
+                <div className="rounded-2xl bg-[#E8E3D8] border border-[#D8D2C5] p-4 sm:p-5">
+                  <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-[#757A77]">
+                    {isEn ? 'FOCUS' : 'FOKUS'}
+                  </p>
+                  <p
+                    className="mt-1 text-lg sm:text-xl font-extrabold text-[#B8502B]"
+                    style={{ fontFamily: '"Manrope", sans-serif' }}
+                  >
+                    3H + 5C
+                  </p>
+                  <p className="text-[11px] text-[#5C615E] mt-0.5">Value Creation</p>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
+        {/* SCREEN 02: TANTANGAN SAAT INI (VISUAL POSTER + HORIZONTAL LEDGER STACK) */}
         <section
           id="tantangan"
-          className="min-h-[calc(100svh-72px)] flex flex-col justify-between bg-[#141413] text-[#FAF9F5] scroll-mt-[72px]"
+          className="min-h-[calc(100svh-72px)] flex flex-col justify-center py-8 sm:py-12 px-4 sm:px-8 max-w-[1320px] mx-auto scroll-mt-[72px]"
         >
-          <div className="flex-1 flex flex-col justify-center max-w-[1240px] w-full mx-auto px-6 sm:px-10 py-12 lg:py-16">
-            <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-end pb-10 lg:pb-12 border-b border-white/15">
-              <div className="lg:col-span-7">
-                <p
-                  className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#9E9D96] mb-3"
-                  style={{ fontFamily: '"Manrope", sans-serif' }}
-                >
-                  {isEn ? '01 / CURRENT CHALLENGE' : '01 / TANTANGAN SAAT INI'}
-                </p>
-                <h2
-                  className="font-extrabold text-[34px] sm:text-[46px] lg:text-[54px] leading-[1.06] tracking-[-0.045em] text-white"
-                  style={{ fontFamily: '"Manrope", sans-serif' }}
-                >
-                  {isEn ? 'The workplace is evolving.' : 'Dunia kerja sedang berubah.'}
+          <div className="grid lg:grid-cols-12 gap-5 items-stretch">
+            <div className="lg:col-span-5 rounded-2xl overflow-hidden relative min-h-[340px] bg-[#101614] text-white p-8 sm:p-10 flex flex-col justify-between">
+              <img
+                src="./clevio-pro/unsplash-challenge.jpg"
+                alt={isEn ? 'Changing workplace dynamics' : 'Perubahan dinamika dunia kerja'}
+                className="absolute inset-0 w-full h-full object-cover opacity-30 sepia-[.15]"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-[#101614]/85 via-[#101614]/70 to-[#101614]/95" />
+
+              <div className="relative z-10">
+                <span className="inline-block px-3 py-1 rounded-full bg-[#B8502B] text-white text-[10px] font-bold tracking-[0.18em] uppercase">
+                  {isEn ? '01 · CURRENT CHALLENGE' : '01 · TANTANGAN SAAT INI'}
+                </span>
+                <h2 className="mt-5 font-extrabold text-[34px] sm:text-[44px] leading-[1.06] tracking-[-0.035em] text-white">
+                  {isEn ? (
+                    <>
+                      The workplace
+                      <br />
+                      <span
+                        className="italic font-normal text-[#E8C5B0]"
+                        style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
+                      >
+                        is changing fast.
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      Dunia kerja
+                      <br />
+                      <span
+                        className="italic font-normal text-[#E8C5B0]"
+                        style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
+                      >
+                        sedang berubah.
+                      </span>
+                    </>
+                  )}
                 </h2>
               </div>
-              <div className="lg:col-span-5">
-                <p className="text-[16px] sm:text-[18px] text-[#B8B6AE] leading-relaxed">
+
+              <div className="relative z-10 pt-8 border-t border-white/15">
+                <p className="text-sm sm:text-base text-[#C6CEC9] leading-relaxed">
                   {isEn
-                    ? 'Relying on conventional routines amidst rapid AI acceleration is no longer a safe option for leaders or organisations.'
-                    : 'Mengandalkan cara kerja rutin di tengah percepatan AI bukan lagi pilihan yang aman bagi pemimpin maupun organisasi.'}
+                    ? 'Standing still with old habits amidst rapid AI acceleration is the greatest risk for modern leaders and organisations.'
+                    : 'Bertahan dengan pola kerja lama di tengah percepatan AI adalah risiko terbesar bagi pemimpin maupun organisasi saat ini.'}
                 </p>
               </div>
             </div>
 
-            <div className="mt-10 lg:mt-12 grid md:grid-cols-3 gap-6">
+            <div className="lg:col-span-7 flex flex-col justify-between gap-4">
               {[
                 {
                   num: '01',
-                  tag: isEn ? 'ROUTINE AUTOMATION' : 'OTOMASI RUTINITAS',
+                  label: isEn ? 'AUTOMATION RISK' : 'RISIKO OTOMASI',
                   title: isEn
                     ? 'Routine work is easily replaced.'
                     : 'Pekerjaan rutin mudah digantikan.',
                   desc: isEn
-                    ? 'Administrative tasks, standard reporting, and repetitive data processing are now completed by automation in seconds.'
-                    : 'Tugas administratif, penyusunan laporan standar, dan pengolahan data berulang kini diambil alih mesin dalam hitungan detik.',
+                    ? 'Standard administration, data compilation, and repetitive analysis are now executed by AI in seconds.'
+                    : 'Tugas administratif, rekapitulasi laporan, dan analisis berulang kini diambil alih otomasi dalam hitungan detik.',
                 },
                 {
                   num: '02',
-                  tag: isEn ? 'SHIFTING STANDARDS' : 'PERGESERAN STANDAR',
+                  label: isEn ? 'COMPLACENCY TRAP' : 'JEBAKAN ZONA NYAMAN',
                   title: isEn
                     ? 'A false sense of security.'
                     : 'Rasa aman bisa menjadi ilusi.',
                   desc: isEn
-                    ? 'Professionals who orchestrate AI operate up to 10x faster, shifting performance expectations across every role.'
-                    : 'Profesional yang mampu mengorkestrasi AI bekerja 10x lebih cepat, menggeser ekspektasi kinerja di setiap level organisasi.',
+                    ? 'Leaders who master AI orchestration work up to 10x faster, redefining performance benchmarks across industries.'
+                    : 'Profesional yang menguasai orkestrasi AI bekerja 10x lebih cepat, menggeser standar kinerja di setiap level jabatan.',
                 },
                 {
                   num: '03',
-                  tag: isEn ? 'STRATEGIC CHOICE' : 'KEPUTUSAN STRATEGIS',
+                  label: isEn ? 'LEADERSHIP CHOICE' : 'PILIHAN KEPEMIMPINAN',
                   title: isEn
-                    ? 'Victim of automation or value creator.'
-                    : 'Korban otomasi atau pencipta nilai.',
+                    ? 'We can choose: become a victim of automation or a value creator.'
+                    : 'Kita bisa memilih: menjadi korban otomasi atau pencipta nilai.',
                   desc: isEn
-                    ? 'We can choose: be displaced by automation or lead AI to create breakthroughs, products, and new business value.'
-                    : 'Kita dapat memilih: tergerus oleh otomasi atau memimpin AI untuk melahirkan terobosan, produk, dan nilai bisnis baru.',
+                    ? 'True advantage belongs to those who frame problems, exercise empathy, and direct AI toward new breakthroughs.'
+                    : 'Keunggulan nyata dimiliki oleh mereka yang mampu merumuskan masalah, berempati, dan mengarahkan AI untuk mencipta nilai baru.',
                 },
-              ].map((item) => (
+              ].map((row, i) => (
                 <div
-                  key={item.num}
-                  className="bg-white/[0.04] border border-white/15 p-7 sm:p-9 flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-center justify-between text-[11px] font-bold tracking-[0.15em] text-[#9E9D96] mb-8">
-                      <span style={{ fontFamily: '"Manrope", sans-serif' }}>{item.tag}</span>
-                      <span className="tabular-nums text-white">{item.num}</span>
-                    </div>
-                    <h3
-                      className="font-extrabold text-2xl sm:text-[26px] text-white tracking-[-0.03em] leading-snug"
-                      style={{ fontFamily: '"Manrope", sans-serif' }}
-                    >
-                      {item.title}
-                    </h3>
-                    <p className="mt-3.5 text-[15px] text-[#B8B6AE] leading-relaxed">
-                      {item.desc}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="border-t border-white/15">
-            <div className="max-w-[1240px] mx-auto px-6 sm:px-10 py-4 flex items-center justify-between text-xs text-[#9E9D96]">
-              <span className="font-semibold tabular-nums" style={{ fontFamily: '"Manrope", sans-serif' }}>
-                {isEn ? 'SECTION 01 / 06 · THE CHANGING LANDSCAPE' : 'BAGIAN 01 / 06 · KONTEKS PERUBAHAN'}
-              </span>
-              <a
-                href="#hasil"
-                className="inline-flex items-center gap-2 font-bold text-white hover:opacity-75"
-                style={{ fontFamily: '"Manrope", sans-serif' }}
-              >
-                <span>{isEn ? 'Next: Outcomes Achieved (3H)' : 'Berikutnya: Hasil yang Dicapai (3H)'}</span>
-                <span aria-hidden="true">↓</span>
-              </a>
-            </div>
-          </div>
-        </section>
-
-        <section
-          id="hasil"
-          className="min-h-[calc(100svh-72px)] flex flex-col justify-between bg-white border-b border-[#E2E0D8] scroll-mt-[72px]"
-        >
-          <div className="flex-1 flex flex-col justify-center max-w-[1240px] w-full mx-auto px-6 sm:px-10 py-12 lg:py-16">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 lg:mb-12">
-              <div>
-                <p
-                  className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#6E6D68] mb-3"
-                  style={{ fontFamily: '"Manrope", sans-serif' }}
-                >
-                  {isEn ? '02 / OUTCOMES ACHIEVED' : '02 / HASIL YANG DICAPAI'}
-                </p>
-                <h2
-                  className="font-extrabold text-[34px] sm:text-[46px] lg:text-[52px] leading-[1.06] tracking-[-0.045em] text-[#141413]"
-                  style={{ fontFamily: '"Manrope", sans-serif' }}
-                >
-                  {isEn
-                    ? 'Three core impacts for leaders and teams.'
-                    : 'Tiga dampak utama bagi pemimpin dan tim.'}
-                </h2>
-              </div>
-              <p className="text-[15px] text-[#575651] max-w-sm">
-                {isEn
-                  ? 'Building new capacity to work with sharper focus, validate ideas rapidly, and deliver meaningful outcomes.'
-                  : 'Membangun kapasitas baru untuk bekerja lebih fokus, menguji ide secara tangkas, dan menghasilkan dampak nyata.'}
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-6">
-              {[
-                {
-                  num: '01',
-                  title: 'Hyper-Productive',
-                  subtitle: isEn
-                    ? 'Work with greater focus and impact.'
-                    : 'Bekerja lebih fokus dan berdampak.',
-                  desc: isEn
-                    ? 'Orchestrate cross-functional AI assistants to eliminate repetitive technical work and accelerate decision-making.'
-                    : 'Mengorkestrasi berbagai asisten AI lintas fungsi untuk memangkas pekerjaan teknis berulang dan mempercepat pengambilan keputusan.',
-                  shift: isEn ? 'From routine load → Strategic focus' : 'Dari beban rutin → Fokus strategis',
-                  dark: false,
-                },
-                {
-                  num: '02',
-                  title: 'Hyper-Iterative',
-                  subtitle: isEn
-                    ? 'Validate ideas faster and more measurably.'
-                    : 'Validasi ide lebih cepat dan terukur.',
-                  desc: isEn
-                    ? 'Turn abstract concepts into working solution prototypes that can be tested directly against real user needs.'
-                    : 'Mengubah gagasan menjadi prototipe solusi yang dapat langsung diuji terhadap kebutuhan pengguna nyata dalam waktu singkat.',
-                  shift: isEn ? 'From old assumptions → Rapid experiments' : 'Dari asumsi lama → Eksperimen cepat',
-                  dark: false,
-                },
-                {
-                  num: '03',
-                  title: 'Hyper-Impactful',
-                  subtitle: isEn
-                    ? 'Turn opportunities into tangible value.'
-                    : 'Mengubah peluang menjadi nilai nyata.',
-                  desc: isEn
-                    ? 'Combine human empathy with critical thinking to create innovations that drive direct organisational value.'
-                    : 'Memadukan empati manusia dan ketajaman berpikir kritis untuk melahirkan inovasi yang berdampak langsung pada organisasi.',
-                  shift: isEn ? 'From AI hype → Tangible business value' : 'Dari wacana AI → Nilai bisnis nyata',
-                  dark: true,
-                },
-              ].map((pillar) => (
-                <div
-                  key={pillar.title}
-                  className={`p-8 sm:p-10 flex flex-col justify-between border ${
-                    pillar.dark
-                      ? 'bg-[#141413] text-white border-[#141413]'
-                      : 'bg-[#FAF9F5] text-[#141413] border-[#E2E0D8]'
+                  key={row.num}
+                  className={`rounded-2xl p-6 sm:p-8 border transition-all flex flex-col sm:flex-row sm:items-center gap-5 ${
+                    i === 2
+                      ? 'bg-[#101614] text-white border-[#101614]'
+                      : 'bg-white text-[#101614] border-[#DED9CE]'
                   }`}
                 >
-                  <div>
-                    <div className="flex items-center justify-between mb-8">
-                      <span
-                        className={`text-xs font-bold tracking-[0.14em] uppercase ${
-                          pillar.dark ? 'text-[#9E9D96]' : 'text-[#6E6D68]'
-                        }`}
-                        style={{ fontFamily: '"Manrope", sans-serif' }}
-                      >
-                        {isEn ? `PILLAR ${pillar.num}` : `PILAR ${pillar.num}`}
-                      </span>
-                      <span
-                        className={`font-extrabold text-3xl tabular-nums ${
-                          pillar.dark ? 'text-white' : 'text-[#141413]'
-                        }`}
-                        style={{ fontFamily: '"Manrope", sans-serif' }}
-                      >
-                        {pillar.num}
-                      </span>
-                    </div>
-
-                    <h3
-                      className="font-extrabold text-[28px] sm:text-[32px] tracking-[-0.04em]"
-                      style={{ fontFamily: '"Manrope", sans-serif' }}
+                  <div className="sm:w-24 flex-shrink-0">
+                    <span
+                      className="block text-4xl sm:text-5xl italic font-normal text-[#B8502B] leading-none"
+                      style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
                     >
-                      {pillar.title}
-                    </h3>
-                    <p
-                      className={`mt-2 text-base font-bold ${
-                        pillar.dark ? 'text-white' : 'text-[#141413]'
+                      {row.num}
+                    </span>
+                    <span
+                      className={`mt-1 block text-[9px] font-bold tracking-[0.16em] uppercase ${
+                        i === 2 ? 'text-[#949E99]' : 'text-[#757A77]'
                       }`}
                     >
-                      {pillar.subtitle}
-                    </p>
-                    <p
-                      className={`mt-3 text-[15px] leading-relaxed ${
-                        pillar.dark ? 'text-[#B8B6AE]' : 'text-[#575651]'
-                      }`}
-                    >
-                      {pillar.desc}
-                    </p>
+                      {row.label}
+                    </span>
                   </div>
 
-                  <div
-                    className={`mt-10 pt-4 border-t text-xs font-semibold ${
-                      pillar.dark
-                        ? 'border-white/15 text-[#EAE8E0]'
-                        : 'border-[#E2E0D8] text-[#141413]'
-                    }`}
-                  >
-                    {pillar.shift}
+                  <div className="flex-1 sm:border-l sm:pl-6 border-current/15">
+                    <h3 className="font-extrabold text-xl sm:text-2xl tracking-[-0.02em]">
+                      {row.title}
+                    </h3>
+                    <p
+                      className={`mt-1.5 text-sm sm:text-[15px] leading-relaxed ${
+                        i === 2 ? 'text-[#B8C0BC]' : 'text-[#525855]'
+                      }`}
+                    >
+                      {row.desc}
+                    </p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
+        </section>
 
-          <div className="border-t border-[#E2E0D8] bg-[#FAF9F5]">
-            <div className="max-w-[1240px] mx-auto px-6 sm:px-10 py-4 flex items-center justify-between text-xs text-[#6E6D68]">
-              <span className="font-semibold tabular-nums" style={{ fontFamily: '"Manrope", sans-serif' }}>
-                {isEn ? 'SECTION 02 / 06 · THREE IMPACT PILLARS' : 'BAGIAN 02 / 06 · TIGA PILAR DAMPAK'}
-              </span>
-              <a
-                href="#kurikulum"
-                className="inline-flex items-center gap-2 font-bold text-[#141413] hover:opacity-70"
-                style={{ fontFamily: '"Manrope", sans-serif' }}
-              >
-                <span>{isEn ? 'Next: Workshop Programme' : 'Berikutnya: Program Workshop'}</span>
-                <span aria-hidden="true">↓</span>
-              </a>
+        {/* SCREEN 03: HASIL YANG DICAPAI 3H (ASYMMETRIC 1 + 2 BENTO SHOWCASE) */}
+        <section
+          id="hasil"
+          className="min-h-[calc(100svh-72px)] flex flex-col justify-center py-8 sm:py-12 px-4 sm:px-8 max-w-[1320px] mx-auto scroll-mt-[72px]"
+        >
+          <div className="rounded-3xl bg-white border border-[#DED9CE] p-6 sm:p-10 lg:p-12">
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 pb-8 border-b border-[#E8E3D8]">
+              <div>
+                <span className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#B8502B]">
+                  {isEn ? '02 · OUTCOMES ACHIEVED (3H)' : '02 · HASIL YANG DICAPAI (3H)'}
+                </span>
+                <h2 className="mt-2 font-extrabold text-[32px] sm:text-[42px] leading-[1.08] tracking-[-0.035em] text-[#101614]">
+                  {isEn ? (
+                    <>
+                      Three shifts in{' '}
+                      <span
+                        className="italic font-normal text-[#B8502B]"
+                        style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
+                      >
+                        executive capability.
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      Tiga lompatan kapasitas{' '}
+                      <span
+                        className="italic font-normal text-[#B8502B]"
+                        style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
+                      >
+                        kepemimpinan.
+                      </span>
+                    </>
+                  )}
+                </h2>
+              </div>
+              <p className="text-sm sm:text-base text-[#525855] max-w-md">
+                {isEn
+                  ? 'Moving your team beyond basic tool usage into high-leverage strategic execution.'
+                  : 'Membawa tim Anda melampaui sekadar pengguna fitur menuju pencipta terobosan yang terukur.'}
+              </p>
+            </div>
+
+            <div className="mt-8 grid lg:grid-cols-12 gap-5 items-stretch">
+              <div className="lg:col-span-5 rounded-2xl bg-[#101614] text-white p-7 sm:p-9 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between">
+                    <span className="px-3 py-1 rounded-full bg-white/10 text-[10px] font-bold tracking-[0.16em] uppercase text-[#E8C5B0]">
+                      {isEn ? 'PILLAR 01 · FOCUS' : 'PILAR 01 · FOKUS KERJA'}
+                    </span>
+                    <span
+                      className="text-4xl italic text-[#D98260]"
+                      style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
+                    >
+                      01
+                    </span>
+                  </div>
+
+                  <h3 className="mt-6 font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] text-white">
+                    Hyper-Productive
+                  </h3>
+                  <p className="mt-2 text-lg font-semibold text-[#E8C5B0]">
+                    {isEn
+                      ? 'Work with greater focus and impact.'
+                      : 'Bekerja lebih fokus dan berdampak.'}
+                  </p>
+                  <p className="mt-4 text-sm sm:text-[15px] text-[#B8C0BC] leading-relaxed">
+                    {isEn
+                      ? 'Delegate repetitive research, drafting, and operational analysis to cross-functional AI assistants so leaders can focus on high-value strategic decisions.'
+                      : 'Mendelegasikan beban riset awal, penyusunan draf, dan analisis operasional kepada asisten AI lintas fungsi sehingga waktu Anda tercurah pada keputusan bernilai tinggi.'}
+                  </p>
+                </div>
+
+                <div className="mt-8 pt-5 border-t border-white/15 flex items-center justify-between text-xs">
+                  <span className="text-[#949E99]">
+                    {isEn ? 'Key Shift' : 'Pergeseran Utama'}
+                  </span>
+                  <span className="font-bold text-white">
+                    {isEn ? 'Routine Load → Strategic Focus' : 'Beban Rutin → Fokus Strategis'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="lg:col-span-7 flex flex-col gap-5">
+                <div className="flex-1 rounded-2xl bg-[#F4F1EA] border border-[#DED9CE] p-7 sm:p-8 flex flex-col justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                    <div>
+                      <span className="text-[10px] font-bold tracking-[0.16em] uppercase text-[#B8502B]">
+                        {isEn ? 'PILLAR 02 · AGILITY' : 'PILAR 02 · KETANGKASAN VALIDASI'}
+                      </span>
+                      <h3 className="mt-1 font-extrabold text-2xl sm:text-3xl tracking-[-0.03em] text-[#101614]">
+                        Hyper-Iterative
+                      </h3>
+                      <p className="mt-1 text-base font-bold text-[#2C3330]">
+                        {isEn
+                          ? 'Validate ideas faster and more measurably.'
+                          : 'Validasi ide lebih cepat dan terukur.'}
+                      </p>
+                    </div>
+                    <span
+                      className="text-4xl italic text-[#B8502B] leading-none"
+                      style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
+                    >
+                      02
+                    </span>
+                  </div>
+                  <p className="mt-3 text-sm sm:text-[15px] text-[#525855] leading-relaxed">
+                    {isEn
+                      ? 'Transform raw ideas into tangible prototypes within hours, testing assumptions directly against real user needs before committing heavy resources.'
+                      : 'Mengubah gagasan menjadi prototipe solusi dalam hitungan jam untuk menguji asumsi langsung terhadap kebutuhan pengguna nyata.'}
+                  </p>
+                </div>
+
+                <div className="flex-1 rounded-2xl bg-[#E8E3D8] border border-[#D8D2C5] p-7 sm:p-8 flex flex-col justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                    <div>
+                      <span className="text-[10px] font-bold tracking-[0.16em] uppercase text-[#B8502B]">
+                        {isEn ? 'PILLAR 03 · VALUE CREATION' : 'PILAR 03 · PENCIPTAAN NILAI'}
+                      </span>
+                      <h3 className="mt-1 font-extrabold text-2xl sm:text-3xl tracking-[-0.03em] text-[#101614]">
+                        Hyper-Impactful
+                      </h3>
+                      <p className="mt-1 text-base font-bold text-[#2C3330]">
+                        {isEn
+                          ? 'Turn opportunities into tangible value.'
+                          : 'Mengubah peluang menjadi nilai nyata.'}
+                      </p>
+                    </div>
+                    <span
+                      className="text-4xl italic text-[#B8502B] leading-none"
+                      style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
+                    >
+                      03
+                    </span>
+                  </div>
+                  <p className="mt-3 text-sm sm:text-[15px] text-[#525855] leading-relaxed">
+                    {isEn
+                      ? 'Align technological capability with human empathy and business acumen to deliver solutions that truly matter to your organisation.'
+                      : 'Menyatukan kapabilitas teknologi dengan empati manusia dan ketajaman strategi untuk melahirkan inovasi yang berdampak nyata bagi organisasi.'}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
+        {/* SCREEN 04: PROGRAM WORKSHOP (INTERACTIVE SPLIT PROCESS EXPLORER) */}
         <section
           id="kurikulum"
-          className="min-h-[calc(100svh-72px)] flex flex-col justify-between bg-[#F2F0E8] border-b border-[#E2E0D8] scroll-mt-[72px]"
+          className="min-h-[calc(100svh-72px)] flex flex-col justify-center py-8 sm:py-12 px-4 sm:px-8 max-w-[1320px] mx-auto scroll-mt-[72px]"
         >
-          <div className="flex-1 flex flex-col justify-center max-w-[1240px] w-full mx-auto px-6 sm:px-10 py-12 lg:py-16">
-            <div className="grid lg:grid-cols-12 gap-8 items-center mb-10 lg:mb-12">
-              <div className="lg:col-span-7">
-                <p
-                  className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#6E6D68] mb-3"
-                  style={{ fontFamily: '"Manrope", sans-serif' }}
-                >
-                  {isEn ? '03 / WORKSHOP PROGRAMME' : '03 / PROGRAM WORKSHOP'}
-                </p>
-                <h2
-                  className="font-extrabold text-[34px] sm:text-[46px] lg:text-[52px] leading-[1.06] tracking-[-0.045em] text-[#141413]"
-                  style={{ fontFamily: '"Manrope", sans-serif' }}
-                >
-                  {isEn
-                    ? 'Three steps. One day. Tangible impact.'
-                    : 'Tiga langkah. Satu hari. Dampak nyata.'}
-                </h2>
-                <p className="mt-3.5 text-[16px] sm:text-[18px] text-[#4A4945] max-w-[46ch]">
-                  {isEn
-                    ? 'Bring a real challenge from your workplace. Develop it into ideas, a tested prototype, and an action plan.'
-                    : 'Bawa tantangan nyata dari lingkungan kerja Anda. Kembangkan menjadi gagasan, prototipe, dan rencana eksekusi.'}
-                </p>
-              </div>
-
-              <div className="lg:col-span-5">
-                <div className="overflow-hidden border border-[#DCDAD0] bg-white p-2.5">
-                  <img
-                    src="./clevio-pro/unsplash-process.jpg"
-                    alt={
-                      isEn
-                        ? 'Solution design and prototyping process'
-                        : 'Proses perancangan solusi dan prototipe'
-                    }
-                    className="w-full h-[180px] sm:h-[200px] object-cover grayscale contrast-120"
-                    loading="lazy"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-6">
-              {[
-                {
-                  num: '01',
-                  phase: isEn ? 'STAGE 01 · PRE-SESSION (D-14)' : 'TAHAP 01 · PRA-SESI (H-14)',
-                  title: isEn
-                    ? 'Understand your business context'
-                    : 'Pahami konteks bisnis Anda',
-                  desc: isEn
-                    ? 'Identify the needs, challenges, and highest-priority opportunities in your organisation before the session begins.'
-                    : 'Mengidentifikasi kebutuhan, tantangan, dan peluang paling strategis di organisasi Anda sebelum sesi dimulai.',
-                  output: isEn
-                    ? 'Output: Problem Map & Priority Targets'
-                    : 'Output: Peta Masalah & Target Prioritas',
-                },
-                {
-                  num: '02',
-                  phase: isEn ? 'STAGE 02 · CORE SESSION (1 DAY)' : 'TAHAP 02 · SESI INTI (1 HARI)',
-                  title: isEn ? 'Design solutions with AI' : 'Rancang solusi dengan AI',
-                  desc: isEn
-                    ? 'Deconstruct root problems with Design Thinking and build solution prototypes alongside AI assistants.'
-                    : 'Membedah akar masalah dengan Design Thinking dan membangun prototipe solusi bersama asisten AI.',
-                  output: isEn
-                    ? 'Output: AI-Powered Solution Prototype'
-                    : 'Output: Prototipe Solusi Berbasis AI',
-                },
-                {
-                  num: '03',
-                  phase: isEn ? 'STAGE 03 · IMPLEMENTATION (D+14)' : 'TAHAP 03 · IMPLEMENTASI (H+14)',
-                  title: isEn
-                    ? 'Validate and iterate for execution'
-                    : 'Validasi dan iterasi nyata',
-                  desc: isEn
-                    ? 'Test solutions in your real workplace, refine from user feedback, and define concrete implementation steps.'
-                    : 'Menguji solusi di lapangan kerja nyata, menyempurnakan dari umpan balik, dan menyusun langkah eksekusi.',
-                  output: isEn
-                    ? 'Output: Validated Execution Roadmap'
-                    : 'Output: Rencana Implementasi Teruji',
-                },
-              ].map((step) => (
-                <div
-                  key={step.num}
-                  className="bg-white border border-[#DCDAD0] p-7 sm:p-9 flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-center justify-between pb-5 mb-5 border-b border-[#ECEAE2]">
-                      <span
-                        className="font-extrabold text-3xl text-[#141413] tracking-[-0.04em] tabular-nums"
-                        style={{ fontFamily: '"Manrope", sans-serif' }}
-                      >
-                        {step.num}
-                      </span>
-                      <span
-                        className="text-[10px] font-bold tracking-[0.14em] uppercase text-[#6E6D68]"
-                        style={{ fontFamily: '"Manrope", sans-serif' }}
-                      >
-                        {step.phase}
-                      </span>
-                    </div>
-                    <h3
-                      className="font-extrabold text-xl sm:text-2xl text-[#141413] tracking-[-0.03em]"
-                      style={{ fontFamily: '"Manrope", sans-serif' }}
-                    >
-                      {step.title}
-                    </h3>
-                    <p className="mt-3 text-[15px] text-[#575651] leading-relaxed">
-                      {step.desc}
-                    </p>
-                  </div>
-
-                  <div className="mt-8 pt-4 border-t border-[#ECEAE2] text-xs font-bold text-[#141413]">
-                    {step.output}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="border-t border-[#DCDAD0] bg-[#FAF9F5]">
-            <div className="max-w-[1240px] mx-auto px-6 sm:px-10 py-4 flex items-center justify-between text-xs text-[#6E6D68]">
-              <span className="font-semibold tabular-nums" style={{ fontFamily: '"Manrope", sans-serif' }}>
-                {isEn ? 'SECTION 03 / 06 · LEARNING PATHWAY' : 'BAGIAN 03 / 06 · ALUR PEMBELAJARAN'}
+          <div className="mb-7 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <span className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#B8502B]">
+                {isEn ? '03 · WORKSHOP PROGRAMME' : '03 · PROGRAM WORKSHOP'}
               </span>
-              <a
-                href="#kompetensi"
-                className="inline-flex items-center gap-2 font-bold text-[#141413] hover:opacity-70"
-                style={{ fontFamily: '"Manrope", sans-serif' }}
-              >
-                <span>{isEn ? 'Next: Capabilities & Format' : 'Berikutnya: Kompetensi & Format'}</span>
-                <span aria-hidden="true">↓</span>
-              </a>
-            </div>
-          </div>
-        </section>
-
-        <section
-          id="kompetensi"
-          className="min-h-[calc(100svh-72px)] flex flex-col justify-between bg-white border-b border-[#E2E0D8] scroll-mt-[72px]"
-        >
-          <div className="flex-1 flex flex-col justify-center max-w-[1240px] w-full mx-auto px-6 sm:px-10 py-12 lg:py-16">
-            <div className="mb-8 lg:mb-10">
-              <p
-                className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#6E6D68] mb-2.5"
-                style={{ fontFamily: '"Manrope", sans-serif' }}
-              >
-                {isEn ? '04 / TAKEAWAY CAPABILITIES' : '04 / KOMPETENSI YANG DIBAWA PULANG'}
-              </p>
-              <h2
-                className="font-extrabold text-[32px] sm:text-[44px] tracking-[-0.045em] text-[#141413] leading-tight"
-                style={{ fontFamily: '"Manrope", sans-serif' }}
-              >
-                {isEn
-                  ? 'Frameworks and skills to lead in the age of AI.'
-                  : 'Kerangka berpikir dan keterampilan untuk memimpin di era AI.'}
+              <h2 className="mt-1.5 font-extrabold text-[32px] sm:text-[44px] leading-[1.06] tracking-[-0.035em] text-[#101614]">
+                {isEn ? (
+                  <>
+                    Three steps. One day.{' '}
+                    <span
+                      className="italic font-normal text-[#B8502B]"
+                      style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
+                    >
+                      Tangible impact.
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    Tiga langkah. Satu hari.{' '}
+                    <span
+                      className="italic font-normal text-[#B8502B]"
+                      style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
+                    >
+                      Dampak nyata.
+                    </span>
+                  </>
+                )}
               </h2>
             </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-              {[
-                {
-                  num: '01',
-                  title: isEn ? 'Higher-Order Thinking (HOTS)' : 'Berpikir tingkat tinggi (HOTS)',
-                  desc: isEn
-                    ? 'Critical and strategic reasoning to filter AI bias and hallucinations.'
-                    : 'Penalaran kritis dan strategis untuk memfilter halusinasi AI.',
-                },
-                {
-                  num: '02',
-                  title: 'Design Thinking',
-                  desc: isEn
-                    ? 'Deep empathy for real human needs as the foundation of innovation.'
-                    : 'Empati mendalam terhadap kebutuhan nyata manusia.',
-                },
-                {
-                  num: '03',
-                  title: isEn ? 'AI Literacy' : 'Literasi AI',
-                  desc: isEn
-                    ? 'Prompt orchestration, data synthesis, and responsible AI governance.'
-                    : 'Orkestrasi prompt, pengelolaan data, dan tata kelola.',
-                },
-                {
-                  num: '04',
-                  title: isEn ? 'Leadership' : 'Kepemimpinan',
-                  desc: isEn
-                    ? 'Guiding systemic change and building resilient team character.'
-                    : 'Mengarahkan perubahan sistemik dan karakter tim.',
-                },
-                {
-                  num: '05',
-                  title: isEn ? 'Adaptability' : 'Adaptabilitas',
-                  desc: isEn
-                    ? 'Self-directed continuous learning (Metagogy) amidst disruption.'
-                    : 'Kemandirian belajar berkelanjutan (Metagogy).',
-                },
-              ].map((comp) => (
-                <div
-                  key={comp.num}
-                  className="bg-[#FAF9F5] border border-[#E2E0D8] p-6 flex flex-col justify-between"
-                >
-                  <span
-                    className="text-2xl font-extrabold text-[#141413] tabular-nums mb-5 block"
-                    style={{ fontFamily: '"Manrope", sans-serif' }}
-                  >
-                    {comp.num}
-                  </span>
-                  <div>
-                    <h3
-                      className="font-bold text-[17px] text-[#141413] leading-snug"
-                      style={{ fontFamily: '"Manrope", sans-serif' }}
-                    >
-                      {comp.title}
-                    </h3>
-                    <p className="mt-2 text-xs sm:text-[13px] text-[#575651] leading-relaxed">
-                      {comp.desc}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-6 grid md:grid-cols-12 gap-6">
-              <div className="md:col-span-7 bg-[#FAF9F5] border border-[#E2E0D8] p-7 sm:p-9 flex flex-col justify-center">
-                <p
-                  className="text-[10px] font-bold tracking-[0.18em] uppercase text-[#6E6D68] mb-2"
-                  style={{ fontFamily: '"Manrope", sans-serif' }}
-                >
-                  {isEn ? 'WHO IT IS FOR' : 'UNTUK SIAPA'}
-                </p>
-                <h3
-                  className="font-extrabold text-2xl sm:text-[26px] text-[#141413] tracking-[-0.03em]"
-                  style={{ fontFamily: '"Manrope", sans-serif' }}
-                >
-                  {isEn
-                    ? 'Leaders, managers, and cross-functional professionals.'
-                    : 'Pemimpin, manajer, dan profesional lintas fungsi.'}
-                </h3>
-                <p className="mt-2.5 text-[15px] text-[#575651] leading-relaxed max-w-[52ch]">
-                  {isEn
-                    ? 'Designed for those who want to strengthen strategic thinking, make sharper decisions, and lead meaningful innovation.'
-                    : 'Yang ingin memperkuat cara berpikir, mengambil keputusan strategis, dan memimpin inovasi nyata di dalam organisasinya.'}
-                </p>
-              </div>
-
-              <div className="md:col-span-5 bg-[#141413] text-white p-7 sm:p-9 flex flex-col justify-between">
-                <div>
-                  <p
-                    className="text-[10px] font-bold tracking-[0.18em] uppercase text-[#9E9D96] mb-2"
-                    style={{ fontFamily: '"Manrope", sans-serif' }}
-                  >
-                    {isEn ? 'PROGRAMME FORMAT' : 'FORMAT PELAKSANAAN'}
-                  </p>
-                  <h3
-                    className="font-extrabold text-2xl sm:text-[26px] text-white tracking-[-0.03em]"
-                    style={{ fontFamily: '"Manrope", sans-serif' }}
-                  >
-                    {isEn ? '1 full day · In-person or hybrid.' : '1 hari penuh · In-person atau hybrid.'}
-                  </h3>
-                  <p className="mt-2 text-sm text-[#B8B6AE] leading-relaxed">
-                    {isEn
-                      ? 'Available for Public Batches and tailored Corporate In-House sessions.'
-                      : 'Tersedia untuk jadwal Public Batch maupun sesi khusus In-House Corporate.'}
-                  </p>
-                </div>
-
-                <div className="mt-6 pt-4 border-t border-white/15">
-                  <a
-                    href={waInhouseHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-xs font-bold text-white hover:opacity-75"
-                    style={{ fontFamily: '"Manrope", sans-serif' }}
-                  >
-                    <span>
-                      {isEn
-                        ? 'Discuss Team Schedule via WhatsApp'
-                        : 'Diskusikan Jadwal Tim via WhatsApp'}
-                    </span>
-                    <ArrowRightIcon className="w-3.5 h-3.5" />
-                  </a>
-                </div>
-              </div>
-            </div>
+            <p className="text-xs sm:text-sm text-[#525855]">
+              {isEn
+                ? 'Select any stage below to inspect the learning flow and deliverable.'
+                : 'Klik tahapan di bawah untuk melihat detail alur dan hasil tiap fase.'}
+            </p>
           </div>
 
-          <div className="border-t border-[#E2E0D8] bg-[#FAF9F5]">
-            <div className="max-w-[1240px] mx-auto px-6 sm:px-10 py-4 flex items-center justify-between text-xs text-[#6E6D68]">
-              <span className="font-semibold tabular-nums" style={{ fontFamily: '"Manrope", sans-serif' }}>
-                {isEn ? 'SECTION 04 / 06 · CAPABILITIES & FORMAT' : 'BAGIAN 04 / 06 · KOMPETENSI & FORMAT'}
-              </span>
-              <a
-                href="#mentor"
-                className="inline-flex items-center gap-2 font-bold text-[#141413] hover:opacity-70"
-                style={{ fontFamily: '"Manrope", sans-serif' }}
-              >
-                <span>{isEn ? 'Next: Facilitator Profile' : 'Berikutnya: Profil Mentor'}</span>
-                <span aria-hidden="true">↓</span>
-              </a>
+          <div className="grid lg:grid-cols-12 gap-5 items-stretch">
+            <div className="lg:col-span-5 flex flex-col gap-3.5">
+              {stages.map((st, idx) => {
+                const isSelected = activeStage === idx
+                return (
+                  <button
+                    key={st.num}
+                    type="button"
+                    onClick={() => setActiveStage(idx)}
+                    className={`w-full text-left rounded-2xl p-6 border transition-all flex items-start gap-4 ${
+                      isSelected
+                        ? 'bg-[#101614] text-white border-[#101614] shadow-md'
+                        : 'bg-white text-[#101614] border-[#DED9CE] hover:border-[#101614]'
+                    }`}
+                  >
+                    <span
+                      className={`text-3xl italic leading-none pt-0.5 ${
+                        isSelected ? 'text-[#D98260]' : 'text-[#B8502B]'
+                      }`}
+                      style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
+                    >
+                      {st.num}
+                    </span>
+                    <div className="flex-1">
+                      <span
+                        className={`block text-[10px] font-bold tracking-[0.16em] uppercase ${
+                          isSelected ? 'text-[#949E99]' : 'text-[#757A77]'
+                        }`}
+                      >
+                        {st.badge}
+                      </span>
+                      <h3 className="mt-1 font-extrabold text-lg sm:text-xl tracking-[-0.02em]">
+                        {st.title}
+                      </h3>
+                      <p
+                        className={`mt-1 text-xs sm:text-sm leading-relaxed ${
+                          isSelected ? 'text-[#B8C0BC]' : 'text-[#525855]'
+                        }`}
+                      >
+                        {st.summary}
+                      </p>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+
+            <div className="lg:col-span-7 rounded-2xl bg-white border border-[#DED9CE] p-6 sm:p-9 flex flex-col justify-between">
+              <div>
+                <div className="aspect-[16/7.5] w-full rounded-xl overflow-hidden bg-[#101614] mb-6 relative">
+                  <img
+                    src={stages[activeStage].img}
+                    alt={stages[activeStage].title}
+                    className="w-full h-full object-cover sepia-[.12] contrast-105"
+                  />
+                  <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-[#101614]/85 text-white text-[10px] font-bold tracking-[0.16em] uppercase">
+                    {stages[activeStage].badge}
+                  </div>
+                </div>
+
+                <div className="flex items-baseline gap-3">
+                  <span
+                    className="text-3xl italic text-[#B8502B]"
+                    style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
+                  >
+                    {stages[activeStage].num}
+                  </span>
+                  <h3 className="font-extrabold text-2xl sm:text-3xl tracking-[-0.03em] text-[#101614]">
+                    {stages[activeStage].title}
+                  </h3>
+                </div>
+
+                <p className="mt-3 text-sm sm:text-base text-[#424744] leading-relaxed">
+                  {stages[activeStage].detail}
+                </p>
+              </div>
+
+              <div className="mt-6 pt-5 border-t border-[#E8E3D8] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <span className="text-[10px] font-bold tracking-[0.16em] uppercase text-[#757A77] block">
+                    {isEn ? 'STAGE DELIVERABLE' : 'LUARAN TAHAP INI'}
+                  </span>
+                  <span className="text-sm font-bold text-[#101614]">
+                    {stages[activeStage].deliverable}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {[0, 1, 2].map((i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setActiveStage(i)}
+                      aria-label={`Tahap ${i + 1}`}
+                      className={`h-2 rounded-full transition-all ${
+                        activeStage === i ? 'w-8 bg-[#B8502B]' : 'w-2 bg-[#D8D2C5]'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
+        {/* SCREEN 05: KOMPETENSI + PESERTA & FORMAT (LEFT DARK ANCHOR + RIGHT 5-TILE BENTO) */}
         <section
-          id="mentor"
-          className="min-h-[calc(100svh-72px)] flex flex-col justify-between bg-[#141413] text-[#FAF9F5] scroll-mt-[72px]"
+          id="kompetensi"
+          className="min-h-[calc(100svh-72px)] flex flex-col justify-center py-8 sm:py-12 px-4 sm:px-8 max-w-[1320px] mx-auto scroll-mt-[72px]"
         >
-          <div className="flex-1 flex flex-col justify-center max-w-[1240px] w-full mx-auto px-6 sm:px-10 py-12 lg:py-16">
-            <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-center">
-              <div className="lg:col-span-5">
-                <div className="bg-white/5 border border-white/15 p-3">
-                  <div className="aspect-[4/3.4] w-full overflow-hidden bg-black">
-                    <img
-                      src="./clevio-pro/aranggi-real.jpg"
-                      alt="Aranggi Soemardjan"
-                      className="w-full h-full object-cover object-top grayscale contrast-115"
-                      loading="lazy"
-                    />
-                  </div>
-                  <div className="pt-3 px-1 flex items-center justify-between text-xs text-[#9E9D96]">
-                    <span>&ldquo;Get High &amp; Fly, AND Get Down &amp; Dirty&rdquo;</span>
-                    <span className="text-white font-semibold">
-                      {isEn ? 'Lead Facilitator' : 'Fasilitator Utama'}
-                    </span>
-                  </div>
+          <div className="grid lg:grid-cols-12 gap-5 items-stretch">
+            <div className="lg:col-span-5 rounded-2xl bg-[#101614] text-white p-7 sm:p-10 flex flex-col justify-between">
+              <div>
+                <span className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#D98260]">
+                  {isEn ? '04 · AUDIENCE & FORMAT' : '04 · PESERTA & FORMAT'}
+                </span>
+
+                <div className="mt-6 pb-7 border-b border-white/15">
+                  <p className="text-[10px] font-bold tracking-[0.16em] uppercase text-[#949E99]">
+                    {isEn ? 'WHO IT IS FOR' : 'UNTUK SIAPA'}
+                  </p>
+                  <h2 className="mt-2 font-extrabold text-2xl sm:text-3xl tracking-[-0.03em] text-white leading-snug">
+                    {isEn
+                      ? 'Leaders, managers, and cross-functional professionals.'
+                      : 'Pemimpin, manajer, dan profesional lintas fungsi.'}
+                  </h2>
+                  <p className="mt-2.5 text-sm text-[#B8C0BC] leading-relaxed">
+                    {isEn
+                      ? 'Who want to strengthen their way of thinking, make strategic decisions, and lead innovation in their organisation.'
+                      : 'Yang ingin memperkuat cara berpikir, mengambil keputusan, dan memimpin inovasi di organisasinya.'}
+                  </p>
+                </div>
+
+                <div className="mt-7">
+                  <p className="text-[10px] font-bold tracking-[0.16em] uppercase text-[#949E99]">
+                    {isEn ? 'FORMAT' : 'FORMAT'}
+                  </p>
+                  <h3 className="mt-1.5 font-extrabold text-2xl sm:text-3xl text-[#E8C5B0] tracking-[-0.03em]">
+                    {isEn ? '1 full day' : '1 hari penuh'}
+                  </h3>
+                  <p className="mt-1.5 text-sm text-[#B8C0BC]">
+                    {isEn
+                      ? 'In-person or hybrid · Public Batch & Corporate In-House.'
+                      : 'In-person atau hybrid · Public Batch & In-House Corporate.'}
+                  </p>
                 </div>
               </div>
 
-              <div className="lg:col-span-7">
-                <p
-                  className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#9E9D96] mb-3"
-                  style={{ fontFamily: '"Manrope", sans-serif' }}
+              <div className="mt-8 pt-5 border-t border-white/15">
+                <a
+                  href={waInhouseHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full min-h-[46px] rounded-full bg-white hover:bg-[#E8E3D8] text-[#101614] px-6 py-3 text-xs font-bold inline-flex items-center justify-center gap-2 transition-colors"
                 >
-                  {isEn ? '05 / LED BY' : '05 / DIPANDU OLEH'}
-                </p>
-                <h2
-                  className="font-extrabold text-[36px] sm:text-[48px] lg:text-[56px] tracking-[-0.045em] text-white leading-[1.05]"
-                  style={{ fontFamily: '"Manrope", sans-serif' }}
-                >
-                  Aranggi Soemardjan
-                </h2>
-                <p className="mt-2 text-lg sm:text-xl font-semibold text-[#EAE8E0]">
-                  {isEn
-                    ? 'Serial Innovator for the Greater Good · Social Change Architect'
-                    : 'Serial Innovator for the Greater Good · Arsitek Perubahan Sosial'}
-                </p>
-                <p className="mt-4 text-[16px] sm:text-[17px] text-[#B8B6AE] leading-relaxed max-w-[54ch]">
-                  {isEn
-                    ? 'Experienced in leading cross-industry innovation and transformation. Connecting an understanding of human needs with technological potential through Design Thinking and AI.'
-                    : 'Berpengalaman memimpin inovasi dan transformasi lintas industri. Menghubungkan pemahaman atas kebutuhan manusia dengan potensi teknologi melalui Design Thinking dan AI.'}
-                </p>
+                  <span>
+                    {isEn
+                      ? 'Consult Schedule via WhatsApp'
+                      : 'Konsultasikan Jadwal via WhatsApp'}
+                  </span>
+                  <ArrowRightIcon className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            </div>
 
-                <div className="mt-8 grid sm:grid-cols-3 gap-4">
-                  {[
-                    {
-                      title: isEn ? '3 US Patents' : '3 Hak Paten AS',
-                      sub: isEn
-                        ? 'Global elevator safety and structural inventions in the United States.'
-                        : 'Invensi sistem keamanan elevator global di Amerika Serikat.',
-                    },
-                    {
-                      title: 'SOSOK Harian Kompas',
-                      sub: isEn
-                        ? '1995 internet ecosystem pioneer & 2012 Ristek Award recipient.'
-                        : 'Pionir ekosistem internet 1995 & peraih Ristek Award 2012.',
-                    },
-                    {
-                      title: 'Clevio & Agriana.ai',
-                      sub: isEn
-                        ? 'Driving technopreneurship education & AI agricultural ecosystems.'
-                        : 'Penggerak technopreneurship & ekosistem pangan berbasis AI.',
-                    },
-                  ].map((cred) => (
-                    <div
-                      key={cred.title}
-                      className="p-4 bg-white/[0.04] border border-white/15"
-                    >
-                      <p
-                        className="text-xs font-bold text-white"
-                        style={{ fontFamily: '"Manrope", sans-serif' }}
-                      >
-                        {cred.title}
-                      </p>
-                      <p className="mt-1 text-xs text-[#B8B6AE] leading-relaxed">{cred.sub}</p>
-                    </div>
-                  ))}
+            <div className="lg:col-span-7 flex flex-col justify-between gap-4">
+              <div className="rounded-2xl bg-[#E8E3D8] border border-[#D8D2C5] px-6 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <span className="text-[10px] font-bold tracking-[0.18em] uppercase text-[#B8502B]">
+                    {isEn ? 'TAKEAWAY CAPABILITIES' : 'KOMPETENSI YANG DIBAWA PULANG'}
+                  </span>
+                  <h3 className="font-extrabold text-xl sm:text-2xl tracking-[-0.03em] text-[#101614]">
+                    {isEn
+                      ? 'Frameworks and skills to lead in the age of AI.'
+                      : 'Kerangka berpikir dan keterampilan untuk memimpin di era AI.'}
+                  </h3>
                 </div>
+                <span
+                  className="text-3xl italic text-[#B8502B]"
+                  style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
+                >
+                  5 Pillars
+                </span>
+              </div>
 
-                <div className="mt-8 flex flex-wrap items-center gap-5">
+              <div className="grid sm:grid-cols-2 gap-4">
+                {[
+                  {
+                    num: '01',
+                    title: isEn
+                      ? 'Higher-Order Thinking (HOTS)'
+                      : 'Berpikir tingkat tinggi (HOTS)',
+                    desc: isEn
+                      ? 'Critical, structured reasoning to evaluate AI output and avoid hallucinations.'
+                      : 'Penalaran kritis dan terstruktur untuk memfilter bias serta halusinasi AI.',
+                  },
+                  {
+                    num: '02',
+                    title: 'Design Thinking',
+                    desc: isEn
+                      ? 'Deep human empathy to frame the right problems before building solutions.'
+                      : 'Empati mendalam terhadap kebutuhan manusia dalam merumuskan solusi.',
+                  },
+                ].map((c) => (
+                  <div
+                    key={c.num}
+                    className="rounded-2xl bg-white border border-[#DED9CE] p-6 flex flex-col justify-between"
+                  >
+                    <span
+                      className="text-3xl italic text-[#B8502B] leading-none"
+                      style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
+                    >
+                      {c.num}
+                    </span>
+                    <div className="mt-4">
+                      <h4 className="font-extrabold text-lg text-[#101614]">{c.title}</h4>
+                      <p className="mt-1 text-xs sm:text-sm text-[#525855] leading-relaxed">
+                        {c.desc}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="grid sm:grid-cols-3 gap-4">
+                {[
+                  {
+                    num: '03',
+                    title: isEn ? 'AI Literacy' : 'Literasi AI',
+                    desc: isEn
+                      ? 'Prompt orchestration, data synthesis, and ethical governance.'
+                      : 'Orkestrasi prompt, pembacaan data, dan etika tata kelola.',
+                  },
+                  {
+                    num: '04',
+                    title: isEn ? 'Leadership' : 'Kepemimpinan',
+                    desc: isEn
+                      ? 'Directing systemic transformation and building team character.'
+                      : 'Mengarahkan perubahan sistemik dan membangun karakter tim.',
+                  },
+                  {
+                    num: '05',
+                    title: isEn ? 'Adaptability' : 'Adaptabilitas',
+                    desc: isEn
+                      ? 'Self-directed continuous learning (Metagogy) in a fast-moving era.'
+                      : 'Kemandirian belajar berkelanjutan (Metagogy) di era perubahan.',
+                  },
+                ].map((c) => (
+                  <div
+                    key={c.num}
+                    className="rounded-2xl bg-white border border-[#DED9CE] p-5 flex flex-col justify-between"
+                  >
+                    <span
+                      className="text-2xl italic text-[#B8502B] leading-none"
+                      style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
+                    >
+                      {c.num}
+                    </span>
+                    <div className="mt-3">
+                      <h4 className="font-extrabold text-base text-[#101614]">{c.title}</h4>
+                      <p className="mt-1 text-xs text-[#525855] leading-relaxed">{c.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* SCREEN 06: DIPANDU OLEH ARANGGI SOEMARDJAN (3-COLUMN MAGAZINE FEATURE) */}
+        <section
+          id="mentor"
+          className="min-h-[calc(100svh-72px)] flex flex-col justify-center py-8 sm:py-12 px-4 sm:px-8 max-w-[1320px] mx-auto scroll-mt-[72px]"
+        >
+          <div className="rounded-3xl bg-white border border-[#DED9CE] p-6 sm:p-10 lg:p-12">
+            <div className="grid lg:grid-cols-12 gap-8 items-center">
+              <div className="lg:col-span-5">
+                <span className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#B8502B]">
+                  {isEn ? '05 · LED BY' : '05 · DIPANDU OLEH'}
+                </span>
+                <h2 className="mt-2 font-extrabold text-[36px] sm:text-[46px] leading-[1.04] tracking-[-0.035em] text-[#101614]">
+                  Aranggi
+                  <br />
+                  <span
+                    className="italic font-normal text-[#B8502B]"
+                    style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
+                  >
+                    Soemardjan.
+                  </span>
+                </h2>
+                <p className="mt-3 text-base sm:text-lg font-bold text-[#2C3330]">
+                  {isEn
+                    ? 'Serial Innovator · Social Change Architect'
+                    : 'Serial Innovator · Arsitek Perubahan Sosial'}
+                </p>
+                <p className="mt-3.5 text-sm sm:text-[15px] text-[#525855] leading-relaxed">
+                  {isEn
+                    ? 'Experienced in leading innovation and transformation across industries. Combining engineering precision, business management, and human empathy to turn AI into practical breakthroughs.'
+                    : 'Berpengalaman memimpin inovasi dan transformasi lintas industri. Memadukan ketajaman rekayasa teknik, manajemen bisnis, dan sosiologi untuk menerjemahkan AI menjadi terobosan nyata.'}
+                </p>
+
+                <div className="mt-6 pt-5 border-t border-[#E8E3D8] flex flex-wrap items-center gap-4">
                   <button
                     type="button"
                     onClick={() => setActiveVideo('mentor')}
-                    className="min-h-[46px] inline-flex items-center gap-2.5 bg-white hover:bg-[#EAE8E0] text-[#141413] px-6 py-3 text-xs font-bold transition-colors"
-                    style={{ fontFamily: '"Manrope", sans-serif' }}
+                    className="min-h-[44px] rounded-full bg-[#101614] hover:bg-[#2C3330] text-white px-5 py-2.5 text-xs font-bold inline-flex items-center gap-2 transition-colors"
                   >
-                    <span>{isEn ? 'Watch Facilitator Video' : 'Tonton Video Profil'}</span>
-                    <span aria-hidden="true">▶</span>
+                    <span>{isEn ? 'Watch Profile Video' : 'Putar Video Profil'}</span>
+                    <span aria-hidden="true" className="text-[#D98260]">
+                      ▶
+                    </span>
                   </button>
 
                   <a
                     href={MENTOR_ARTICLE_URL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-white hover:opacity-75 border-b border-white pb-0.5"
-                    style={{ fontFamily: '"Manrope", sans-serif' }}
+                    className="text-xs font-bold text-[#101614] hover:text-[#B8502B] underline underline-offset-4 inline-flex items-center gap-1.5"
                   >
                     <span>
-                      {isEn
-                        ? 'Read Harian Kompas SOSOK Feature'
-                        : 'Baca Liputan SOSOK Harian Kompas'}
+                      {isEn ? 'Read Harian Kompas Feature' : 'Liputan SOSOK Harian Kompas'}
                     </span>
                     <ArrowRightIcon className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              </div>
+
+              <div className="lg:col-span-4">
+                <div className="rounded-2xl overflow-hidden bg-[#101614] border border-[#DED9CE] p-2.5">
+                  <div className="aspect-[4/4.3] rounded-xl overflow-hidden">
+                    <img
+                      src="./clevio-pro/aranggi-real.jpg"
+                      alt="Aranggi Soemardjan"
+                      className="w-full h-full object-cover object-top"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="pt-3 pb-1 px-2 text-center">
+                    <p
+                      className="text-sm italic text-[#E8C5B0]"
+                      style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
+                    >
+                      &ldquo;Get High &amp; Fly, AND Get Down &amp; Dirty&rdquo;
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="lg:col-span-3 flex flex-col gap-3.5">
+                {[
+                  {
+                    num: '01',
+                    title: isEn ? '3 US Patents' : '3 Hak Paten AS',
+                    desc: isEn
+                      ? 'Inventor of global elevator safety systems in the United States.'
+                      : 'Invensi sistem keamanan elevator global di Amerika Serikat.',
+                  },
+                  {
+                    num: '02',
+                    title: 'Kompas SOSOK',
+                    desc: isEn
+                      ? '1995 internet pioneer & recipient of the 2012 Ristek Award.'
+                      : 'Pionir ekosistem internet 1995 & peraih Ristek Award 2012.',
+                  },
+                  {
+                    num: '03',
+                    title: 'Clevio & Agriana.ai',
+                    desc: isEn
+                      ? 'Founder of Clevio Coder Camp & AI agricultural ecosystem.'
+                      : 'Pendiri Clevio Coder Camp & ekosistem pangan berbasis AI.',
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.num}
+                    className="rounded-2xl bg-[#F4F1EA] border border-[#DED9CE] p-4 sm:p-5"
+                  >
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-extrabold text-sm text-[#101614]">{item.title}</h3>
+                      <span
+                        className="text-lg italic text-[#B8502B]"
+                        style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
+                      >
+                        {item.num}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-xs text-[#525855] leading-relaxed">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* SCREEN 07: GALERI, EKOSISTEM & PENDAFTARAN WHATSAPP */}
+        <section
+          id="galeri"
+          className="min-h-[calc(100svh-72px)] flex flex-col justify-between pt-6 pb-0 px-4 sm:px-8 max-w-[1320px] mx-auto scroll-mt-[72px]"
+        >
+          <div className="grid lg:grid-cols-12 gap-5 items-stretch my-auto py-4">
+            <div className="lg:col-span-7 flex flex-col justify-between gap-4">
+              <div>
+                <span className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#B8502B]">
+                  {isEn ? '06 · GALLERY & ECOSYSTEM' : '06 · GALERI & EKOSISTEM'}
+                </span>
+                <h2 className="mt-1 font-extrabold text-2xl sm:text-3xl tracking-[-0.03em] text-[#101614]">
+                  {isEn
+                    ? 'Collaborative exploration in the workshop room.'
+                    : 'Suasana eksplorasi dan kolaborasi di ruang workshop.'}
+                </h2>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-3.5">
+                <button
+                  type="button"
+                  onClick={() => setActiveVideo('workshop')}
+                  aria-label={
+                    isEn
+                      ? 'Play Clevio AI Pro workshop video'
+                      : 'Putar video dokumentasi sesi Clevio AI Pro'
+                  }
+                  className="group relative aspect-[16/10] rounded-2xl overflow-hidden bg-[#101614] border border-[#DED9CE] text-left block"
+                >
+                  <img
+                    src="./clevio-pro/unsplash-gallery-4.jpg"
+                    alt="Video dokumentasi Clevio AI Pro"
+                    className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent p-4 flex items-end justify-between">
+                    <div>
+                      <span className="text-[10px] font-bold tracking-wider uppercase text-[#E8C5B0] block">
+                        VIDEO HIGHLIGHT
+                      </span>
+                      <span className="text-xs sm:text-sm font-bold text-white">
+                        {isEn ? 'Watch Workshop Session' : 'Tonton Cuplikan Sesi'}
+                      </span>
+                    </div>
+                    <span className="w-10 h-10 rounded-full bg-[#B8502B] text-white flex items-center justify-center flex-shrink-0">
+                      <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 ml-0.5">
+                        <polygon points="8 5 19 12 8 19 8 5" />
+                      </svg>
+                    </span>
+                  </div>
+                </button>
+
+                <div className="aspect-[16/10] rounded-2xl overflow-hidden bg-white border border-[#DED9CE]">
+                  <img
+                    src="./clevio-pro/unsplash-gallery-1.jpg"
+                    alt="Sesi diskusi strategis"
+                    className="w-full h-full object-cover sepia-[.08]"
+                    loading="lazy"
+                  />
+                </div>
+
+                <div className="aspect-[16/10] rounded-2xl overflow-hidden bg-white border border-[#DED9CE]">
+                  <img
+                    src="./clevio-pro/unsplash-gallery-2.jpg"
+                    alt="Kolaborasi pemetaan masalah"
+                    className="w-full h-full object-cover sepia-[.08]"
+                    loading="lazy"
+                  />
+                </div>
+
+                <div className="aspect-[16/10] rounded-2xl overflow-hidden bg-white border border-[#DED9CE]">
+                  <img
+                    src="./clevio-pro/unsplash-gallery-3.jpg"
+                    alt="Eksplorasi prototipe solusi"
+                    className="w-full h-full object-cover sepia-[.08]"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+                {[
+                  { name: 'Harian Kompas', sub: 'Rubrik SOSOK' },
+                  { name: 'Ristek Award', sub: 'Inovasi 2012' },
+                  { name: 'Harvard Seed', sub: 'Social Impact' },
+                  { name: 'Agriana.ai', sub: 'AI Pangan' },
+                  { name: 'Clevio Camp', sub: 'EdTech' },
+                ].map((org) => (
+                  <div
+                    key={org.name}
+                    className="rounded-xl bg-white border border-[#DED9CE] px-3 py-2.5 text-center"
+                  >
+                    <p className="text-[11px] font-extrabold text-[#101614]">{org.name}</p>
+                    <p className="text-[10px] text-[#757A77]">{org.sub}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div
+              id="kontak"
+              className="lg:col-span-5 rounded-3xl bg-[#101614] text-white p-8 sm:p-11 flex flex-col justify-between"
+            >
+              <div>
+                <span className="inline-block px-3 py-1 rounded-full bg-[#B8502B] text-white text-[10px] font-bold tracking-[0.18em] uppercase">
+                  {isEn ? '07 · REGISTRATION' : '07 · PENDAFTARAN'}
+                </span>
+
+                <h2 className="mt-5 font-extrabold text-[32px] sm:text-[42px] leading-[1.06] tracking-[-0.035em] text-white">
+                  {isEn ? (
+                    <>
+                      Ready to lead
+                      <br />
+                      <span
+                        className="italic font-normal text-[#E8C5B0]"
+                        style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
+                      >
+                        change with AI?
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      Siap memimpin
+                      <br />
+                      <span
+                        className="italic font-normal text-[#E8C5B0]"
+                        style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
+                      >
+                        perubahan dengan AI?
+                      </span>
+                    </>
+                  )}
+                </h2>
+
+                <p className="mt-4 text-sm sm:text-base text-[#B8C0BC] leading-relaxed">
+                  {isEn
+                    ? 'Secure your seat at the next Clevio AI Pro Public Batch or schedule a tailored In-House session for your leadership team.'
+                    : 'Amankan tempat Anda di workshop Clevio AI Pro atau jadwalkan sesi in-house khusus untuk tim kepemimpinan Anda.'}
+                </p>
+
+                <div className="mt-7">
+                  <a
+                    href={waHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full min-h-[52px] rounded-full bg-[#B8502B] hover:bg-[#9E4120] text-white px-7 py-3.5 text-sm font-bold inline-flex items-center justify-center gap-3 transition-colors"
+                  >
+                    <span>
+                      {isEn ? 'Register via WhatsApp' : 'Daftar Workshop via WhatsApp'}
+                    </span>
+                    <ArrowRightIcon className="w-4 h-4" />
+                  </a>
+                </div>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-white/15 space-y-2 text-xs text-[#949E99]">
+                <div className="flex items-center justify-between">
+                  <span>WhatsApp</span>
+                  <a
+                    href={waHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-bold text-white hover:underline tabular-nums inline-flex items-center gap-1.5"
+                  >
+                    <PhoneIcon className="w-3.5 h-3.5 text-[#D98260]" />
+                    <span>+62 822-2111-8860</span>
+                  </a>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Email</span>
+                  <a
+                    href="mailto:clevioaipro@gmail.com"
+                    className="font-semibold text-white hover:underline"
+                  >
+                    clevioaipro@gmail.com
+                  </a>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Website</span>
+                  <a
+                    href="https://cleviopro.vercel.app"
+                    className="font-semibold text-white hover:underline"
+                  >
+                    chiefaiofficer.id
                   </a>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="border-t border-white/15">
-            <div className="max-w-[1240px] mx-auto px-6 sm:px-10 py-4 flex items-center justify-between text-xs text-[#9E9D96]">
-              <span className="font-semibold tabular-nums" style={{ fontFamily: '"Manrope", sans-serif' }}>
-                {isEn ? 'SECTION 05 / 06 · PROGRAMME FACILITATOR' : 'BAGIAN 05 / 06 · FASILITATOR PROGRAM'}
-              </span>
-              <a
-                href="#galeri"
-                className="inline-flex items-center gap-2 font-bold text-white hover:opacity-75"
-                style={{ fontFamily: '"Manrope", sans-serif' }}
-              >
-                <span>{isEn ? 'Next: Gallery & Ecosystem' : 'Berikutnya: Galeri & Ekosistem'}</span>
-                <span aria-hidden="true">↓</span>
-              </a>
+          <footer className="py-4 border-t border-[#DED9CE] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#5C615E]">
+            <div className="flex items-center gap-3">
+              <span className="font-bold text-[#101614]">clevio AI Pro</span>
+              <span>·</span>
+              <span>© 2026 Clevio AI Pro. All rights reserved.</span>
             </div>
-          </div>
-        </section>
-
-        <section
-          id="galeri"
-          className="min-h-[calc(100svh-72px)] flex flex-col justify-between bg-[#FAF9F5] border-b border-[#E2E0D8] scroll-mt-[72px]"
-        >
-          <div className="flex-1 flex flex-col justify-center max-w-[1240px] w-full mx-auto px-6 sm:px-10 py-12 lg:py-16">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 lg:mb-10">
-              <div>
-                <p
-                  className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#6E6D68] mb-2.5"
-                  style={{ fontFamily: '"Manrope", sans-serif' }}
-                >
-                  {isEn ? '06 / GALLERY & DOCUMENTATION' : '06 / GALERI & DOKUMENTASI'}
-                </p>
-                <h2
-                  className="font-extrabold text-[32px] sm:text-[42px] tracking-[-0.045em] text-[#141413]"
-                  style={{ fontFamily: '"Manrope", sans-serif' }}
-                >
-                  {isEn
-                    ? 'Collaborative learning environment.'
-                    : 'Suasana kolaborasi dan pembelajaran.'}
-                </h2>
-              </div>
-              <p className="text-sm text-[#575651] max-w-xs">
-                {isEn
-                  ? 'Exchanging perspectives, framing problems, and exploring practical AI solutions together.'
-                  : 'Pertukaran perspektif, pemetaan masalah, dan eksplorasi solusi bersama.'}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {[
-                {
-                  src: './clevio-pro/unsplash-gallery-1.jpg',
-                  num: '01',
-                  caption: isEn ? 'Fresh strategic perspectives' : 'Perspektif strategis baru',
-                },
-                {
-                  src: './clevio-pro/unsplash-gallery-2.jpg',
-                  num: '02',
-                  caption: isEn ? 'Cross-functional collaboration' : 'Kolaborasi lintas fungsi',
-                },
-                {
-                  src: './clevio-pro/unsplash-gallery-3.jpg',
-                  num: '03',
-                  caption: isEn ? 'Solution prototype design' : 'Perancangan prototipe solusi',
-                },
-              ].map((img) => (
-                <figure key={img.num} className="m-0 bg-white border border-[#E2E0D8] p-2.5">
-                  <div className="aspect-[4/3] w-full overflow-hidden bg-[#141413]">
-                    <img
-                      src={img.src}
-                      alt={img.caption}
-                      className="w-full h-full object-cover grayscale contrast-115 hover:grayscale-0 transition-all duration-300"
-                      loading="lazy"
-                    />
-                  </div>
-                  <figcaption className="pt-2.5 px-1 flex items-center gap-2 text-xs text-[#4A4945]">
-                    <span className="font-bold text-[#7A7974] tabular-nums">{img.num}</span>
-                    <span className="font-medium">{img.caption}</span>
-                  </figcaption>
-                </figure>
-              ))}
-
-              <figure className="m-0 bg-white border border-[#E2E0D8] p-2.5">
-                <button
-                  type="button"
-                  onClick={() => setActiveVideo('workshop')}
-                  aria-label={
-                    isEn
-                      ? 'Play Clevio AI Pro session video'
-                      : 'Putar video dokumentasi sesi Clevio AI Pro'
-                  }
-                  className="group relative aspect-[4/3] w-full overflow-hidden bg-[#141413] block text-left"
-                >
-                  <img
-                    src="./clevio-pro/unsplash-gallery-4.jpg"
-                    alt={
-                      isEn
-                        ? 'Clevio AI Pro session video highlight'
-                        : 'Cuplikan video sesi Clevio AI Pro'
-                    }
-                    className="w-full h-full object-cover grayscale contrast-115 opacity-80 group-hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
-                  />
-                  <span className="absolute inset-0 flex items-center justify-center bg-black/35">
-                    <span className="w-12 h-12 rounded-full bg-white text-[#141413] flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
-                      <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 ml-0.5">
-                        <polygon points="8 5 19 12 8 19 8 5" />
-                      </svg>
-                    </span>
-                  </span>
-                </button>
-                <figcaption className="pt-2.5 px-1 flex items-center gap-2 text-xs text-[#4A4945]">
-                  <span className="font-bold text-[#7A7974] tabular-nums">04</span>
-                  <span className="font-medium">
-                    {isEn ? 'Watch session video highlight' : 'Tonton video dokumentasi sesi'}
-                  </span>
-                </figcaption>
-              </figure>
-            </div>
-
-            <div className="mt-10 pt-8 border-t border-[#E2E0D8]">
-              <p
-                className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#6E6D68] mb-4"
-                style={{ fontFamily: '"Manrope", sans-serif' }}
-              >
-                {isEn
-                  ? 'TRUSTED BY & ECOSYSTEM HIGHLIGHTS'
-                  : 'DIPERCAYA OLEH & SOROTAN EKOSISTEM'}
-              </p>
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                {[
-                  { name: 'Harian Kompas', sub: isEn ? 'SOSOK Feature' : 'Liputan SOSOK' },
-                  { name: 'Ristek Award', sub: isEn ? 'Innovation Award' : 'Anugerah Inovasi' },
-                  { name: 'Harvard Seed', sub: 'Social Innovation' },
-                  { name: 'Agriana.ai', sub: isEn ? 'AI Food Ecosystem' : 'Ekosistem Pangan AI' },
-                  { name: 'Clevio Camp', sub: isEn ? 'EdTech Innovation' : 'Inovasi Pendidikan' },
-                ].map((org) => (
-                  <div
-                    key={org.name}
-                    className="px-4 py-3.5 bg-white border border-[#E2E0D8] text-center"
-                  >
-                    <p
-                      className="text-xs font-bold text-[#141413]"
-                      style={{ fontFamily: '"Manrope", sans-serif' }}
-                    >
-                      {org.name}
-                    </p>
-                    <p className="text-[11px] text-[#6E6D68] mt-0.5">{org.sub}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-[#E2E0D8] bg-white">
-            <div className="max-w-[1240px] mx-auto px-6 sm:px-10 py-4 flex items-center justify-between text-xs text-[#6E6D68]">
-              <span className="font-semibold tabular-nums" style={{ fontFamily: '"Manrope", sans-serif' }}>
-                {isEn ? 'SECTION 06 / 06 · COLLABORATIVE SPACE' : 'BAGIAN 06 / 06 · RUANG KOLABORASI'}
-              </span>
-              <a
-                href="#kontak"
-                className="inline-flex items-center gap-2 font-bold text-[#141413] hover:opacity-70"
-                style={{ fontFamily: '"Manrope", sans-serif' }}
-              >
-                <span>{isEn ? 'Registration & Contact' : 'Pendaftaran & Kontak'}</span>
-                <span aria-hidden="true">↓</span>
-              </a>
-            </div>
-          </div>
+            <a href="#top" className="font-bold text-[#101614] hover:text-[#B8502B]">
+              {isEn ? 'Back to top ↑' : 'Kembali ke atas ↑'}
+            </a>
+          </footer>
         </section>
       </main>
-
-      <div
-        id="kontak"
-        className="min-h-[calc(100svh-72px)] flex flex-col justify-between bg-[#F2F0E8] scroll-mt-[72px]"
-      >
-        <section className="flex-1 flex flex-col items-center justify-center text-center max-w-2xl mx-auto px-6 py-16">
-          <p
-            className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#6E6D68] mb-4"
-            style={{ fontFamily: '"Manrope", sans-serif' }}
-          >
-            {isEn ? 'TAKE YOUR NEXT STRATEGIC STEP' : 'MULAI LANGKAH STRATEGIS ANDA'}
-          </p>
-          <h2
-            className="font-extrabold text-[36px] sm:text-[48px] lg:text-[56px] tracking-[-0.045em] text-[#141413] leading-[1.06]"
-            style={{ fontFamily: '"Manrope", sans-serif' }}
-          >
-            {isEn ? 'Ready to lead change with AI?' : 'Siap memimpin perubahan dengan AI?'}
-          </h2>
-          <p className="mt-4 text-base sm:text-xl text-[#4A4945] max-w-lg">
-            {isEn
-              ? 'Secure your place at the Clevio AI Pro workshop or schedule an in-house session for your organisation.'
-              : 'Amankan tempat Anda di workshop Clevio AI Pro atau jadwalkan sesi in-house untuk organisasi Anda.'}
-          </p>
-          <div className="mt-8">
-            <a
-              href={waHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="min-h-[54px] inline-flex items-center justify-center gap-4 bg-[#141413] hover:bg-[#2C2C2A] text-white px-9 py-4 text-sm font-bold transition-colors"
-              style={{ fontFamily: '"Manrope", sans-serif' }}
-            >
-              <span>
-                {isEn ? 'Register Workshop via WhatsApp' : 'Daftar Workshop via WhatsApp'}
-              </span>
-              <ArrowRightIcon className="w-4 h-4" />
-            </a>
-          </div>
-          <p className="mt-3.5 text-xs text-[#6E6D68]">
-            {isEn
-              ? 'Our team will confirm schedule availability directly via WhatsApp.'
-              : 'Tim Clevio AI Pro akan mengonfirmasi jadwal dan ketersediaan tempat langsung melalui WhatsApp.'}
-          </p>
-        </section>
-
-        <footer className="bg-[#141413] text-[#FAF9F5] border-t border-[#2C2C2A]">
-          <div className="max-w-[1240px] mx-auto px-6 sm:px-10">
-            <div className="py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 border-b border-white/10">
-              <div className="flex items-center gap-6">
-                <a href="#top" className="inline-flex items-baseline gap-1.5">
-                  <ClevioLogo size="sm" variant="light" sublabel="" />
-                  <span
-                    className="text-lg font-medium tracking-[-0.03em] text-[#B8B6AE] -ml-1"
-                    style={{ fontFamily: '"Manrope", sans-serif' }}
-                  >
-                    AI Pro
-                  </span>
-                </a>
-                <span className="hidden sm:inline-block h-4 w-px bg-white/15" />
-                <nav className="hidden sm:flex items-center gap-6 text-xs text-[#B8B6AE]">
-                  <a href="#tantangan" className="hover:text-white transition-colors">
-                    {isEn ? 'Challenge' : 'Tantangan'}
-                  </a>
-                  <a href="#hasil" className="hover:text-white transition-colors">
-                    {isEn ? '3H Outcomes' : 'Hasil 3H'}
-                  </a>
-                  <a href="#kurikulum" className="hover:text-white transition-colors">
-                    {isEn ? 'Curriculum' : 'Kurikulum'}
-                  </a>
-                  <a href="#kompetensi" className="hover:text-white transition-colors">
-                    {isEn ? 'Capabilities' : 'Kompetensi'}
-                  </a>
-                  <a href="#mentor" className="hover:text-white transition-colors">
-                    {isEn ? 'Facilitator' : 'Mentor'}
-                  </a>
-                  <a href="#galeri" className="hover:text-white transition-colors">
-                    {isEn ? 'Gallery' : 'Galeri'}
-                  </a>
-                </nav>
-              </div>
-
-              <a
-                href={waHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="min-h-[38px] inline-flex items-center justify-center bg-white hover:bg-[#EAE8E0] text-[#141413] px-5 py-2 text-xs font-bold transition-colors"
-                style={{ fontFamily: '"Manrope", sans-serif' }}
-              >
-                {isEn ? 'Register Workshop' : 'Daftar Workshop'}
-              </a>
-            </div>
-
-            <div className="py-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs text-[#9E9D96]">
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-                <span>© 2026 Clevio AI Pro. All rights reserved.</span>
-                <span className="hidden sm:inline text-white/15">|</span>
-                <a
-                  href={waHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 hover:text-white transition-colors tabular-nums"
-                >
-                  <PhoneIcon className="w-3.5 h-3.5" />
-                  <span>+62 822-2111-8860</span>
-                </a>
-                <span className="hidden sm:inline text-white/15">|</span>
-                <a href="https://cleviopro.vercel.app" className="hover:text-white transition-colors">
-                  chiefaiofficer.id
-                </a>
-                <span className="hidden sm:inline text-white/15">|</span>
-                <a
-                  href="mailto:clevioaipro@gmail.com"
-                  className="hover:text-white transition-colors"
-                >
-                  clevioaipro@gmail.com
-                </a>
-              </div>
-
-              <a href="#top" className="hover:text-white transition-colors">
-                {isEn ? 'Back to top ↑' : 'Kembali ke atas ↑'}
-              </a>
-            </div>
-          </div>
-        </footer>
-      </div>
 
       {activeVideo && (
         <div
@@ -1355,11 +1335,11 @@ export default function ClevioPro() {
           onClick={() => setActiveVideo(null)}
         >
           <div
-            className="w-full max-w-4xl bg-[#141413] border border-[#2C2C2A] shadow-2xl overflow-hidden"
+            className="w-full max-w-4xl rounded-2xl bg-[#101614] border border-white/20 shadow-2xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-5 py-3 border-b border-[#2C2C2A] text-white text-xs sm:text-sm">
-              <span className="font-bold" style={{ fontFamily: '"Manrope", sans-serif' }}>
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/10 text-white text-xs sm:text-sm">
+              <span className="font-bold">
                 {activeVideo === 'workshop'
                   ? isEn
                     ? 'Clevio AI Pro Workshop Highlight'
@@ -1371,7 +1351,7 @@ export default function ClevioPro() {
               <button
                 type="button"
                 onClick={() => setActiveVideo(null)}
-                className="px-3 py-1 bg-white/10 hover:bg-white/20 text-xs font-semibold text-white"
+                className="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 text-xs font-semibold text-white"
               >
                 {isEn ? 'Close ✕' : 'Tutup ✕'}
               </button>
