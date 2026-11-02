@@ -1,1373 +1,2256 @@
-import { useState, useEffect } from 'react'
-import ClevioLogo from '../components/ClevioLogo'
-import { ArrowRightIcon, PhoneIcon } from '../components/Icons'
+import React, { useState, useEffect } from 'react';
 
-type Lang = 'id' | 'en'
+type Lang = 'id' | 'en';
 
-const WA_URL_ID =
-  'https://wa.me/6282221118860?text=Halo%20Tim%20Clevio%20AI%20Pro%2C%20saya%20tertarik%20mendaftar%20Workshop%20Clevio%20AI%20Pro.'
-const WA_URL_EN =
-  'https://wa.me/6282221118860?text=Hello%20Clevio%20AI%20Pro%20Team%2C%20I%20would%20like%20to%20inquire%20about%20the%20Clevio%20AI%20Pro%20Workshop.'
-const WA_INHOUSE_ID =
-  'https://wa.me/6282221118860?text=Halo%20Tim%20Clevio%20AI%20Pro%2C%20saya%20ingin%20berdiskusi%20mengenai%20In-House%20Workshop%20untuk%20organisasi%20kami.'
-const WA_INHOUSE_EN =
-  'https://wa.me/6282221118860?text=Hello%20Clevio%20AI%20Pro%20Team%2C%20I%20would%20like%20to%20discuss%20an%20In-House%20Workshop%20for%20our%20organisation.'
-const MENTOR_ARTICLE_URL =
-  'https://rumahpengetahuan.web.id/aranggi-soemardjan-pengantar-masa-depan/'
-const VIDEO_WORKSHOP_EMBED =
-  'https://drive.google.com/file/d/1OYTSNpAidncScOpdwzD30jPdOUzE9OkY/preview'
-const VIDEO_ARANGGI_EMBED =
-  'https://drive.google.com/file/d/1Qtgxb8THbVPC-9d77CmZxg0x0w99Mb80/preview'
+interface ContentData {
+  header: {
+    hours: string;
+    cta: string;
+    menu: string;
+    close: string;
+  };
+  hero: {
+    title1: string;
+    title2: string;
+    subtitle: string;
+    ctaPrompt: string;
+    ctaLink: string;
+  };
+  intro: {
+    catch1: string;
+    catch2: string;
+    desc: string[];
+    items: {
+      num: string;
+      title: string;
+      body: string[];
+    }[];
+    btnText: string;
+  };
+  works: {
+    titleJp: string;
+    titleEn: string;
+    lead1: string;
+    lead2: string;
+    btnText: string;
+    enCaption1: string;
+    enCaption2: string;
+    items: {
+      id: string;
+      tag: string;
+      title: string;
+      subtitle: string;
+      desc: string;
+      img: string;
+      enNote?: string[];
+    }[];
+  };
+  event: {
+    titleJp: string;
+    titleEn: string;
+    desc: string[];
+    btnText: string;
+    pickups: {
+      stage: string;
+      tag: string;
+      title: string;
+      meta1Label: string;
+      meta1Value: string;
+      meta2Label: string;
+      meta2Value: string;
+      img: string;
+    }[];
+  };
+  sale: {
+    titleJp: string;
+    titleEn: string;
+    tab1: string;
+    tab2: string;
+    tab1Desc: string;
+    tab2Desc: string;
+    btnText: string;
+    competencies: {
+      num: string;
+      tag1: string;
+      tag2: string;
+      title: string;
+      desc: string;
+      img: string;
+    }[];
+    audiences: {
+      num: string;
+      tag1: string;
+      tag2: string;
+      title: string;
+      desc: string;
+      img: string;
+    }[];
+  };
+  company1: {
+    titleJp: string;
+    titleEn: string;
+    lead: string;
+    links: {
+      jp: string;
+      en: string;
+      desc: string;
+    }[];
+  };
+  company2: {
+    titleJp: string;
+    titleEn: string;
+    lead: string;
+    links: {
+      jp: string;
+      en: string;
+      desc: string;
+    }[];
+  };
+  videos: {
+    titleJp: string;
+    titleEn: string;
+    btnText: string;
+    items: {
+      id: string;
+      date: string;
+      tag: string;
+      title: string;
+      duration: string;
+    }[];
+  };
+  footer: {
+    ctaTitleJp: string;
+    ctaTitleEn: string;
+    ctaBtn1: string;
+    ctaBtn2: string;
+    telTime: string;
+    areaLabel: string;
+    areaDesc: string;
+    addressLabel: string;
+    addressBody: string;
+    copyright: string;
+  };
+}
+
+const DATA: Record<Lang, ContentData> = {
+  id: {
+    header: {
+      hours: '09:00–18:00 · Senin–Jumat',
+      cta: 'Daftar Workshop',
+      menu: 'MENU',
+      close: 'CLOSE',
+    },
+    hero: {
+      title1: 'Bukan diganti AI.',
+      title2: 'Tapi Memimpin AI.',
+      subtitle: 'Workshop 1 Hari · AI Thinking & Innovation untuk Pemimpin dan Profesional',
+      ctaPrompt: 'Jadwalkan sesi untuk tim atau organisasi Anda',
+      ctaLink: 'Konsultasi & Pendaftaran via WhatsApp',
+    },
+    intro: {
+      catch1: 'Dunia kerja sedang berubah.',
+      catch2: 'Cara lama tidak lagi cukup.',
+      desc: [
+        'Mengandalkan cara kerja konvensional di tengah akselerasi AI bukan lagi pilihan yang aman.',
+        'Pemimpin masa depan tidak sekadar menggunakan alat, melainkan mengarahkan empati,',
+        'konteks strategis, dan penciptaan nilai baru bagi organisasi.',
+      ],
+      items: [
+        {
+          num: '01',
+          title: 'Pekerjaan rutin mudah digantikan.',
+          body: [
+            'Tugas administratif, rekapitulasi laporan, dan analisis standar kini diselesaikan oleh otomasi dalam hitungan detik.',
+            'Keunggulan kompetitif berpindah pada kemampuan merumuskan masalah yang tepat.',
+          ],
+        },
+        {
+          num: '02',
+          title: 'Rasa aman bisa menjadi ilusi.',
+          body: [
+            'Profesional dan tim yang menguasai orkestrasi AI bekerja berkali lipat lebih cepat dan presisi.',
+            'Standar produktivitas lintas industri bergeser secara permanen di setiap level kepemimpinan.',
+          ],
+        },
+        {
+          num: '03',
+          title: 'Menjadi korban otomasi atau pencipta nilai.',
+          body: [
+            'AI hanya mengolah pola dari masa lalu, sedangkan manusia menentukan empati, arah, dan keputusan.',
+            'Kita memiliki pilihan untuk memimpin AI demi melahirkan solusi nyata yang berdampak.',
+          ],
+        },
+      ],
+      btnText: 'Diskusikan Kebutuhan Tim Anda',
+    },
+    works: {
+      titleJp: 'Hasil yang Dicapai',
+      titleEn: 'Outcomes / 3H',
+      lead1: 'Tiga dampak utama yang dibangun',
+      lead2: 'untuk pemimpin dan tim modern.',
+      btnText: 'Konsultasi Program',
+      enCaption1: 'Building executive AI capability',
+      enCaption2: 'with human empathy and strategic clarity',
+      items: [
+        {
+          id: '02',
+          tag: 'PILAR 01 · HYPER-PRODUCTIVE',
+          title: 'Hyper-Productive: Bekerja lebih fokus dan berdampak.',
+          subtitle: 'Mengorkestrasi asisten AI lintas fungsi kerja.',
+          desc: 'Memangkas beban pekerjaan teknis berulang hingga puluhan persen sehingga pemimpin dapat berfokus penuh pada pengambilan keputusan strategis.',
+          img: 'unsplash-gallery-1.jpg',
+        },
+        {
+          id: '03',
+          tag: 'PILAR 02 · HYPER-ITERATIVE',
+          title: 'Hyper-Iterative: Validasi ide lebih cepat dan terukur.',
+          subtitle: 'Eksplorasi solusi dalam hitungan jam, bukan minggu.',
+          desc: 'Mengubah gagasan kasar menjadi prototipe dan simulasi strategi yang langsung diuji terhadap kebutuhan pengguna nyata secara tangkas.',
+          img: 'unsplash-process.jpg',
+        },
+        {
+          id: '04',
+          tag: 'PILAR 03 · HYPER-IMPACTFUL',
+          title: 'Hyper-Impactful: Mengubah peluang menjadi nilai nyata.',
+          subtitle: 'Inovasi yang relevan bagi pertumbuhan bisnis.',
+          desc: 'Memadukan empati manusia dan ketajaman konteks bisnis untuk melahirkan terobosan layanan maupun efisiensi operasional yang terukur.',
+          img: 'unsplash-gallery-2.jpg',
+          enNote: [
+            'AI processes patterns from the past.',
+            'Humans define direction, empathy, and new value.',
+          ],
+        },
+        {
+          id: '05',
+          tag: 'PRINSIP UTAMA · HUMAN LEADERSHIP',
+          title: 'Kolaborasi Lintas Fungsi Berbasis Studi Kasus Nyata.',
+          subtitle: 'Praktik langsung dengan tantangan aktual organisasi Anda.',
+          desc: 'Setiap peserta tidak hanya mempelajari teori, melainkan langsung membedah alur kerja dan menyusun solusi AI siap pakai.',
+          img: 'unsplash-gallery-4.jpg',
+        },
+      ],
+    },
+    event: {
+      titleJp: 'Program Workshop',
+      titleEn: 'Curriculum',
+      desc: [
+        'Dirancang sebagai perjalanan transformasi utuh, bukan sekadar seminar satu arah.',
+        'Dimulai dari pemetaan tantangan sebelum sesi, lokakarya intensif satu hari penuh, hingga pendampingan implementasi pasca-sesi.',
+      ],
+      btnText: 'Daftar Sesi Berikutnya',
+      pickups: [
+        {
+          stage: 'TAHAP 01 · PRA-SESI (H-14)',
+          tag: 'Diagnostic & Alignment',
+          title: 'Identifikasi masalah utama dan pemetaan peluang penggunaan AI di unit kerja.',
+          meta1Label: 'Fokus Utama',
+          meta1Value: 'Asesmen kesiapan & pemilihan studi kasus nyata peserta',
+          meta2Label: 'Output Tahap 01',
+          meta2Value: 'Dokumen prioritas masalah & target efisiensi tim',
+          img: 'unsplash-challenge.jpg',
+        },
+        {
+          stage: 'TAHAP 02 · SESI UTAMA (1 HARI PENUH)',
+          tag: 'Intensive Workshop',
+          title: 'Praktik intensif AI Thinking, perancangan solusi, dan pembuatan prototipe kerja.',
+          meta1Label: 'Metode Belajar',
+          meta1Value: 'Simulasi interaktif, studi kasus & eksperimen terarah',
+          meta2Label: 'Output Tahap 02',
+          meta2Value: 'Prototipe asisten AI & cetak biru solusi siap uji',
+          img: 'unsplash-gallery-3.jpg',
+        },
+        {
+          stage: 'TAHAP 03 · IMPLEMENTASI (H+14)',
+          tag: 'Execution & Review',
+          title: 'Uji coba solusi di lingkungan kerja nyata, evaluasi hasil, dan penyempurnaan alur.',
+          meta1Label: 'Pendampingan',
+          meta1Value: 'Klinik evaluasi dampak & optimasi adopsi tim',
+          meta2Label: 'Output Tahap 03',
+          meta2Value: 'Solusi AI tervalidasi yang siap diterapkan berkelanjutan',
+          img: 'unsplash-hero.jpg',
+        },
+      ],
+    },
+    sale: {
+      titleJp: 'Kompetensi & Format',
+      titleEn: 'Capabilities',
+      tab1: '5 Kompetensi Inti',
+      tab2: 'Peserta & Format',
+      tab1Desc: 'Lima kapabilitas strategis yang dilatih secara mendalam selama rangkaian workshop berlangsung.',
+      tab2Desc: 'Dirancang khusus bagi pengambil keputusan, pimpinan unit, dan tim inovasi lintas industri.',
+      btnText: 'Konsultasikan Jadwal & Kuota',
+      competencies: [
+        {
+          num: '01',
+          tag1: 'Kompetensi 01',
+          tag2: 'Human Empathy',
+          title: 'Empati & Pemahaman Masalah',
+          desc: 'Menemukan akar persoalan manusia dan pelanggan yang benar-benar layak diselesaikan sebelum memilih teknologi.',
+          img: 'unsplash-gallery-1.jpg',
+        },
+        {
+          num: '02',
+          tag1: 'Kompetensi 02',
+          tag2: 'Critical Framing',
+          title: 'Berpikir Kritis & Strategis',
+          desc: 'Mengajukan pertanyaan tajam, menguji asumsi bisnis, dan memvalidasi kualitas keluaran AI secara objektif.',
+          img: 'unsplash-challenge.jpg',
+        },
+        {
+          num: '03',
+          tag1: 'Kompetensi 03',
+          tag2: 'AI Orchestration',
+          title: 'Kolaborasi Manusia & AI',
+          desc: 'Mengorkestrasi berbagai model AI sebagai mitra berpikir strategis untuk memperluas kapasitas analisis tim.',
+          img: 'unsplash-process.jpg',
+        },
+        {
+          num: '04',
+          tag1: 'Kompetensi 04',
+          tag2: 'Rapid Prototyping',
+          title: 'Eksperimen & Iterasi Cepat',
+          desc: 'Membangun, menguji, dan memperbaiki prototipe solusi kerja dalam siklus waktu yang sangat singkat.',
+          img: 'unsplash-gallery-2.jpg',
+        },
+        {
+          num: '05',
+          tag1: 'Kompetensi 05',
+          tag2: 'Value Creation',
+          title: 'Kepemimpinan Penciptaan Nilai',
+          desc: 'Menerjemahkan terobosan teknologi menjadi dampak bisnis nyata, efisiensi biaya, dan pertumbuhan organisasi.',
+          img: 'unsplash-gallery-4.jpg',
+        },
+      ],
+      audiences: [
+        {
+          num: 'A1',
+          tag1: 'Profil Peserta',
+          tag2: 'C-Level & Directors',
+          title: 'Pemimpin & Pengambil Keputusan',
+          desc: 'Direksi, VP, dan kepala divisi yang menentukan arah strategi bisnis serta transformasi kapabilitas organisasi.',
+          img: 'unsplash-hero.jpg',
+        },
+        {
+          num: 'A2',
+          tag1: 'Profil Peserta',
+          tag2: 'Managers & Leads',
+          title: 'Manajer & Profesional Senior',
+          desc: 'Pemimpin tim operasional, produk, pemasaran, SDM, dan keuangan yang ingin melipatgandakan dampak kerja.',
+          img: 'unsplash-gallery-3.jpg',
+        },
+        {
+          num: 'F1',
+          tag1: 'Format Sesi',
+          tag2: 'Full-Day Intensive',
+          title: '1 Hari Penuh · 09:00–17:00 WIB',
+          desc: 'Tersedia dalam format In-House eksklusif untuk perusahaan maupun kelas publik terbatas dengan kurasi peserta.',
+          img: 'unsplash-gallery-1.jpg',
+        },
+      ],
+    },
+    company1: {
+      titleJp: 'Dipandu Oleh',
+      titleEn: 'Facilitator',
+      lead: 'Aranggi Soemardjan · Praktisi inovasi, pendiri Clevio, dan pelopor pendidikan pemikiran komputasional & AI.',
+      links: [
+        {
+          jp: 'Pendiri Ekosistem Inovasi Clevio',
+          en: 'Founder of Clevio & Coach Playground',
+          desc: 'Lebih dari satu dekade mendampingi korporasi, pemimpin bisnis, dan talenta teknologi membangun budaya inovasi.',
+        },
+        {
+          jp: 'Inovator AI Terapan Lintas Industri',
+          en: 'Agriana.ai & Applied AI Solutions',
+          desc: 'Mengembangkan berbagai solusi asisten cerdas dan otomasi proses bisnis yang berorientasi pada dampak manusia.',
+        },
+        {
+          jp: 'Latar Belakang Riset & Kepemimpinan Global',
+          en: 'Harvard Seed for Social Innovation Fellow',
+          desc: 'Memadukan ketajaman strategi bisnis dengan pendekatan human-centered design dalam setiap sesi pendampingan.',
+        },
+      ],
+    },
+    company2: {
+      titleJp: 'Rekam Jejak',
+      titleEn: 'Recognition',
+      lead: 'Pengalaman nyata mendampingi transformasi digital dan meraih apresiasi inovasi nasional maupun internasional.',
+      links: [
+        {
+          jp: 'Profil SOSOK Harian Kompas',
+          en: 'Featured National Innovation Figure',
+          desc: 'Diangkat dalam rubrik prestisius SOSOK Harian Kompas atas dedikasi membangun literasi kreator teknologi di Indonesia.',
+        },
+        {
+          jp: 'Anugerah Ristekdikti & Apresiasi Nasional',
+          en: 'National Research & Innovation Awardee',
+          desc: 'Pengakuan atas kontribusi metodologi pembelajaran berbasis proyek dan pemecahan masalah nyata.',
+        },
+        {
+          jp: 'Pendekatan Human-First AI Thinking',
+          en: '100% Case-Study Driven Workshop',
+          desc: 'Dirancang agar peserta dari latar belakang non-teknis sekalipun mampu memimpin inisiatif AI dengan percaya diri.',
+        },
+      ],
+    },
+    videos: {
+      titleJp: 'Dokumentasi Sesi',
+      titleEn: 'Session Highlights',
+      btnText: 'Tonton Cuplikan Lengkap',
+      items: [
+        {
+          id: 'p28s931M61c',
+          date: 'VIDEO 01',
+          tag: 'Executive Insight',
+          title: 'Mengapa Pemimpin Perlu Menguasai AI Thinking, Bukan Sekadar Prompting',
+          duration: 'Cuplikan Dokumentasi · YouTube Shorts',
+        },
+        {
+          id: 'gR9A7eA4wP0',
+          date: 'VIDEO 02',
+          tag: 'Workshop Atmosphere',
+          title: 'Suasana Kolaborasi, Eksperimen Cepat & Diskusi Strategis Clevio AI Pro',
+          duration: 'Cuplikan Dokumentasi · YouTube Shorts',
+        },
+      ],
+    },
+    footer: {
+      ctaTitleJp: 'Pendaftaran & Konsultasi',
+      ctaTitleEn: 'Contact Us',
+      ctaBtn1: 'Hubungi via WhatsApp',
+      ctaBtn2: 'Jadwalkan In-House',
+      telTime: 'Senin–Jumat 09:00–18:00 WIB (Respons Cepat via WhatsApp)',
+      areaLabel: 'Format Penyelenggaraan Workshop',
+      areaDesc: 'Tersedia untuk sesi tatap muka eksklusif di Jakarta & kota besar di Indonesia, serta sesi Hybrid / In-House khusus organisasi.',
+      addressLabel: 'Clevio AI Pro · Executive AI Thinking & Innovation',
+      addressBody: 'Jakarta, Indonesia · WhatsApp: +62 822-2111-8860 · Web: clev.io/pro',
+      copyright: '© Clevio AI Pro. All Rights Reserved.',
+    },
+  },
+  en: {
+    header: {
+      hours: '09:00–18:00 · Mon–Fri',
+      cta: 'Register Now',
+      menu: 'MENU',
+      close: 'CLOSE',
+    },
+    hero: {
+      title1: 'Not replaced by AI.',
+      title2: 'Leading with AI.',
+      subtitle: '1-Day Executive Workshop · AI Thinking & Innovation for Leaders and Professionals',
+      ctaPrompt: 'Bring this program to your leadership team',
+      ctaLink: 'Inquire & Register via WhatsApp',
+    },
+    intro: {
+      catch1: 'The workplace is shifting.',
+      catch2: 'Old playbooks no longer suffice.',
+      desc: [
+        'Relying on conventional workflows amid rapid AI acceleration is no longer a safe strategy.',
+        'Future-ready leaders do not merely operate tools; they direct human empathy,',
+        'strategic judgment, and new value creation across their organizations.',
+      ],
+      items: [
+        {
+          num: '01',
+          title: 'Routine work is rapidly automated.',
+          body: [
+            'Administrative tasks, standard reporting, and baseline analysis are now completed by automation in seconds.',
+            'True competitive advantage shifts toward framing the right high-leverage problems.',
+          ],
+        },
+        {
+          num: '02',
+          title: 'Standing still is an illusion of safety.',
+          body: [
+            'Professionals and teams who orchestrate AI operate with exponentially greater speed and clarity.',
+            'Productivity benchmarks are shifting permanently across every management layer.',
+          ],
+        },
+        {
+          num: '03',
+          title: 'Be disrupted by automation, or create new value.',
+          body: [
+            'AI processes patterns from the past; humans define empathy, strategic direction, and judgment.',
+            'We can choose to lead AI intentionally to build solutions that deliver measurable impact.',
+          ],
+        },
+      ],
+      btnText: 'Discuss Your Team Requirements',
+    },
+    works: {
+      titleJp: 'Key Outcomes',
+      titleEn: 'Outcomes / 3H',
+      lead1: 'Three core pillars designed for',
+      lead2: 'modern leaders and high-impact teams.',
+      btnText: 'Program Inquiry',
+      enCaption1: 'Building executive AI capability',
+      enCaption2: 'with human empathy and strategic clarity',
+      items: [
+        {
+          id: '02',
+          tag: 'PILLAR 01 · HYPER-PRODUCTIVE',
+          title: 'Hyper-Productive: Work with sharper focus and higher leverage.',
+          subtitle: 'Orchestrate AI assistants across core workflows.',
+          desc: 'Eliminate repetitive operational bottlenecks so leaders and teams can dedicate their energy to high-stakes strategic decisions.',
+          img: 'unsplash-gallery-1.jpg',
+        },
+        {
+          id: '03',
+          tag: 'PILLAR 02 · HYPER-ITERATIVE',
+          title: 'Hyper-Iterative: Validate ideas faster with measurable clarity.',
+          subtitle: 'Explore and test solutions in hours, not weeks.',
+          desc: 'Transform raw concepts into working prototypes and strategic simulations tested directly against real user needs.',
+          img: 'unsplash-process.jpg',
+        },
+        {
+          id: '04',
+          tag: 'PILLAR 03 · HYPER-IMPACTFUL',
+          title: 'Hyper-Impactful: Turn emerging opportunities into real value.',
+          subtitle: 'Innovation grounded in business relevance.',
+          desc: 'Combine deep human empathy with commercial acumen to launch service breakthroughs and measurable operational gains.',
+          img: 'unsplash-gallery-2.jpg',
+          enNote: [
+            'AI processes patterns from the past.',
+            'Humans define direction, empathy, and new value.',
+          ],
+        },
+        {
+          id: '05',
+          tag: 'CORE PRINCIPLE · HUMAN LEADERSHIP',
+          title: 'Cross-Functional Collaboration Built on Real Case Studies.',
+          subtitle: 'Hands-on execution with your actual business challenges.',
+          desc: 'Participants go beyond theory to dissect live organizational workflows and architect ready-to-deploy AI solutions.',
+          img: 'unsplash-gallery-4.jpg',
+        },
+      ],
+    },
+    event: {
+      titleJp: 'Program Structure',
+      titleEn: 'Curriculum',
+      desc: [
+        'Architected as a complete transformation journey rather than a passive one-way seminar.',
+        'Spanning pre-session diagnostic mapping, an intensive full-day workshop, and post-session implementation review.',
+      ],
+      btnText: 'Reserve Next Cohort',
+      pickups: [
+        {
+          stage: 'STAGE 01 · PRE-SESSION (D-14)',
+          tag: 'Diagnostic & Alignment',
+          title: 'Identify priority bottlenecks and map high-value AI opportunities across your unit.',
+          meta1Label: 'Core Focus',
+          meta1Value: 'Readiness assessment & participant case selection',
+          meta2Label: 'Stage 01 Output',
+          meta2Value: 'Priority problem brief & team efficiency targets',
+          img: 'unsplash-challenge.jpg',
+        },
+        {
+          stage: 'STAGE 02 · CORE WORKSHOP (1 FULL DAY)',
+          tag: 'Intensive Workshop',
+          title: 'Hands-on AI Thinking, solution architecture, and rapid workflow prototyping.',
+          meta1Label: 'Learning Method',
+          meta1Value: 'Interactive simulation, live case studies & guided sprints',
+          meta2Label: 'Stage 02 Output',
+          meta2Value: 'Working AI assistant prototype & testable solution blueprint',
+          img: 'unsplash-gallery-3.jpg',
+        },
+        {
+          stage: 'STAGE 03 · IMPLEMENTATION (D+14)',
+          tag: 'Execution & Review',
+          title: 'Deploy solutions in real workflows, evaluate outcomes, and refine team adoption.',
+          meta1Label: 'Mentorship',
+          meta1Value: 'Impact evaluation clinic & workflow optimization',
+          meta2Label: 'Stage 03 Output',
+          meta2Value: 'Validated AI solution ready for sustained scaling',
+          img: 'unsplash-hero.jpg',
+        },
+      ],
+    },
+    sale: {
+      titleJp: 'Competencies & Format',
+      titleEn: 'Capabilities',
+      tab1: '5 Core Competencies',
+      tab2: 'Audience & Format',
+      tab1Desc: 'Five strategic capabilities practiced intensively throughout the Clevio AI Pro workshop.',
+      tab2Desc: 'Tailored for decision-makers, business unit heads, and cross-functional innovation teams.',
+      btnText: 'Check Schedule & Availability',
+      competencies: [
+        {
+          num: '01',
+          tag1: 'Competency 01',
+          tag2: 'Human Empathy',
+          title: 'Empathy & Problem Discovery',
+          desc: 'Uncover the root human and customer problems truly worth solving before selecting any technology.',
+          img: 'unsplash-gallery-1.jpg',
+        },
+        {
+          num: '02',
+          tag1: 'Competency 02',
+          tag2: 'Critical Framing',
+          title: 'Critical & Strategic Thinking',
+          desc: 'Ask incisive questions, challenge business assumptions, and objectively validate AI-generated outputs.',
+          img: 'unsplash-challenge.jpg',
+        },
+        {
+          num: '03',
+          tag1: 'Competency 03',
+          tag2: 'AI Orchestration',
+          title: 'Human & AI Collaboration',
+          desc: 'Orchestrate multiple AI models as strategic thinking partners to expand your team’s analytical capacity.',
+          img: 'unsplash-process.jpg',
+        },
+        {
+          num: '04',
+          tag1: 'Competency 04',
+          tag2: 'Rapid Prototyping',
+          title: 'Rapid Experimentation & Iteration',
+          desc: 'Build, test, and refine working solution prototypes within tightly compressed feedback loops.',
+          img: 'unsplash-gallery-2.jpg',
+        },
+        {
+          num: '05',
+          tag1: 'Competency 05',
+          tag2: 'Value Creation',
+          title: 'Value Creation Leadership',
+          desc: 'Translate technological capability into measurable business impact, cost efficiency, and organizational growth.',
+          img: 'unsplash-gallery-4.jpg',
+        },
+      ],
+      audiences: [
+        {
+          num: 'A1',
+          tag1: 'Participant Profile',
+          tag2: 'C-Level & Directors',
+          title: 'Executives & Decision Makers',
+          desc: 'Board members, VPs, and division heads shaping corporate strategy and organizational capability transformation.',
+          img: 'unsplash-hero.jpg',
+        },
+        {
+          num: 'A2',
+          tag1: 'Participant Profile',
+          tag2: 'Managers & Leads',
+          title: 'Senior Managers & Professionals',
+          desc: 'Leaders across operations, product, marketing, HR, and finance seeking exponential workflow impact.',
+          img: 'unsplash-gallery-3.jpg',
+        },
+        {
+          num: 'F1',
+          tag1: 'Session Format',
+          tag2: 'Full-Day Intensive',
+          title: '1 Full Day · 09:00–17:00 WIB',
+          desc: 'Available as exclusive corporate In-House cohorts or curated limited-seat executive public sessions.',
+          img: 'unsplash-gallery-1.jpg',
+        },
+      ],
+    },
+    company1: {
+      titleJp: 'Led By',
+      titleEn: 'Facilitator',
+      lead: 'Aranggi Soemardjan · Innovation practitioner, founder of Clevio, and pioneer in computational & AI thinking education.',
+      links: [
+        {
+          jp: 'Founder of Clevio Innovation Ecosystem',
+          en: 'Founder of Clevio & Coach Playground',
+          desc: 'Over a decade advising enterprises, business leaders, and technology talent on building sustainable innovation cultures.',
+        },
+        {
+          jp: 'Applied Cross-Industry AI Innovator',
+          en: 'Agriana.ai & Applied AI Solutions',
+          desc: 'Architecting intelligent assistant ecosystems and business workflow automation centered on human impact.',
+        },
+        {
+          jp: 'Global Leadership & Research Foundation',
+          en: 'Harvard Seed for Social Innovation Fellow',
+          desc: 'Blending executive business strategy with human-centered design in every advisory and workshop engagement.',
+        },
+      ],
+    },
+    company2: {
+      titleJp: 'Track Record',
+      titleEn: 'Recognition',
+      lead: 'Proven experience guiding digital transformation and earning national and international innovation recognition.',
+      links: [
+        {
+          jp: 'Kompas Daily SOSOK Feature',
+          en: 'Featured National Innovation Figure',
+          desc: 'Profiled in Kompas Daily’s prestigious SOSOK column for pioneering technology creator literacy in Indonesia.',
+        },
+        {
+          jp: 'Ristekdikti National Innovation Award',
+          en: 'National Research & Innovation Awardee',
+          desc: 'Recognized for project-based learning methodologies focused on real-world problem solving.',
+        },
+        {
+          jp: 'Human-First AI Thinking Methodology',
+          en: '100% Case-Study Driven Workshop',
+          desc: 'Designed so leaders from both non-technical and technical backgrounds can spearhead AI initiatives with confidence.',
+        },
+      ],
+    },
+    videos: {
+      titleJp: 'Session Highlights',
+      titleEn: 'Documentation',
+      btnText: 'Watch Full Highlights',
+      items: [
+        {
+          id: 'p28s931M61c',
+          date: 'VIDEO 01',
+          tag: 'Executive Insight',
+          title: 'Why Leaders Must Master AI Thinking Rather Than Mere Prompting',
+          duration: 'Session Highlight · YouTube Shorts',
+        },
+        {
+          id: 'gR9A7eA4wP0',
+          date: 'VIDEO 02',
+          tag: 'Workshop Atmosphere',
+          title: 'Inside Clevio AI Pro: Rapid Experimentation & Strategic Group Sprints',
+          duration: 'Session Highlight · YouTube Shorts',
+        },
+      ],
+    },
+    footer: {
+      ctaTitleJp: 'Registration & Inquiry',
+      ctaTitleEn: 'Contact Us',
+      ctaBtn1: 'Contact via WhatsApp',
+      ctaBtn2: 'Book In-House Cohort',
+      telTime: 'Mon–Fri 09:00–18:00 WIB (Fast Response via WhatsApp)',
+      areaLabel: 'Workshop Delivery Formats',
+      areaDesc: 'Available for exclusive in-person cohorts in Jakarta and major Indonesian cities, as well as tailored Hybrid / In-House corporate sessions.',
+      addressLabel: 'Clevio AI Pro · Executive AI Thinking & Innovation',
+      addressBody: 'Jakarta, Indonesia · WhatsApp: +62 822-2111-8860 · Web: clev.io/pro',
+      copyright: '© Clevio AI Pro. All Rights Reserved.',
+    },
+  },
+};
+
+const WA_URL =
+  'https://wa.me/6282221118860?text=Halo%20Tim%20Clevio%20AI%20Pro%2C%20saya%20ingin%20berkonsultasi%20mengenai%20Workshop%20Executive%20AI%20Thinking%20%26%20Innovation.';
+
+const MARQUEE_SLIDES = [
+  { img: 'unsplash-gallery-1.jpg', wide: true, label: 'Executive Alignment' },
+  { img: 'unsplash-process.jpg', wide: false, label: 'AI Orchestration' },
+  { img: 'unsplash-gallery-2.jpg', wide: false, label: 'Rapid Prototyping' },
+  { img: 'unsplash-gallery-3.jpg', wide: true, label: 'Collaborative Sprint' },
+  { img: 'unsplash-challenge.jpg', wide: false, label: 'Critical Framing' },
+  { img: 'unsplash-gallery-4.jpg', wide: true, label: 'Value Creation' },
+];
 
 export default function ClevioPro() {
-  const [lang, setLang] = useState<Lang>(() => {
-    try {
-      return localStorage.getItem('clevio-language') === 'en' ? 'en' : 'id'
-    } catch {
-      return 'id'
-    }
-  })
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [activeStage, setActiveStage] = useState<number>(0)
-  const [activeVideo, setActiveVideo] = useState<'workshop' | 'mentor' | null>(null)
+  const [lang, setLang] = useState<Lang>('id');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'tab1' | 'tab2'>('tab1');
+  const [activeVideo, setActiveVideo] = useState<string | null>(null);
+  const [scrolled, setScrolled] = useState(false);
 
-  const isEn = lang === 'en'
-  const waHref = isEn ? WA_URL_EN : WA_URL_ID
-  const waInhouseHref = isEn ? WA_INHOUSE_EN : WA_INHOUSE_ID
-
-  const changeLang = (next: Lang) => {
-    setLang(next)
-    document.documentElement.lang = next
-    try {
-      localStorage.setItem('clevio-language', next)
-    } catch {
-      return
-    }
-  }
+  const t = DATA[lang];
+  const baseUrl = import.meta.env.BASE_URL;
+  const asset = (file: string) => `${baseUrl}clevio-pro/${file}`;
 
   useEffect(() => {
-    document.documentElement.lang = lang
-    document.title = isEn
-      ? 'Clevio AI Pro | Not replaced by AI. Lead with AI.'
-      : 'Clevio AI Pro | Bukan diganti AI. Tapi Memimpin AI.'
-  }, [lang, isEn])
+    const onScroll = () => {
+      setScrolled(window.scrollY > 80);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setMobileMenuOpen(false)
-        setActiveVideo(null)
-      }
+    if (menuOpen || activeVideo) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
     }
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [])
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [menuOpen, activeVideo]);
 
-  const stages = [
-    {
-      num: '01',
-      badge: isEn ? 'PRE-SESSION · D-14' : 'PRA-SESI · H-14',
-      title: isEn ? 'Understand your business context' : 'Pahami konteks bisnis Anda',
-      summary: isEn
-        ? 'Mapping real organisational challenges and expectations before the workshop begins.'
-        : 'Memetakan tantangan dan ekspektasi nyata organisasi sebelum sesi tatap muka dimulai.',
-      detail: isEn
-        ? 'Participants do not arrive empty-handed. Two weeks prior to the workshop, our AI learning assistant guides you in identifying high-priority business bottlenecks and framing the right questions to bring into the room.'
-        : 'Peserta tidak datang dengan tangan kosong. Dua minggu sebelum sesi, asisten pembelajaran membantu mengidentifikasi hambatan prioritas di tempat kerja Anda agar siap dibedah di ruang workshop.',
-      deliverable: isEn
-        ? 'Context Brief & Priority Problem Statement'
-        : 'Peta Konteks Bisnis & Rumusan Masalah Prioritas',
-      img: './clevio-pro/unsplash-challenge.jpg',
-    },
-    {
-      num: '02',
-      badge: isEn ? 'CORE WORKSHOP · 1 FULL DAY' : 'SESI INTI · 1 HARI PENUH',
-      title: isEn ? 'Design solutions with AI' : 'Rancang solusi dengan AI',
-      summary: isEn
-        ? 'Hands-on problem deconstruction with Design Thinking and rapid AI prototyping.'
-        : 'Bedah akar masalah dengan Design Thinking dan rancang prototipe solusi bersama AI.',
-      detail: isEn
-        ? 'Guided directly by Aranggi Soemardjan, participants combine human empathy, Higher-Order Thinking (HOTS), and cross-functional AI orchestration to turn raw challenges into working solution prototypes within a single day.'
-        : 'Dipandu langsung oleh Bpk. Aranggi Soemardjan, peserta memadukan empati pengguna, penalaran kritis (HOTS), dan orkestrasi asisten AI untuk mengubah masalah nyata menjadi prototipe solusi dalam satu hari.',
-      deliverable: isEn
-        ? 'Working AI-Assisted Solution Prototype'
-        : 'Prototipe Solusi Berbasis AI yang Siap Diuji',
-      img: './clevio-pro/unsplash-process.jpg',
-    },
-    {
-      num: '03',
-      badge: isEn ? 'IMPLEMENTATION · D+14' : 'IMPLEMENTASI · H+14',
-      title: isEn
-        ? 'Validate and iterate for execution'
-        : 'Validasi dan iterasi untuk implementasi',
-      summary: isEn
-        ? 'Testing assumptions in your actual workplace and refining the execution roadmap.'
-        : 'Menguji asumsi langsung di lingkungan kerja dan menyempurnakan langkah eksekusi.',
-      detail: isEn
-        ? 'True impact happens after the classroom. Over the two weeks following the workshop, participants test their prototypes with real stakeholders, gather feedback, iterate, and lock in an actionable implementation plan.'
-        : 'Dampak sejati diukur di lapangan kerja. Selama dua minggu pasca-sesi, peserta menguji prototipe kepada pengguna nyata, mengumpulkan umpan balik, melakukan iterasi, dan mengunci rencana implementasi.',
-      deliverable: isEn
-        ? 'Validated Prototype & Organisational Action Plan'
-        : 'Prototipe Tervalidasi & Rencana Eksekusi Nyata',
-      img: './clevio-pro/unsplash-gallery-2.jpg',
-    },
-  ]
+  const scrollToSection = (id: string) => {
+    setMenuOpen(false);
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
-    <div
-      id="top"
-      className="min-h-screen bg-[#F4F1EA] text-[#101614] selection:bg-[#B8502B] selection:text-white overflow-x-clip w-full"
-      style={{ fontFamily: '"Plus Jakarta Sans", "Manrope", sans-serif' }}
-    >
-      <header className="sticky top-0 z-40 bg-[#F4F1EA]/90 backdrop-blur-md border-b border-[#DED9CE]">
-        <div className="max-w-[1320px] mx-auto px-5 sm:px-8 h-[72px] flex items-center justify-between gap-4">
+    <div className="nkg-root">
+      <style>{`
+        .nkg-root {
+          --clr-primary-default: #202020;
+          --clr-primary-dark: #0F0F0F;
+          --clr-primary-light: #4A4A4A;
+          --clr-secondary-default: #AD8A72;
+          --clr-secondary-dark: #5F433E;
+          --clr-secondary-light: #D6B996;
+          --clr-bg-01: #F2EDE7;
+          --clr-bg-02: #E9E1DA;
+          --clr-text-primary: #333333;
+          --clr-text-secondary: #757575;
+          --clr-text-placeholder: #BDBDBD;
+          --clr-text-light: #F5F2EE;
+          --clr-wht: #FFFFFF;
+          --clr-blk: #0F0F0F;
+          --font-jp-heading: 'Noto Serif', Georgia, serif;
+          --font-jp-text: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+          --font-en-heading: 'Cardo', Georgia, serif;
+          --font-en-text: 'Jost', sans-serif;
+          background-color: var(--clr-bg-01);
+          color: var(--clr-text-primary);
+          font-family: var(--font-jp-text);
+          line-height: 1.9;
+          letter-spacing: 0.04em;
+          overflow-x: hidden;
+        }
+
+        /* Subtle Japanese paper grain texture matching nakagawa-corp.com */
+        .nkg-paper {
+          background-color: var(--clr-bg-01);
+          background-image: radial-gradient(rgba(32, 32, 32, 0.035) 1px, transparent 0);
+          background-size: 24px 24px;
+        }
+        .nkg-paper-alt {
+          background-color: var(--clr-bg-02);
+          background-image: radial-gradient(rgba(32, 32, 32, 0.04) 1px, transparent 0);
+          background-size: 24px 24px;
+        }
+
+        /* Nakagawa Dual Heading (.ttl-dual) */
+        .nkg-ttl-dual {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+        .nkg-ttl-dual.is-center {
+          align-items: center;
+          text-align: center;
+        }
+        .nkg-ttl-dual .font-jp {
+          font-family: var(--font-jp-heading);
+          font-size: clamp(1.85rem, 3.2vw, 3rem);
+          font-weight: 400;
+          line-height: 1.4;
+          letter-spacing: 0.12em;
+          color: var(--clr-primary-default);
+        }
+        .nkg-ttl-dual .font-en {
+          font-family: var(--font-en-heading);
+          font-size: clamp(0.875rem, 1.1vw, 1.05rem);
+          font-style: italic;
+          letter-spacing: 0.14em;
+          color: var(--clr-secondary-default);
+        }
+
+        /* Nakagawa Signature Pill-Arrow Button (.btn a) */
+        .nkg-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 1.75rem;
+          padding: 0.5rem 0;
+          color: var(--clr-primary-default);
+          font-family: var(--font-jp-text);
+          font-size: 0.9375rem;
+          font-weight: 500;
+          letter-spacing: 0.08em;
+          text-decoration: none;
+          transition: color 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+          cursor: pointer;
+        }
+        .nkg-btn-pill {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 2.75rem;
+          height: 1.625rem;
+          border-radius: 999px;
+          background-color: var(--clr-primary-default);
+          border: 1px solid var(--clr-primary-default);
+          color: var(--clr-wht);
+          transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+          flex-shrink: 0;
+        }
+        .nkg-btn:hover .nkg-btn-pill {
+          background-color: transparent;
+          color: var(--clr-primary-default);
+          transform: translateX(4px);
+        }
+
+        /* Light variant for dark backgrounds (.home-intro__btn) */
+        .nkg-btn-light {
+          color: var(--clr-text-light);
+        }
+        .nkg-btn-light .nkg-btn-pill {
+          background-color: var(--clr-text-light);
+          border-color: var(--clr-text-light);
+          color: var(--clr-primary-default);
+        }
+        .nkg-btn-light:hover .nkg-btn-pill {
+          background-color: transparent;
+          color: var(--clr-text-light);
+        }
+
+        /* Solid Primary Button (.btn-priamry) */
+        .nkg-btn-solid {
+          display: inline-flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 1.5rem;
+          padding: 1.15rem 1.75rem;
+          background-color: var(--clr-primary-default);
+          border: 1px solid var(--clr-primary-default);
+          color: var(--clr-wht);
+          font-size: 0.9375rem;
+          font-weight: 500;
+          letter-spacing: 0.08em;
+          text-decoration: none;
+          transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .nkg-btn-solid:hover {
+          background-color: var(--clr-secondary-dark);
+          border-color: var(--clr-secondary-dark);
+        }
+
+        /* Animated vertical scroll line (.home-intro__scroll & .home-works__scroll) */
+        @keyframes nkg-scroll-line {
+          0%, 5% {
+            clip-path: inset(0 0 0 0);
+          }
+          35% {
+            clip-path: inset(100% 0 0 0);
+          }
+          36% {
+            clip-path: inset(0 0 100% 0);
+          }
+          90%, 100% {
+            clip-path: inset(0 0 0 0);
+          }
+        }
+        .nkg-scroll-indicator {
+          width: 1px;
+          height: 4.25rem;
+          animation: nkg-scroll-line 2.6s infinite cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Continuous Marquee (.home-event__slides) */
+        @keyframes nkg-marquee {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+        .nkg-marquee-track {
+          display: flex;
+          align-items: flex-end;
+          gap: 2.25rem;
+          width: max-content;
+          animation: nkg-marquee 42s linear infinite;
+        }
+        .nkg-marquee-track:hover {
+          animation-play-state: paused;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .nkg-scroll-indicator,
+          .nkg-marquee-track {
+            animation: none;
+          }
+        }
+      `}</style>
+
+      {/* =====================================================================
+          HEADER (.header.header-main)
+      ===================================================================== */}
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+          menuOpen
+            ? 'bg-transparent text-[#202020]'
+            : scrolled
+              ? 'bg-[#F2EDE7]/95 backdrop-blur-md text-[#202020] shadow-[0_1px_0_rgba(32,32,32,0.08)] py-3.5'
+              : 'bg-gradient-to-b from-black/60 to-transparent text-[#F5F2EE] py-6'
+        }`}
+      >
+        <div className="max-w-[1720px] mx-auto px-5 sm:px-10 lg:px-14 flex items-center justify-between">
+          {/* Brand Logo (.header--logo) */}
           <a
-            href="#top"
-            className="inline-flex items-baseline gap-1.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#101614]"
+            href="#"
+            className="flex items-center gap-3.5 group focus:outline-none"
+            aria-label="Clevio AI Pro"
           >
-            <ClevioLogo size="md" variant="dark" sublabel="" />
-            <span
-              className="text-2xl italic font-normal text-[#B8502B] -ml-0.5"
-              style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
-            >
-              AI Pro
+            <span className="flex items-center gap-1" aria-hidden="true">
+              <span
+                className="block w-2.5 h-5 rounded-[2px] transition-colors duration-300"
+                style={{
+                  backgroundColor: menuOpen || scrolled ? '#202020' : '#F5F2EE',
+                  transform: 'skewY(-22deg)',
+                }}
+              />
+              <span
+                className="block w-2.5 h-5 rounded-[2px] bg-[#AD8A72]"
+                style={{ transform: 'skewY(22deg)' }}
+              />
+            </span>
+            <span className="flex items-baseline gap-2">
+              <span
+                className="text-xl sm:text-2xl tracking-[0.06em] font-normal"
+                style={{ fontFamily: 'var(--font-en-text)' }}
+              >
+                CLEVIO
+              </span>
+              <span
+                className="text-xs sm:text-sm tracking-[0.18em] uppercase opacity-80"
+                style={{ fontFamily: 'var(--font-en-heading)', fontStyle: 'italic' }}
+              >
+                AI Pro
+              </span>
             </span>
           </a>
 
-          <nav
-            aria-label={isEn ? 'Main navigation' : 'Navigasi utama'}
-            className="hidden xl:flex items-center gap-1 bg-[#E8E3D8] p-1 rounded-full border border-[#D8D2C5]"
-          >
-            {[
-              { href: '#tantangan', num: '01', label: isEn ? 'Challenge' : 'Realita' },
-              { href: '#hasil', num: '02', label: isEn ? '3H Impact' : 'Dampak 3H' },
-              { href: '#kurikulum', num: '03', label: isEn ? 'Process' : 'Alur 3 Tahap' },
-              { href: '#kompetensi', num: '04', label: isEn ? 'Capabilities' : 'Kompetensi' },
-              { href: '#mentor', num: '05', label: isEn ? 'Facilitator' : 'Fasilitator' },
-              { href: '#galeri', num: '06', label: isEn ? 'Gallery' : 'Galeri' },
-            ].map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#2C3330] hover:bg-white hover:text-[#101614] transition-all flex items-center gap-1.5"
+          {/* Right Actions (.header--actions) */}
+          <div className="flex items-center gap-4 sm:gap-8 lg:gap-10">
+            {/* Phone & Hours (.header--tel) */}
+            <a
+              href={WA_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`hidden xl:flex flex-col items-end pb-1 border-b transition-opacity hover:opacity-75 ${
+                menuOpen || scrolled ? 'border-[#202020]/30' : 'border-white/30'
+              }`}
+            >
+              <span
+                className="text-base tracking-[0.08em] font-medium leading-none"
+                style={{ fontFamily: 'var(--font-en-text)' }}
               >
-                <span className="text-[10px] font-bold text-[#B8502B] tabular-nums">
-                  {item.num}
-                </span>
-                <span>{item.label}</span>
-              </a>
-            ))}
-          </nav>
+                +62 822-2111-8860
+              </span>
+              <span className="text-[11px] tracking-[0.08em] opacity-75 mt-1">
+                {t.header.hours}
+              </span>
+            </a>
 
-          <div className="flex items-center gap-3">
+            {/* Language Switcher (ID / EN) */}
             <div
+              className={`flex items-center text-xs tracking-[0.14em] border rounded-full p-0.5 ${
+                menuOpen || scrolled
+                  ? 'border-[#202020]/25 text-[#202020]'
+                  : 'border-white/30 text-[#F5F2EE]'
+              }`}
+              style={{ fontFamily: 'var(--font-en-text)' }}
               role="group"
-              aria-label={isEn ? 'Language selection' : 'Pilihan bahasa'}
-              className="inline-flex items-center bg-[#E8E3D8] p-0.5 rounded-full border border-[#D8D2C5] text-[11px] font-bold"
+              aria-label="Language switcher"
             >
               <button
                 type="button"
-                onClick={() => changeLang('id')}
-                aria-pressed={lang === 'id'}
-                aria-label="Bahasa Indonesia"
-                className={`min-w-[34px] min-h-[34px] px-2.5 rounded-full inline-flex items-center justify-center transition-all ${
+                onClick={() => setLang('id')}
+                className={`px-2.5 py-1 rounded-full transition-colors cursor-pointer ${
                   lang === 'id'
-                    ? 'bg-[#101614] text-white shadow-xs'
-                    : 'text-[#525855] hover:text-[#101614]'
+                    ? menuOpen || scrolled
+                      ? 'bg-[#202020] text-[#F5F2EE]'
+                      : 'bg-[#F5F2EE] text-[#202020]'
+                    : 'opacity-70 hover:opacity-100'
                 }`}
               >
                 ID
               </button>
               <button
                 type="button"
-                onClick={() => changeLang('en')}
-                aria-pressed={lang === 'en'}
-                aria-label="English"
-                className={`min-w-[34px] min-h-[34px] px-2.5 rounded-full inline-flex items-center justify-center transition-all ${
+                onClick={() => setLang('en')}
+                className={`px-2.5 py-1 rounded-full transition-colors cursor-pointer ${
                   lang === 'en'
-                    ? 'bg-[#101614] text-white shadow-xs'
-                    : 'text-[#525855] hover:text-[#101614]'
+                    ? menuOpen || scrolled
+                      ? 'bg-[#202020] text-[#F5F2EE]'
+                      : 'bg-[#F5F2EE] text-[#202020]'
+                    : 'opacity-70 hover:opacity-100'
                 }`}
               >
                 EN
               </button>
             </div>
 
+            {/* Header CTA (.header__btn.btn-cta) */}
             <a
-              href={waHref}
+              href={WA_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:inline-flex min-h-[40px] items-center justify-center gap-2 rounded-full bg-[#B8502B] hover:bg-[#9E4120] text-white px-5 py-2 text-xs font-bold tracking-wide transition-colors"
+              className={`hidden sm:inline-flex items-center gap-3 px-5 py-2.5 text-xs tracking-[0.12em] uppercase transition-all ${
+                menuOpen || scrolled
+                  ? 'bg-[#202020] text-[#F5F2EE] hover:bg-[#5F433E]'
+                  : 'bg-[#F5F2EE] text-[#202020] hover:bg-[#D6B996]'
+              }`}
             >
-              <span>{isEn ? 'Register Workshop' : 'Daftar Workshop'}</span>
-              <ArrowRightIcon className="w-3.5 h-3.5" />
+              <span>{t.header.cta}</span>
+              <span aria-hidden="true">→</span>
             </a>
 
+            {/* Menu Button (.header--menu_btn) */}
             <button
               type="button"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-expanded={mobileMenuOpen}
-              aria-label={
-                isEn
-                  ? mobileMenuOpen
-                    ? 'Close menu'
-                    : 'Open menu'
-                  : mobileMenuOpen
-                    ? 'Tutup menu'
-                    : 'Buka menu'
-              }
-              className="xl:hidden w-10 h-10 rounded-full border border-[#D8D2C5] bg-white flex flex-col items-center justify-center gap-1.5"
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="flex items-center gap-2.5 py-2 cursor-pointer group focus:outline-none"
+              aria-expanded={menuOpen}
+              aria-label="Toggle navigation menu"
             >
               <span
-                className={`w-4 h-px bg-[#101614] transition-transform ${
-                  mobileMenuOpen ? 'translate-y-[3.5px] rotate-45' : ''
+                className={`w-2 h-2 rounded-full transition-transform duration-300 group-hover:scale-125 ${
+                  menuOpen
+                    ? 'bg-[#AD8A72]'
+                    : scrolled
+                      ? 'bg-[#202020]'
+                      : 'bg-[#F5F2EE]'
                 }`}
               />
               <span
-                className={`w-4 h-px bg-[#101614] transition-transform ${
-                  mobileMenuOpen ? '-translate-y-[3.5px] -rotate-45' : ''
-                }`}
-              />
+                className="text-xs sm:text-sm tracking-[0.18em] font-medium"
+                style={{ fontFamily: 'var(--font-en-text)' }}
+              >
+                {menuOpen ? t.header.close : t.header.menu}
+              </span>
             </button>
           </div>
         </div>
-
-        {mobileMenuOpen && (
-          <div className="xl:hidden border-t border-[#DED9CE] bg-[#F4F1EA] px-6 py-4 space-y-1 shadow-xl">
-            {[
-              { href: '#tantangan', label: isEn ? '01 · Current Challenge' : '01 · Tantangan Saat Ini' },
-              { href: '#hasil', label: isEn ? '02 · 3H Outcomes' : '02 · Hasil yang Dicapai (3H)' },
-              { href: '#kurikulum', label: isEn ? '03 · 3-Step Programme' : '03 · Alur Program 3 Langkah' },
-              { href: '#kompetensi', label: isEn ? '04 · Capabilities & Format' : '04 · Kompetensi & Format' },
-              { href: '#mentor', label: isEn ? '05 · Facilitator Profile' : '05 · Profil Fasilitator' },
-              { href: '#galeri', label: isEn ? '06 · Gallery & Contact' : '06 · Galeri & Pendaftaran' },
-            ].map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="min-h-[46px] flex items-center justify-between text-sm font-bold text-[#101614] border-b border-[#DED9CE]/60 last:border-b-0"
-              >
-                <span>{item.label}</span>
-                <ArrowRightIcon className="w-4 h-4 text-[#B8502B]" />
-              </a>
-            ))}
-            <div className="pt-3">
-              <a
-                href={waHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full min-h-[46px] rounded-full inline-flex items-center justify-center gap-2 bg-[#B8502B] text-white text-sm font-bold"
-              >
-                <span>{isEn ? 'Register Workshop' : 'Daftar Workshop'}</span>
-                <ArrowRightIcon className="w-4 h-4" />
-              </a>
-            </div>
-          </div>
-        )}
       </header>
 
-      <main>
-        {/* SCREEN 01: ASYMMETRIC BENTO HERO */}
-        <section className="min-h-[calc(100svh-72px)] flex flex-col justify-center py-6 sm:py-8 px-4 sm:px-8 max-w-[1320px] mx-auto">
-          <div className="grid lg:grid-cols-12 gap-4 sm:gap-5 flex-1 items-stretch">
-            <div className="lg:col-span-7 rounded-2xl bg-[#101614] text-[#F4F1EA] p-7 sm:p-11 lg:p-14 flex flex-col justify-between relative overflow-hidden">
-              <div>
-                <p className="text-[11px] font-bold tracking-[0.22em] uppercase text-[#D98260] mb-6">
-                  {isEn
-                    ? 'AI THINKING & INNOVATION WORKSHOP'
-                    : 'WORKSHOP AI THINKING & INNOVATION'}
+      {/* =====================================================================
+          FULL-SCREEN ARCHITECTURAL MODAL MENU (#modal)
+      ===================================================================== */}
+      <div
+        className={`fixed inset-0 z-40 bg-white/95 backdrop-blur-md transition-all duration-500 overflow-y-auto ${
+          menuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+        aria-hidden={!menuOpen}
+      >
+        <div className="max-w-[1600px] mx-auto px-6 sm:px-14 pt-32 pb-16 min-h-screen flex flex-col justify-between">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+            {/* Multi-column Navigation (.modal__nav) */}
+            <nav className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-10">
+              <div className="flex flex-col gap-6">
+                <p
+                  className="text-xs tracking-[0.2em] uppercase text-[#AD8A72]"
+                  style={{ fontFamily: 'var(--font-en-text)' }}
+                >
+                  01 / Program & Architecture
                 </p>
-
-                <h1 className="font-extrabold text-[40px] sm:text-[56px] lg:text-[68px] leading-[1.02] tracking-[-0.04em] text-white">
-                  {isEn ? (
-                    <>
-                      Not replaced by AI.
-                      <br />
+                <ul className="flex flex-col gap-4 border-l border-[#202020]/15 pl-5">
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection('tantangan')}
+                      className="text-left group cursor-pointer"
+                    >
                       <span
-                        className="italic font-normal text-[#E8C5B0]"
-                        style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
+                        className="block text-xl text-[#202020] group-hover:text-[#AD8A72] transition-colors"
+                        style={{ fontFamily: 'var(--font-jp-heading)' }}
                       >
-                        But leading with AI.
+                        {t.intro.catch1}
                       </span>
-                    </>
-                  ) : (
-                    <>
-                      Bukan diganti AI.
-                      <br />
                       <span
-                        className="italic font-normal text-[#E8C5B0]"
-                        style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
+                        className="text-xs tracking-[0.14em] text-[#757575] uppercase"
+                        style={{ fontFamily: 'var(--font-en-text)' }}
                       >
-                        Tapi Memimpin AI.
+                        The Shifting Workplace
                       </span>
-                    </>
-                  )}
-                </h1>
-
-                <p className="mt-6 text-base sm:text-lg lg:text-[19px] text-[#B8C0BC] leading-relaxed max-w-[44ch]">
-                  {isEn
-                    ? 'A one-day intensive workshop for leaders and professionals ready to turn AI potential into real organisational value.'
-                    : 'Workshop 1 hari untuk pemimpin dan profesional yang siap menciptakan nilai nyata dengan AI.'}
-                </p>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection('dampak')}
+                      className="text-left group cursor-pointer"
+                    >
+                      <span
+                        className="block text-xl text-[#202020] group-hover:text-[#AD8A72] transition-colors"
+                        style={{ fontFamily: 'var(--font-jp-heading)' }}
+                      >
+                        {t.works.titleJp} (3H)
+                      </span>
+                      <span
+                        className="text-xs tracking-[0.14em] text-[#757575] uppercase"
+                        style={{ fontFamily: 'var(--font-en-text)' }}
+                      >
+                        Hyper-Productive · Iterative · Impactful
+                      </span>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection('program')}
+                      className="text-left group cursor-pointer"
+                    >
+                      <span
+                        className="block text-xl text-[#202020] group-hover:text-[#AD8A72] transition-colors"
+                        style={{ fontFamily: 'var(--font-jp-heading)' }}
+                      >
+                        {t.event.titleJp}
+                      </span>
+                      <span
+                        className="text-xs tracking-[0.14em] text-[#757575] uppercase"
+                        style={{ fontFamily: 'var(--font-en-text)' }}
+                      >
+                        H-14 Pre-Session · 1-Day Core · H+14 Review
+                      </span>
+                    </button>
+                  </li>
+                </ul>
               </div>
 
-              <div className="mt-10 pt-8 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
-                <div className="flex flex-wrap items-center gap-3.5">
-                  <a
-                    href={waHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="min-h-[50px] inline-flex items-center justify-center gap-3 rounded-full bg-[#B8502B] hover:bg-[#9E4120] text-white px-7 py-3.5 text-sm font-bold transition-colors"
-                  >
-                    <span>{isEn ? 'Register Workshop' : 'Daftar Workshop'}</span>
-                    <ArrowRightIcon className="w-4 h-4" />
-                  </a>
+              <div className="flex flex-col gap-6">
+                <p
+                  className="text-xs tracking-[0.2em] uppercase text-[#AD8A72]"
+                  style={{ fontFamily: 'var(--font-en-text)' }}
+                >
+                  02 / Capabilities & Leadership
+                </p>
+                <ul className="flex flex-col gap-4 border-l border-[#202020]/15 pl-5">
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection('kompetensi')}
+                      className="text-left group cursor-pointer"
+                    >
+                      <span
+                        className="block text-xl text-[#202020] group-hover:text-[#AD8A72] transition-colors"
+                        style={{ fontFamily: 'var(--font-jp-heading)' }}
+                      >
+                        {t.sale.titleJp}
+                      </span>
+                      <span
+                        className="text-xs tracking-[0.14em] text-[#757575] uppercase"
+                        style={{ fontFamily: 'var(--font-en-text)' }}
+                      >
+                        5 Core AI Thinking Competencies
+                      </span>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection('mentor')}
+                      className="text-left group cursor-pointer"
+                    >
+                      <span
+                        className="block text-xl text-[#202020] group-hover:text-[#AD8A72] transition-colors"
+                        style={{ fontFamily: 'var(--font-jp-heading)' }}
+                      >
+                        Aranggi Soemardjan
+                      </span>
+                      <span
+                        className="text-xs tracking-[0.14em] text-[#757575] uppercase"
+                        style={{ fontFamily: 'var(--font-en-text)' }}
+                      >
+                        Facilitator & Track Record
+                      </span>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection('dokumentasi')}
+                      className="text-left group cursor-pointer"
+                    >
+                      <span
+                        className="block text-xl text-[#202020] group-hover:text-[#AD8A72] transition-colors"
+                        style={{ fontFamily: 'var(--font-jp-heading)' }}
+                      >
+                        {t.videos.titleJp}
+                      </span>
+                      <span
+                        className="text-xs tracking-[0.14em] text-[#757575] uppercase"
+                        style={{ fontFamily: 'var(--font-en-text)' }}
+                      >
+                        Video Documentation
+                      </span>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </nav>
 
-                  <button
-                    type="button"
-                    onClick={() => setActiveVideo('workshop')}
-                    className="min-h-[50px] inline-flex items-center justify-center gap-2.5 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 text-white px-6 py-3.5 text-sm font-semibold transition-colors"
-                  >
-                    <span>{isEn ? 'Watch Preview' : 'Cuplikan Sesi'}</span>
-                    <span aria-hidden="true" className="text-xs text-[#D98260]">
-                      ▶
-                    </span>
-                  </button>
-                </div>
-
+            {/* Modal Right Contact Card (.modal__cta) */}
+            <div className="lg:col-span-4 bg-[#F2EDE7] p-8 sm:p-10 flex flex-col gap-6">
+              <div className="nkg-ttl-dual">
+                <span className="font-jp !text-2xl">{t.footer.ctaTitleJp}</span>
+                <span className="font-en">{t.footer.ctaTitleEn}</span>
+              </div>
+              <a href={WA_URL} target="_blank" rel="noopener noreferrer" className="nkg-btn-solid">
+                <span>{t.footer.ctaBtn1}</span>
+                <span aria-hidden="true">→</span>
+              </a>
+              <div className="pt-4 border-t border-[#202020]/15 flex flex-col gap-1">
                 <a
-                  href="#tantangan"
-                  className="text-xs font-semibold text-[#949E99] hover:text-white inline-flex items-center gap-1.5"
+                  href={WA_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-2xl font-medium tracking-[0.06em] text-[#202020]"
+                  style={{ fontFamily: 'var(--font-en-text)' }}
                 >
-                  <span>{isEn ? 'Explore below' : ' Eksplorasi'}</span>
-                  <span aria-hidden="true">↓</span>
+                  +62 822-2111-8860
                 </a>
-              </div>
-            </div>
-
-            <div className="lg:col-span-5 flex flex-col gap-4 sm:gap-5">
-              <div className="relative flex-1 min-h-[260px] rounded-2xl overflow-hidden border border-[#D8D2C5] bg-[#1C2421]">
-                <img
-                  src="./clevio-pro/unsplash-hero.jpg"
-                  alt={
-                    isEn
-                      ? 'Executive architecture representing leadership in the age of AI'
-                      : 'Arsitektur kepemimpinan strategis di era AI'
-                  }
-                  className="w-full h-full object-cover sepia-[.12] contrast-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#101614]/90 via-[#101614]/20 to-transparent p-6 flex flex-col justify-end">
-                  <span className="inline-block w-fit px-2.5 py-1 rounded-md bg-white/15 backdrop-blur-xs text-[10px] font-bold tracking-[0.16em] uppercase text-white mb-2">
-                    {isEn ? 'EXECUTIVE BRIEF' : 'PRINSIP EKSEKUTIF'}
-                  </span>
-                  <p className="text-sm sm:text-base font-medium text-white leading-snug">
-                    {isEn
-                      ? 'AI processes past patterns. Humans define empathy, direction, and new value creation.'
-                      : 'AI mengolah data masa lalu. Manusia menentukan empati, arah, dan penciptaan nilai baru.'}
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-3 sm:gap-4">
-                <div className="rounded-2xl bg-white border border-[#DED9CE] p-4 sm:p-5">
-                  <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-[#757A77]">
-                    {isEn ? 'FORMAT' : 'FORMAT'}
-                  </p>
-                  <p
-                    className="mt-1 text-lg sm:text-xl font-extrabold text-[#101614]"
-                    style={{ fontFamily: '"Manrope", sans-serif' }}
-                  >
-                    {isEn ? '1 Full Day' : '1 Hari'}
-                  </p>
-                  <p className="text-[11px] text-[#5C615E] mt-0.5">In-Person / Hybrid</p>
-                </div>
-
-                <div className="rounded-2xl bg-white border border-[#DED9CE] p-4 sm:p-5">
-                  <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-[#757A77]">
-                    {isEn ? 'CYCLE' : 'SIKLUS'}
-                  </p>
-                  <p
-                    className="mt-1 text-lg sm:text-xl font-extrabold text-[#101614] tabular-nums"
-                    style={{ fontFamily: '"Manrope", sans-serif' }}
-                  >
-                    H-14 · H+14
-                  </p>
-                  <p className="text-[11px] text-[#5C615E] mt-0.5">Flipped Learning</p>
-                </div>
-
-                <div className="rounded-2xl bg-[#E8E3D8] border border-[#D8D2C5] p-4 sm:p-5">
-                  <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-[#757A77]">
-                    {isEn ? 'FOCUS' : 'FOKUS'}
-                  </p>
-                  <p
-                    className="mt-1 text-lg sm:text-xl font-extrabold text-[#B8502B]"
-                    style={{ fontFamily: '"Manrope", sans-serif' }}
-                  >
-                    3H + 5C
-                  </p>
-                  <p className="text-[11px] text-[#5C615E] mt-0.5">Value Creation</p>
-                </div>
+                <p className="text-xs text-[#757575]">{t.footer.telTime}</p>
               </div>
             </div>
           </div>
-        </section>
 
-        {/* SCREEN 02: TANTANGAN SAAT INI (VISUAL POSTER + HORIZONTAL LEDGER STACK) */}
-        <section
-          id="tantangan"
-          className="min-h-[calc(100svh-72px)] flex flex-col justify-center py-8 sm:py-12 px-4 sm:px-8 max-w-[1320px] mx-auto scroll-mt-[72px]"
-        >
-          <div className="grid lg:grid-cols-12 gap-5 items-stretch">
-            <div className="lg:col-span-5 rounded-2xl overflow-hidden relative min-h-[340px] bg-[#101614] text-white p-8 sm:p-10 flex flex-col justify-between">
-              <img
-                src="./clevio-pro/unsplash-challenge.jpg"
-                alt={isEn ? 'Changing workplace dynamics' : 'Perubahan dinamika dunia kerja'}
-                className="absolute inset-0 w-full h-full object-cover opacity-30 sepia-[.15]"
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-[#101614]/85 via-[#101614]/70 to-[#101614]/95" />
-
-              <div className="relative z-10">
-                <span className="inline-block px-3 py-1 rounded-full bg-[#B8502B] text-white text-[10px] font-bold tracking-[0.18em] uppercase">
-                  {isEn ? '01 · CURRENT CHALLENGE' : '01 · TANTANGAN SAAT INI'}
-                </span>
-                <h2 className="mt-5 font-extrabold text-[34px] sm:text-[44px] leading-[1.06] tracking-[-0.035em] text-white">
-                  {isEn ? (
-                    <>
-                      The workplace
-                      <br />
-                      <span
-                        className="italic font-normal text-[#E8C5B0]"
-                        style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
-                      >
-                        is changing fast.
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      Dunia kerja
-                      <br />
-                      <span
-                        className="italic font-normal text-[#E8C5B0]"
-                        style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
-                      >
-                        sedang berubah.
-                      </span>
-                    </>
-                  )}
-                </h2>
-              </div>
-
-              <div className="relative z-10 pt-8 border-t border-white/15">
-                <p className="text-sm sm:text-base text-[#C6CEC9] leading-relaxed">
-                  {isEn
-                    ? 'Standing still with old habits amidst rapid AI acceleration is the greatest risk for modern leaders and organisations.'
-                    : 'Bertahan dengan pola kerja lama di tengah percepatan AI adalah risiko terbesar bagi pemimpin maupun organisasi saat ini.'}
-                </p>
-              </div>
-            </div>
-
-            <div className="lg:col-span-7 flex flex-col justify-between gap-4">
-              {[
-                {
-                  num: '01',
-                  label: isEn ? 'AUTOMATION RISK' : 'RISIKO OTOMASI',
-                  title: isEn
-                    ? 'Routine work is easily replaced.'
-                    : 'Pekerjaan rutin mudah digantikan.',
-                  desc: isEn
-                    ? 'Standard administration, data compilation, and repetitive analysis are now executed by AI in seconds.'
-                    : 'Tugas administratif, rekapitulasi laporan, dan analisis berulang kini diambil alih otomasi dalam hitungan detik.',
-                },
-                {
-                  num: '02',
-                  label: isEn ? 'COMPLACENCY TRAP' : 'JEBAKAN ZONA NYAMAN',
-                  title: isEn
-                    ? 'A false sense of security.'
-                    : 'Rasa aman bisa menjadi ilusi.',
-                  desc: isEn
-                    ? 'Leaders who master AI orchestration work up to 10x faster, redefining performance benchmarks across industries.'
-                    : 'Profesional yang menguasai orkestrasi AI bekerja 10x lebih cepat, menggeser standar kinerja di setiap level jabatan.',
-                },
-                {
-                  num: '03',
-                  label: isEn ? 'LEADERSHIP CHOICE' : 'PILIHAN KEPEMIMPINAN',
-                  title: isEn
-                    ? 'We can choose: become a victim of automation or a value creator.'
-                    : 'Kita bisa memilih: menjadi korban otomasi atau pencipta nilai.',
-                  desc: isEn
-                    ? 'True advantage belongs to those who frame problems, exercise empathy, and direct AI toward new breakthroughs.'
-                    : 'Keunggulan nyata dimiliki oleh mereka yang mampu merumuskan masalah, berempati, dan mengarahkan AI untuk mencipta nilai baru.',
-                },
-              ].map((row, i) => (
-                <div
-                  key={row.num}
-                  className={`rounded-2xl p-6 sm:p-8 border transition-all flex flex-col sm:flex-row sm:items-center gap-5 ${
-                    i === 2
-                      ? 'bg-[#101614] text-white border-[#101614]'
-                      : 'bg-white text-[#101614] border-[#DED9CE]'
-                  }`}
-                >
-                  <div className="sm:w-24 flex-shrink-0">
-                    <span
-                      className="block text-4xl sm:text-5xl italic font-normal text-[#B8502B] leading-none"
-                      style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
-                    >
-                      {row.num}
-                    </span>
-                    <span
-                      className={`mt-1 block text-[9px] font-bold tracking-[0.16em] uppercase ${
-                        i === 2 ? 'text-[#949E99]' : 'text-[#757A77]'
-                      }`}
-                    >
-                      {row.label}
-                    </span>
-                  </div>
-
-                  <div className="flex-1 sm:border-l sm:pl-6 border-current/15">
-                    <h3 className="font-extrabold text-xl sm:text-2xl tracking-[-0.02em]">
-                      {row.title}
-                    </h3>
-                    <p
-                      className={`mt-1.5 text-sm sm:text-[15px] leading-relaxed ${
-                        i === 2 ? 'text-[#B8C0BC]' : 'text-[#525855]'
-                      }`}
-                    >
-                      {row.desc}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="pt-10 border-t border-[#202020]/10 flex flex-wrap items-center justify-between gap-4 text-xs text-[#757575]">
+            <span>{t.footer.addressLabel}</span>
+            <span>{t.footer.copyright}</span>
           </div>
-        </section>
+        </div>
+      </div>
 
-        {/* SCREEN 03: HASIL YANG DICAPAI 3H (ASYMMETRIC 1 + 2 BENTO SHOWCASE) */}
-        <section
-          id="hasil"
-          className="min-h-[calc(100svh-72px)] flex flex-col justify-center py-8 sm:py-12 px-4 sm:px-8 max-w-[1320px] mx-auto scroll-mt-[72px]"
-        >
-          <div className="rounded-3xl bg-white border border-[#DED9CE] p-6 sm:p-10 lg:p-12">
-            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 pb-8 border-b border-[#E8E3D8]">
-              <div>
-                <span className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#B8502B]">
-                  {isEn ? '02 · OUTCOMES ACHIEVED (3H)' : '02 · HASIL YANG DICAPAI (3H)'}
-                </span>
-                <h2 className="mt-2 font-extrabold text-[32px] sm:text-[42px] leading-[1.08] tracking-[-0.035em] text-[#101614]">
-                  {isEn ? (
-                    <>
-                      Three shifts in{' '}
-                      <span
-                        className="italic font-normal text-[#B8502B]"
-                        style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
-                      >
-                        executive capability.
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      Tiga lompatan kapasitas{' '}
-                      <span
-                        className="italic font-normal text-[#B8502B]"
-                        style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
-                      >
-                        kepemimpinan.
-                      </span>
-                    </>
-                  )}
-                </h2>
-              </div>
-              <p className="text-sm sm:text-base text-[#525855] max-w-md">
-                {isEn
-                  ? 'Moving your team beyond basic tool usage into high-leverage strategic execution.'
-                  : 'Membawa tim Anda melampaui sekadar pengguna fitur menuju pencipta terobosan yang terukur.'}
+      {/* =====================================================================
+          HERO & INTRO WRAPPER (.home-hero-wrp)
+          Fixed full-viewport visual backdrop + scrolling dark narrative overlay
+      ===================================================================== */}
+      <div className="relative bg-[#0F0F0F] text-[#F5F2EE]">
+        {/* Sticky Full-Screen Architectural Backdrop (.home-hero) */}
+        <div className="sticky top-0 left-0 w-full h-screen overflow-hidden z-0">
+          <img
+            src={asset('unsplash-hero.jpg')}
+            alt="Clevio AI Pro Executive Architecture"
+            className="w-full h-full object-cover object-center scale-105 opacity-45"
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'linear-gradient(180deg, rgba(15,15,15,0.55) 0%, rgba(15,15,15,0.45) 50%, rgba(15,15,15,0.92) 100%)',
+            }}
+          />
+        </div>
+
+        {/* Hero Foreground Overlay (.home-hero__txtarea + .home-hero__cta) */}
+        <div className="relative z-10 -mt-[100vh]">
+          <section className="min-h-screen flex flex-col justify-between pt-32 pb-12 px-6 sm:px-12 lg:px-20 max-w-[1720px] mx-auto">
+            <div className="my-auto py-16 max-w-4xl">
+              <p
+                className="text-xs sm:text-sm tracking-[0.24em] uppercase text-[#D6B996] mb-6"
+                style={{ fontFamily: 'var(--font-en-text)' }}
+              >
+                Executive AI Thinking &amp; Innovation
+              </p>
+              <h1
+                className="text-3xl sm:text-5xl lg:text-[3.5rem] font-normal leading-[1.45] tracking-[0.1em] text-[#F5F2EE] mb-8"
+                style={{ fontFamily: 'var(--font-jp-heading)' }}
+              >
+                <span className="block">{t.hero.title1}</span>
+                <span className="block text-[#D6B996]">{t.hero.title2}</span>
+              </h1>
+              <p className="text-sm sm:text-base lg:text-lg text-[#F5F2EE]/85 tracking-[0.08em] leading-[2] max-w-2xl">
+                {t.hero.subtitle}
               </p>
             </div>
 
-            <div className="mt-8 grid lg:grid-cols-12 gap-5 items-stretch">
-              <div className="lg:col-span-5 rounded-2xl bg-[#101614] text-white p-7 sm:p-9 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="px-3 py-1 rounded-full bg-white/10 text-[10px] font-bold tracking-[0.16em] uppercase text-[#E8C5B0]">
-                      {isEn ? 'PILLAR 01 · FOCUS' : 'PILAR 01 · FOKUS KERJA'}
-                    </span>
-                    <span
-                      className="text-4xl italic text-[#D98260]"
-                      style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
-                    >
-                      01
-                    </span>
-                  </div>
-
-                  <h3 className="mt-6 font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] text-white">
-                    Hyper-Productive
-                  </h3>
-                  <p className="mt-2 text-lg font-semibold text-[#E8C5B0]">
-                    {isEn
-                      ? 'Work with greater focus and impact.'
-                      : 'Bekerja lebih fokus dan berdampak.'}
-                  </p>
-                  <p className="mt-4 text-sm sm:text-[15px] text-[#B8C0BC] leading-relaxed">
-                    {isEn
-                      ? 'Delegate repetitive research, drafting, and operational analysis to cross-functional AI assistants so leaders can focus on high-value strategic decisions.'
-                      : 'Mendelegasikan beban riset awal, penyusunan draf, dan analisis operasional kepada asisten AI lintas fungsi sehingga waktu Anda tercurah pada keputusan bernilai tinggi.'}
-                  </p>
-                </div>
-
-                <div className="mt-8 pt-5 border-t border-white/15 flex items-center justify-between text-xs">
-                  <span className="text-[#949E99]">
-                    {isEn ? 'Key Shift' : 'Pergeseran Utama'}
-                  </span>
-                  <span className="font-bold text-white">
-                    {isEn ? 'Routine Load → Strategic Focus' : 'Beban Rutin → Fokus Strategis'}
-                  </span>
-                </div>
+            {/* Bottom bar with Scroll Line & Floating Right Hero CTA (.home-hero__cta) */}
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8 pt-6">
+              <div className="flex items-center gap-4">
+                <span className="nkg-scroll-indicator bg-[#F5F2EE]" aria-hidden="true" />
+                <span
+                  className="text-[11px] tracking-[0.22em] uppercase text-[#F5F2EE]/70"
+                  style={{ fontFamily: 'var(--font-en-text)' }}
+                >
+                  Scroll to explore
+                </span>
               </div>
 
-              <div className="lg:col-span-7 flex flex-col gap-5">
-                <div className="flex-1 rounded-2xl bg-[#F4F1EA] border border-[#DED9CE] p-7 sm:p-8 flex flex-col justify-between">
-                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                    <div>
-                      <span className="text-[10px] font-bold tracking-[0.16em] uppercase text-[#B8502B]">
-                        {isEn ? 'PILLAR 02 · AGILITY' : 'PILAR 02 · KETANGKASAN VALIDASI'}
-                      </span>
-                      <h3 className="mt-1 font-extrabold text-2xl sm:text-3xl tracking-[-0.03em] text-[#101614]">
-                        Hyper-Iterative
-                      </h3>
-                      <p className="mt-1 text-base font-bold text-[#2C3330]">
-                        {isEn
-                          ? 'Validate ideas faster and more measurably.'
-                          : 'Validasi ide lebih cepat dan terukur.'}
-                      </p>
-                    </div>
-                    <span
-                      className="text-4xl italic text-[#B8502B] leading-none"
-                      style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
-                    >
-                      02
-                    </span>
-                  </div>
-                  <p className="mt-3 text-sm sm:text-[15px] text-[#525855] leading-relaxed">
-                    {isEn
-                      ? 'Transform raw ideas into tangible prototypes within hours, testing assumptions directly against real user needs before committing heavy resources.'
-                      : 'Mengubah gagasan menjadi prototipe solusi dalam hitungan jam untuk menguji asumsi langsung terhadap kebutuhan pengguna nyata.'}
-                  </p>
-                </div>
-
-                <div className="flex-1 rounded-2xl bg-[#E8E3D8] border border-[#D8D2C5] p-7 sm:p-8 flex flex-col justify-between">
-                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                    <div>
-                      <span className="text-[10px] font-bold tracking-[0.16em] uppercase text-[#B8502B]">
-                        {isEn ? 'PILLAR 03 · VALUE CREATION' : 'PILAR 03 · PENCIPTAAN NILAI'}
-                      </span>
-                      <h3 className="mt-1 font-extrabold text-2xl sm:text-3xl tracking-[-0.03em] text-[#101614]">
-                        Hyper-Impactful
-                      </h3>
-                      <p className="mt-1 text-base font-bold text-[#2C3330]">
-                        {isEn
-                          ? 'Turn opportunities into tangible value.'
-                          : 'Mengubah peluang menjadi nilai nyata.'}
-                      </p>
-                    </div>
-                    <span
-                      className="text-4xl italic text-[#B8502B] leading-none"
-                      style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
-                    >
-                      03
-                    </span>
-                  </div>
-                  <p className="mt-3 text-sm sm:text-[15px] text-[#525855] leading-relaxed">
-                    {isEn
-                      ? 'Align technological capability with human empathy and business acumen to deliver solutions that truly matter to your organisation.'
-                      : 'Menyatukan kapabilitas teknologi dengan empati manusia dan ketajaman strategi untuk melahirkan inovasi yang berdampak nyata bagi organisasi.'}
-                  </p>
-                </div>
+              <div className="flex flex-col sm:items-end gap-1.5 bg-black/45 backdrop-blur-sm px-6 py-4 border-l-2 border-[#AD8A72]">
+                <p className="text-xs tracking-[0.06em] text-[#F5F2EE]/80">{t.hero.ctaPrompt}</p>
+                <a
+                  href={WA_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-3 text-sm sm:text-base font-medium tracking-[0.08em] text-[#F5F2EE] border-b border-[#F5F2EE] pb-1 hover:text-[#D6B996] hover:border-[#D6B996] transition-colors"
+                >
+                  <span>{t.hero.ctaLink}</span>
+                  <span aria-hidden="true">→</span>
+                </a>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* SCREEN 04: PROGRAM WORKSHOP (INTERACTIVE SPLIT PROCESS EXPLORER) */}
-        <section
-          id="kurikulum"
-          className="min-h-[calc(100svh-72px)] flex flex-col justify-center py-8 sm:py-12 px-4 sm:px-8 max-w-[1320px] mx-auto scroll-mt-[72px]"
-        >
-          <div className="mb-7 flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div>
-              <span className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#B8502B]">
-                {isEn ? '03 · WORKSHOP PROGRAMME' : '03 · PROGRAM WORKSHOP'}
-              </span>
-              <h2 className="mt-1.5 font-extrabold text-[32px] sm:text-[44px] leading-[1.06] tracking-[-0.035em] text-[#101614]">
-                {isEn ? (
-                  <>
-                    Three steps. One day.{' '}
-                    <span
-                      className="italic font-normal text-[#B8502B]"
-                      style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
-                    >
-                      Tangible impact.
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    Tiga langkah. Satu hari.{' '}
-                    <span
-                      className="italic font-normal text-[#B8502B]"
-                      style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
-                    >
-                      Dampak nyata.
-                    </span>
-                  </>
-                )}
-              </h2>
-            </div>
-            <p className="text-xs sm:text-sm text-[#525855]">
-              {isEn
-                ? 'Select any stage below to inspect the learning flow and deliverable.'
-                : 'Klik tahapan di bawah untuk melihat detail alur dan hasil tiap fase.'}
-            </p>
-          </div>
-
-          <div className="grid lg:grid-cols-12 gap-5 items-stretch">
-            <div className="lg:col-span-5 flex flex-col gap-3.5">
-              {stages.map((st, idx) => {
-                const isSelected = activeStage === idx
-                return (
-                  <button
-                    key={st.num}
-                    type="button"
-                    onClick={() => setActiveStage(idx)}
-                    className={`w-full text-left rounded-2xl p-6 border transition-all flex items-start gap-4 ${
-                      isSelected
-                        ? 'bg-[#101614] text-white border-[#101614] shadow-md'
-                        : 'bg-white text-[#101614] border-[#DED9CE] hover:border-[#101614]'
-                    }`}
-                  >
-                    <span
-                      className={`text-3xl italic leading-none pt-0.5 ${
-                        isSelected ? 'text-[#D98260]' : 'text-[#B8502B]'
-                      }`}
-                      style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
-                    >
-                      {st.num}
-                    </span>
-                    <div className="flex-1">
-                      <span
-                        className={`block text-[10px] font-bold tracking-[0.16em] uppercase ${
-                          isSelected ? 'text-[#949E99]' : 'text-[#757A77]'
-                        }`}
-                      >
-                        {st.badge}
-                      </span>
-                      <h3 className="mt-1 font-extrabold text-lg sm:text-xl tracking-[-0.02em]">
-                        {st.title}
-                      </h3>
-                      <p
-                        className={`mt-1 text-xs sm:text-sm leading-relaxed ${
-                          isSelected ? 'text-[#B8C0BC]' : 'text-[#525855]'
-                        }`}
-                      >
-                        {st.summary}
-                      </p>
-                    </div>
-                  </button>
-                )
-              })}
-            </div>
-
-            <div className="lg:col-span-7 rounded-2xl bg-white border border-[#DED9CE] p-6 sm:p-9 flex flex-col justify-between">
-              <div>
-                <div className="aspect-[16/7.5] w-full rounded-xl overflow-hidden bg-[#101614] mb-6 relative">
-                  <img
-                    src={stages[activeStage].img}
-                    alt={stages[activeStage].title}
-                    className="w-full h-full object-cover sepia-[.12] contrast-105"
-                  />
-                  <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-[#101614]/85 text-white text-[10px] font-bold tracking-[0.16em] uppercase">
-                    {stages[activeStage].badge}
-                  </div>
-                </div>
-
-                <div className="flex items-baseline gap-3">
-                  <span
-                    className="text-3xl italic text-[#B8502B]"
-                    style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
-                  >
-                    {stages[activeStage].num}
-                  </span>
-                  <h3 className="font-extrabold text-2xl sm:text-3xl tracking-[-0.03em] text-[#101614]">
-                    {stages[activeStage].title}
-                  </h3>
-                </div>
-
-                <p className="mt-3 text-sm sm:text-base text-[#424744] leading-relaxed">
-                  {stages[activeStage].detail}
-                </p>
-              </div>
-
-              <div className="mt-6 pt-5 border-t border-[#E8E3D8] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <span className="text-[10px] font-bold tracking-[0.16em] uppercase text-[#757A77] block">
-                    {isEn ? 'STAGE DELIVERABLE' : 'LUARAN TAHAP INI'}
-                  </span>
-                  <span className="text-sm font-bold text-[#101614]">
-                    {stages[activeStage].deliverable}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  {[0, 1, 2].map((i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() => setActiveStage(i)}
-                      aria-label={`Tahap ${i + 1}`}
-                      className={`h-2 rounded-full transition-all ${
-                        activeStage === i ? 'w-8 bg-[#B8502B]' : 'w-2 bg-[#D8D2C5]'
-                      }`}
-                    />
+          {/* =================================================================
+              INTRO SECTION (.home-intro)
+              Centered Poetic Lead + Vertical Dividers + 01, 02, 03 Blocks
+          ================================================================= */}
+          <section
+            id="tantangan"
+            className="relative z-10 py-28 sm:py-40 lg:py-48 px-6 sm:px-10 bg-gradient-to-b from-transparent via-[#0F0F0F]/90 to-[#0F0F0F]"
+          >
+            <div className="max-w-[760px] mx-auto flex flex-col items-center text-center gap-14">
+              {/* Lead Block (.home-intro__lead) */}
+              <div className="flex flex-col items-center gap-8">
+                <h2
+                  className="text-2xl sm:text-4xl lg:text-[2.75rem] font-normal leading-[1.55] tracking-[0.12em] text-[#F5F2EE]"
+                  style={{ fontFamily: 'var(--font-jp-heading)' }}
+                >
+                  <span className="block">{t.intro.catch1}</span>
+                  <span className="block text-[#D6B996] mt-1">{t.intro.catch2}</span>
+                </h2>
+                <div className="flex flex-col gap-2 text-sm sm:text-base lg:text-[1.0625rem] text-[#F5F2EE]/85 leading-[2.2] tracking-[0.06em]">
+                  {t.intro.desc.map((line, i) => (
+                    <p key={i}>{line}</p>
                   ))}
                 </div>
               </div>
-            </div>
-          </div>
-        </section>
 
-        {/* SCREEN 05: KOMPETENSI + PESERTA & FORMAT (LEFT DARK ANCHOR + RIGHT 5-TILE BENTO) */}
-        <section
-          id="kompetensi"
-          className="min-h-[calc(100svh-72px)] flex flex-col justify-center py-8 sm:py-12 px-4 sm:px-8 max-w-[1320px] mx-auto scroll-mt-[72px]"
-        >
-          <div className="grid lg:grid-cols-12 gap-5 items-stretch">
-            <div className="lg:col-span-5 rounded-2xl bg-[#101614] text-white p-7 sm:p-10 flex flex-col justify-between">
-              <div>
-                <span className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#D98260]">
-                  {isEn ? '04 · AUDIENCE & FORMAT' : '04 · PESERTA & FORMAT'}
-                </span>
+              <span className="block w-px h-12 bg-[#BDBDBD]/45" aria-hidden="true" />
 
-                <div className="mt-6 pb-7 border-b border-white/15">
-                  <p className="text-[10px] font-bold tracking-[0.16em] uppercase text-[#949E99]">
-                    {isEn ? 'WHO IT IS FOR' : 'UNTUK SIAPA'}
-                  </p>
-                  <h2 className="mt-2 font-extrabold text-2xl sm:text-3xl tracking-[-0.03em] text-white leading-snug">
-                    {isEn
-                      ? 'Leaders, managers, and cross-functional professionals.'
-                      : 'Pemimpin, manajer, dan profesional lintas fungsi.'}
-                  </h2>
-                  <p className="mt-2.5 text-sm text-[#B8C0BC] leading-relaxed">
-                    {isEn
-                      ? 'Who want to strengthen their way of thinking, make strategic decisions, and lead innovation in their organisation.'
-                      : 'Yang ingin memperkuat cara berpikir, mengambil keputusan, dan memimpin inovasi di organisasinya.'}
-                  </p>
-                </div>
+              {/* Numbered Items 01, 02, 03 (.home-intro__item) */}
+              {t.intro.items.map((item) => (
+                <React.Fragment key={item.num}>
+                  <div className="flex flex-col items-center gap-4 max-w-[680px]">
+                    <div className="flex flex-col items-center gap-1">
+                      <p
+                        className="text-2xl sm:text-3xl italic text-[#D6B996]"
+                        style={{ fontFamily: 'var(--font-en-heading)' }}
+                      >
+                        {item.num}
+                      </p>
+                      <h3
+                        className="text-xl sm:text-2xl lg:text-[1.75rem] font-normal leading-[1.6] tracking-[0.1em] text-[#F5F2EE]"
+                        style={{ fontFamily: 'var(--font-jp-heading)' }}
+                      >
+                        {item.title}
+                      </h3>
+                    </div>
+                    <div className="flex flex-col gap-1.5 text-sm sm:text-base text-[#F5F2EE]/80 leading-[2] tracking-[0.06em]">
+                      {item.body.map((p, idx) => (
+                        <p key={idx}>{p}</p>
+                      ))}
+                    </div>
+                  </div>
+                  <span className="block w-px h-12 bg-[#BDBDBD]/45" aria-hidden="true" />
+                </React.Fragment>
+              ))}
 
-                <div className="mt-7">
-                  <p className="text-[10px] font-bold tracking-[0.16em] uppercase text-[#949E99]">
-                    {isEn ? 'FORMAT' : 'FORMAT'}
-                  </p>
-                  <h3 className="mt-1.5 font-extrabold text-2xl sm:text-3xl text-[#E8C5B0] tracking-[-0.03em]">
-                    {isEn ? '1 full day' : '1 hari penuh'}
-                  </h3>
-                  <p className="mt-1.5 text-sm text-[#B8C0BC]">
-                    {isEn
-                      ? 'In-person or hybrid · Public Batch & Corporate In-House.'
-                      : 'In-person atau hybrid · Public Batch & In-House Corporate.'}
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-8 pt-5 border-t border-white/15">
+              {/* Intro Bottom CTA (.home-intro__btn) */}
+              <div className="pt-2">
                 <a
-                  href={waInhouseHref}
+                  href={WA_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full min-h-[46px] rounded-full bg-white hover:bg-[#E8E3D8] text-[#101614] px-6 py-3 text-xs font-bold inline-flex items-center justify-center gap-2 transition-colors"
+                  className="nkg-btn nkg-btn-light"
                 >
-                  <span>
-                    {isEn
-                      ? 'Consult Schedule via WhatsApp'
-                      : 'Konsultasikan Jadwal via WhatsApp'}
+                  <span>{t.intro.btnText}</span>
+                  <span className="nkg-btn-pill" aria-hidden="true">
+                    →
                   </span>
-                  <ArrowRightIcon className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      {/* =====================================================================
+          ASYMMETRIC PARALLAX SHOWCASE (.home-works -> Dampak 3H)
+      ===================================================================== */}
+      <section id="dampak" className="nkg-paper py-28 sm:py-36 lg:py-48 relative z-10">
+        <div className="max-w-[1600px] mx-auto px-6 sm:px-12 lg:px-16">
+          {/* .home-works__head */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+            <div className="lg:col-span-5 flex flex-col justify-between h-full pt-2 lg:pt-10">
+              <div>
+                <h2 className="nkg-ttl-dual mb-10">
+                  <span className="font-jp">{t.works.titleJp}</span>
+                  <span className="font-en">{t.works.titleEn}</span>
+                </h2>
+                <p
+                  className="text-lg sm:text-xl leading-[1.9] tracking-[0.08em] text-[#202020] mb-10"
+                  style={{ fontFamily: 'var(--font-jp-heading)' }}
+                >
+                  {t.works.lead1}
+                  <br />
+                  {t.works.lead2}
+                </p>
+                <a href={WA_URL} target="_blank" rel="noopener noreferrer" className="nkg-btn">
+                  <span>{t.works.btnText}</span>
+                  <span className="nkg-btn-pill" aria-hidden="true">
+                    →
+                  </span>
+                </a>
+              </div>
+
+              <div className="hidden lg:flex items-end justify-between pt-20 pr-8">
+                <span className="nkg-scroll-indicator bg-[#202020]" aria-hidden="true" />
+                <p
+                  className="text-[11px] tracking-[0.14em] uppercase text-right text-[#757575] leading-relaxed"
+                  style={{ fontFamily: 'var(--font-en-text)' }}
+                >
+                  {t.works.enCaption1}
+                  <br />
+                  {t.works.enCaption2}
+                </p>
+              </div>
+            </div>
+
+            {/* Large Right Image (.home-works__head-img--01) */}
+            <div className="lg:col-span-7 overflow-hidden">
+              <div className="aspect-[16/10] w-full overflow-hidden bg-[#E9E1DA]">
+                <img
+                  src={asset('unsplash-hero.jpg')}
+                  alt="Clevio AI Pro Executive Collaboration"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* .home-works__body — Staggered Asymmetric Editorial Gallery for 3H */}
+          <div className="mt-20 sm:mt-32 lg:mt-44 flex flex-col gap-20 lg:gap-32">
+            {/* Row 1: Item 02 (Left Wide) + Item 03 (Right Vertical Split) */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+              {/* Item 02: Hyper-Productive */}
+              <article className="lg:col-span-6 lg:mt-16">
+                <div className="aspect-[4/3] overflow-hidden bg-[#E9E1DA]">
+                  <img
+                    src={asset(t.works.items[0].img)}
+                    alt={t.works.items[0].title}
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                  />
+                </div>
+                <div className="pt-7 sm:pl-8 max-w-xl">
+                  <p
+                    className="text-xs tracking-[0.16em] uppercase text-[#AD8A72] mb-2"
+                    style={{ fontFamily: 'var(--font-en-text)' }}
+                  >
+                    {t.works.items[0].tag}
+                  </p>
+                  <h3
+                    className="text-xl sm:text-2xl text-[#202020] leading-[1.5] tracking-[0.06em] mb-3"
+                    style={{ fontFamily: 'var(--font-jp-heading)' }}
+                  >
+                    {t.works.items[0].title}
+                  </h3>
+                  <p className="text-sm text-[#757575] leading-[1.9]">{t.works.items[0].desc}</p>
+                </div>
+              </article>
+
+              {/* Item 03: Hyper-Iterative */}
+              <article className="lg:col-span-5 lg:col-start-8 grid grid-cols-1 sm:grid-cols-12 gap-6 items-start">
+                <div className="sm:col-span-6 aspect-[3/4] overflow-hidden bg-[#E9E1DA]">
+                  <img
+                    src={asset(t.works.items[1].img)}
+                    alt={t.works.items[1].title}
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                  />
+                </div>
+                <div className="sm:col-span-6 pt-2">
+                  <p
+                    className="text-xs tracking-[0.16em] uppercase text-[#AD8A72] mb-2"
+                    style={{ fontFamily: 'var(--font-en-text)' }}
+                  >
+                    {t.works.items[1].tag}
+                  </p>
+                  <h3
+                    className="text-lg sm:text-xl text-[#202020] leading-[1.5] tracking-[0.06em] mb-3"
+                    style={{ fontFamily: 'var(--font-jp-heading)' }}
+                  >
+                    {t.works.items[1].title}
+                  </h3>
+                  <p className="text-sm text-[#757575] leading-[1.9]">{t.works.items[1].desc}</p>
+                </div>
+              </article>
+            </div>
+
+            {/* Row 2: Item 04 (Left Asymmetric) + Item 05 (Right Wide) */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+              {/* Item 04: Hyper-Impactful */}
+              <article className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-12 gap-6 items-start">
+                <div className="sm:col-span-6 sm:order-2 aspect-[3/4] overflow-hidden bg-[#E9E1DA]">
+                  <img
+                    src={asset(t.works.items[2].img)}
+                    alt={t.works.items[2].title}
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                  />
+                </div>
+                <div className="sm:col-span-6 sm:order-1 flex flex-col justify-between h-full">
+                  <div>
+                    <p
+                      className="text-xs tracking-[0.16em] uppercase text-[#AD8A72] mb-2"
+                      style={{ fontFamily: 'var(--font-en-text)' }}
+                    >
+                      {t.works.items[2].tag}
+                    </p>
+                    <h3
+                      className="text-lg sm:text-xl text-[#202020] leading-[1.5] tracking-[0.06em] mb-3"
+                      style={{ fontFamily: 'var(--font-jp-heading)' }}
+                    >
+                      {t.works.items[2].title}
+                    </h3>
+                    <p className="text-sm text-[#757575] leading-[1.9] mb-6">
+                      {t.works.items[2].desc}
+                    </p>
+                  </div>
+                  {t.works.items[2].enNote && (
+                    <p
+                      className="text-[11px] tracking-[0.14em] uppercase text-[#AD8A72] pt-4 border-t border-[#202020]/15"
+                      style={{ fontFamily: 'var(--font-en-text)' }}
+                    >
+                      {t.works.items[2].enNote[0]}
+                      <br />
+                      {t.works.items[2].enNote[1]}
+                    </p>
+                  )}
+                </div>
+              </article>
+
+              {/* Item 05: Human Leadership */}
+              <article className="lg:col-span-6 lg:col-start-7">
+                <div className="aspect-[16/10] overflow-hidden bg-[#E9E1DA]">
+                  <img
+                    src={asset(t.works.items[3].img)}
+                    alt={t.works.items[3].title}
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                  />
+                </div>
+                <div className="pt-7 sm:pl-8 max-w-xl">
+                  <p
+                    className="text-xs tracking-[0.16em] uppercase text-[#AD8A72] mb-2"
+                    style={{ fontFamily: 'var(--font-en-text)' }}
+                  >
+                    {t.works.items[3].tag}
+                  </p>
+                  <h3
+                    className="text-xl sm:text-2xl text-[#202020] leading-[1.5] tracking-[0.06em] mb-3"
+                    style={{ fontFamily: 'var(--font-jp-heading)' }}
+                  >
+                    {t.works.items[3].title}
+                  </h3>
+                  <p className="text-sm text-[#757575] leading-[1.9]">{t.works.items[3].desc}</p>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =====================================================================
+          FULL-BLEED PARALLAX DIVIDER (.home-img-parallax)
+      ===================================================================== */}
+      <div className="relative w-full h-[320px] sm:h-[480px] lg:h-[620px] overflow-hidden">
+        <img
+          src={asset('unsplash-challenge.jpg')}
+          alt="Clevio Executive Workshop Space"
+          className="w-full h-full object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-black/25" />
+      </div>
+
+      {/* =====================================================================
+          SPLIT STICKY LEFT + RIGHT PICKUP CARDS + MARQUEE (.home-event -> Program 3 Langkah)
+      ===================================================================== */}
+      <section id="program" className="nkg-paper py-28 sm:py-36 lg:py-44 relative z-10">
+        <div className="max-w-[1600px] mx-auto px-6 sm:px-12 lg:px-16">
+          <div className="flex flex-col lg:flex-row items-start justify-between gap-14 lg:gap-20">
+            {/* Left Column (.home-event__left) */}
+            <div className="w-full lg:w-[360px] shrink-0 flex flex-col justify-between lg:sticky lg:top-32">
+              <div>
+                <h2 className="nkg-ttl-dual mb-10">
+                  <span className="font-jp">{t.event.titleJp}</span>
+                  <span className="font-en">{t.event.titleEn}</span>
+                </h2>
+                <div className="flex flex-col gap-4 text-sm sm:text-base text-[#333333] leading-[2] mb-10">
+                  {t.event.desc.map((d, i) => (
+                    <p key={i}>{d}</p>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <a href={WA_URL} target="_blank" rel="noopener noreferrer" className="nkg-btn">
+                  <span>{t.event.btnText}</span>
+                  <span className="nkg-btn-pill" aria-hidden="true">
+                    →
+                  </span>
                 </a>
               </div>
             </div>
 
-            <div className="lg:col-span-7 flex flex-col justify-between gap-4">
-              <div className="rounded-2xl bg-[#E8E3D8] border border-[#D8D2C5] px-6 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div>
-                  <span className="text-[10px] font-bold tracking-[0.18em] uppercase text-[#B8502B]">
-                    {isEn ? 'TAKEAWAY CAPABILITIES' : 'KOMPETENSI YANG DIBAWA PULANG'}
-                  </span>
-                  <h3 className="font-extrabold text-xl sm:text-2xl tracking-[-0.03em] text-[#101614]">
-                    {isEn
-                      ? 'Frameworks and skills to lead in the age of AI.'
-                      : 'Kerangka berpikir dan keterampilan untuk memimpin di era AI.'}
-                  </h3>
-                </div>
-                <span
-                  className="text-3xl italic text-[#B8502B]"
-                  style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
+            {/* Right Column (.home-event__right) — 3 Stage Pickup Cards */}
+            <div className="flex-1 w-full flex flex-col gap-8">
+              {t.event.pickups.map((p) => (
+                <article
+                  key={p.stage}
+                  className="bg-white p-7 sm:p-10 lg:p-12 flex flex-col md:flex-row items-center gap-8 lg:gap-12 shadow-[0_2px_20px_rgba(32,32,32,0.03)] hover:shadow-[0_12px_32px_rgba(32,32,32,0.07)] transition-shadow"
                 >
-                  5 Pillars
-                </span>
-              </div>
-
-              <div className="grid sm:grid-cols-2 gap-4">
-                {[
-                  {
-                    num: '01',
-                    title: isEn
-                      ? 'Higher-Order Thinking (HOTS)'
-                      : 'Berpikir tingkat tinggi (HOTS)',
-                    desc: isEn
-                      ? 'Critical, structured reasoning to evaluate AI output and avoid hallucinations.'
-                      : 'Penalaran kritis dan terstruktur untuk memfilter bias serta halusinasi AI.',
-                  },
-                  {
-                    num: '02',
-                    title: 'Design Thinking',
-                    desc: isEn
-                      ? 'Deep human empathy to frame the right problems before building solutions.'
-                      : 'Empati mendalam terhadap kebutuhan manusia dalam merumuskan solusi.',
-                  },
-                ].map((c) => (
-                  <div
-                    key={c.num}
-                    className="rounded-2xl bg-white border border-[#DED9CE] p-6 flex flex-col justify-between"
-                  >
-                    <span
-                      className="text-3xl italic text-[#B8502B] leading-none"
-                      style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
-                    >
-                      {c.num}
-                    </span>
-                    <div className="mt-4">
-                      <h4 className="font-extrabold text-lg text-[#101614]">{c.title}</h4>
-                      <p className="mt-1 text-xs sm:text-sm text-[#525855] leading-relaxed">
-                        {c.desc}
-                      </p>
+                  <div className="flex-1 flex flex-col gap-5 w-full">
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#202020]/10 pb-3">
+                      <span
+                        className="text-xs sm:text-sm tracking-[0.14em] font-medium text-[#202020]"
+                        style={{ fontFamily: 'var(--font-en-text)' }}
+                      >
+                        {p.stage}
+                      </span>
+                      <span className="text-xs px-3 py-1 bg-[#F2EDE7] text-[#5F433E] tracking-[0.08em]">
+                        {p.tag}
+                      </span>
                     </div>
-                  </div>
-                ))}
-              </div>
 
-              <div className="grid sm:grid-cols-3 gap-4">
-                {[
-                  {
-                    num: '03',
-                    title: isEn ? 'AI Literacy' : 'Literasi AI',
-                    desc: isEn
-                      ? 'Prompt orchestration, data synthesis, and ethical governance.'
-                      : 'Orkestrasi prompt, pembacaan data, dan etika tata kelola.',
-                  },
-                  {
-                    num: '04',
-                    title: isEn ? 'Leadership' : 'Kepemimpinan',
-                    desc: isEn
-                      ? 'Directing systemic transformation and building team character.'
-                      : 'Mengarahkan perubahan sistemik dan membangun karakter tim.',
-                  },
-                  {
-                    num: '05',
-                    title: isEn ? 'Adaptability' : 'Adaptabilitas',
-                    desc: isEn
-                      ? 'Self-directed continuous learning (Metagogy) in a fast-moving era.'
-                      : 'Kemandirian belajar berkelanjutan (Metagogy) di era perubahan.',
-                  },
-                ].map((c) => (
-                  <div
-                    key={c.num}
-                    className="rounded-2xl bg-white border border-[#DED9CE] p-5 flex flex-col justify-between"
-                  >
-                    <span
-                      className="text-2xl italic text-[#B8502B] leading-none"
-                      style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
+                    <h3
+                      className="text-xl sm:text-2xl text-[#202020] leading-[1.55] tracking-[0.06em]"
+                      style={{ fontFamily: 'var(--font-jp-heading)' }}
                     >
-                      {c.num}
-                    </span>
-                    <div className="mt-3">
-                      <h4 className="font-extrabold text-base text-[#101614]">{c.title}</h4>
-                      <p className="mt-1 text-xs text-[#525855] leading-relaxed">{c.desc}</p>
-                    </div>
+                      {p.title}
+                    </h3>
+
+                    <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[#202020]/10 text-xs sm:text-sm">
+                      <div>
+                        <dt className="text-[#757575] text-xs mb-1">{p.meta1Label}</dt>
+                        <dd className="text-[#202020] font-medium">{p.meta1Value}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-[#757575] text-xs mb-1">{p.meta2Label}</dt>
+                        <dd className="text-[#202020] font-medium">{p.meta2Value}</dd>
+                      </div>
+                    </dl>
                   </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
 
-        {/* SCREEN 06: DIPANDU OLEH ARANGGI SOEMARDJAN (3-COLUMN MAGAZINE FEATURE) */}
-        <section
-          id="mentor"
-          className="min-h-[calc(100svh-72px)] flex flex-col justify-center py-8 sm:py-12 px-4 sm:px-8 max-w-[1320px] mx-auto scroll-mt-[72px]"
-        >
-          <div className="rounded-3xl bg-white border border-[#DED9CE] p-6 sm:p-10 lg:p-12">
-            <div className="grid lg:grid-cols-12 gap-8 items-center">
-              <div className="lg:col-span-5">
-                <span className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#B8502B]">
-                  {isEn ? '05 · LED BY' : '05 · DIPANDU OLEH'}
-                </span>
-                <h2 className="mt-2 font-extrabold text-[36px] sm:text-[46px] leading-[1.04] tracking-[-0.035em] text-[#101614]">
-                  Aranggi
-                  <br />
-                  <span
-                    className="italic font-normal text-[#B8502B]"
-                    style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
-                  >
-                    Soemardjan.
-                  </span>
-                </h2>
-                <p className="mt-3 text-base sm:text-lg font-bold text-[#2C3330]">
-                  {isEn
-                    ? 'Serial Innovator · Social Change Architect'
-                    : 'Serial Innovator · Arsitek Perubahan Sosial'}
-                </p>
-                <p className="mt-3.5 text-sm sm:text-[15px] text-[#525855] leading-relaxed">
-                  {isEn
-                    ? 'Experienced in leading innovation and transformation across industries. Combining engineering precision, business management, and human empathy to turn AI into practical breakthroughs.'
-                    : 'Berpengalaman memimpin inovasi dan transformasi lintas industri. Memadukan ketajaman rekayasa teknik, manajemen bisnis, dan sosiologi untuk menerjemahkan AI menjadi terobosan nyata.'}
-                </p>
-
-                <div className="mt-6 pt-5 border-t border-[#E8E3D8] flex flex-wrap items-center gap-4">
-                  <button
-                    type="button"
-                    onClick={() => setActiveVideo('mentor')}
-                    className="min-h-[44px] rounded-full bg-[#101614] hover:bg-[#2C3330] text-white px-5 py-2.5 text-xs font-bold inline-flex items-center gap-2 transition-colors"
-                  >
-                    <span>{isEn ? 'Watch Profile Video' : 'Putar Video Profil'}</span>
-                    <span aria-hidden="true" className="text-[#D98260]">
-                      ▶
-                    </span>
-                  </button>
-
-                  <a
-                    href={MENTOR_ARTICLE_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs font-bold text-[#101614] hover:text-[#B8502B] underline underline-offset-4 inline-flex items-center gap-1.5"
-                  >
-                    <span>
-                      {isEn ? 'Read Harian Kompas Feature' : 'Liputan SOSOK Harian Kompas'}
-                    </span>
-                    <ArrowRightIcon className="w-3.5 h-3.5" />
-                  </a>
-                </div>
-              </div>
-
-              <div className="lg:col-span-4">
-                <div className="rounded-2xl overflow-hidden bg-[#101614] border border-[#DED9CE] p-2.5">
-                  <div className="aspect-[4/4.3] rounded-xl overflow-hidden">
+                  <div className="w-full md:w-[240px] lg:w-[280px] shrink-0 aspect-[4/3] overflow-hidden bg-[#E9E1DA]">
                     <img
-                      src="./clevio-pro/aranggi-real.jpg"
-                      alt="Aranggi Soemardjan"
-                      className="w-full h-full object-cover object-top"
-                      loading="lazy"
+                      src={asset(p.img)}
+                      alt={p.title}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
                     />
                   </div>
-                  <div className="pt-3 pb-1 px-2 text-center">
-                    <p
-                      className="text-sm italic text-[#E8C5B0]"
-                      style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
-                    >
-                      &ldquo;Get High &amp; Fly, AND Get Down &amp; Dirty&rdquo;
-                    </p>
-                  </div>
-                </div>
-              </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
 
-              <div className="lg:col-span-3 flex flex-col gap-3.5">
-                {[
-                  {
-                    num: '01',
-                    title: isEn ? '3 US Patents' : '3 Hak Paten AS',
-                    desc: isEn
-                      ? 'Inventor of global elevator safety systems in the United States.'
-                      : 'Invensi sistem keamanan elevator global di Amerika Serikat.',
-                  },
-                  {
-                    num: '02',
-                    title: 'Kompas SOSOK',
-                    desc: isEn
-                      ? '1995 internet pioneer & recipient of the 2012 Ristek Award.'
-                      : 'Pionir ekosistem internet 1995 & peraih Ristek Award 2012.',
-                  },
-                  {
-                    num: '03',
-                    title: 'Clevio & Agriana.ai',
-                    desc: isEn
-                      ? 'Founder of Clevio Coder Camp & AI agricultural ecosystem.'
-                      : 'Pendiri Clevio Coder Camp & ekosistem pangan berbasis AI.',
-                  },
-                ].map((item) => (
-                  <div
-                    key={item.num}
-                    className="rounded-2xl bg-[#F4F1EA] border border-[#DED9CE] p-4 sm:p-5"
-                  >
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-extrabold text-sm text-[#101614]">{item.title}</h3>
+        {/* Continuous Horizontal Image Marquee (.home-event__slides) */}
+        <div className="mt-24 sm:mt-32 overflow-hidden">
+          <div className="nkg-marquee-track">
+            {[...MARQUEE_SLIDES, ...MARQUEE_SLIDES].map((slide, idx) => (
+              <div
+                key={idx}
+                className={`shrink-0 overflow-hidden bg-[#E9E1DA] relative group ${
+                  slide.wide
+                    ? 'w-[290px] sm:w-[440px] aspect-[16/10]'
+                    : 'w-[200px] sm:w-[280px] aspect-[4/5]'
+                }`}
+              >
+                <img
+                  src={asset(slide.img)}
+                  alt={slide.label}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <span
+                  className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-xs text-[#F5F2EE] text-[10px] tracking-[0.16em] uppercase px-2.5 py-1"
+                  style={{ fontFamily: 'var(--font-en-text)' }}
+                >
+                  {slide.label}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* =====================================================================
+          TABBED SHOWCASE SECTION (.home-sale -> 5 Kompetensi Inti & Format)
+      ===================================================================== */}
+      <section id="kompetensi" className="nkg-paper-alt py-28 sm:py-36 lg:py-44 relative z-10">
+        <div className="max-w-[1600px] mx-auto px-6 sm:px-12 lg:px-16 flex flex-col items-center">
+          <h2 className="nkg-ttl-dual is-center mb-12">
+            <span className="font-jp">{t.sale.titleJp}</span>
+            <span className="font-en">{t.sale.titleEn}</span>
+          </h2>
+
+          {/* Tab Buttons (.home-sale__tabs) */}
+          <div
+            className="w-full max-w-2xl grid grid-cols-2 border-b border-[#202020]/20 mb-12"
+            role="tablist"
+          >
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 'tab1'}
+              onClick={() => setActiveTab('tab1')}
+              className={`py-4 px-4 text-sm sm:text-lg tracking-[0.1em] transition-all cursor-pointer border-b-2 -mb-px ${
+                activeTab === 'tab1'
+                  ? 'border-[#202020] text-[#202020] font-medium bg-white/50'
+                  : 'border-transparent text-[#757575] hover:text-[#202020]'
+              }`}
+              style={{ fontFamily: 'var(--font-jp-heading)' }}
+            >
+              {t.sale.tab1}
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 'tab2'}
+              onClick={() => setActiveTab('tab2')}
+              className={`py-4 px-4 text-sm sm:text-lg tracking-[0.1em] transition-all cursor-pointer border-b-2 -mb-px ${
+                activeTab === 'tab2'
+                  ? 'border-[#202020] text-[#202020] font-medium bg-white/50'
+                  : 'border-transparent text-[#757575] hover:text-[#202020]'
+              }`}
+              style={{ fontFamily: 'var(--font-jp-heading)' }}
+            >
+              {t.sale.tab2}
+            </button>
+          </div>
+
+          <p className="text-sm sm:text-base text-[#333333] text-center max-w-2xl mb-14">
+            {activeTab === 'tab1' ? t.sale.tab1Desc : t.sale.tab2Desc}
+          </p>
+
+          {/* Tab Panel Cards (.post-sale) */}
+          {activeTab === 'tab1' ? (
+            <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {t.sale.competencies.map((item) => (
+                <article
+                  key={item.num}
+                  className="bg-white flex flex-col justify-between overflow-hidden group shadow-[0_2px_16px_rgba(32,32,32,0.03)]"
+                >
+                  <div>
+                    <div className="aspect-[16/10] overflow-hidden bg-[#E9E1DA] relative">
+                      <img
+                        src={asset(item.img)}
+                        alt={item.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      />
                       <span
-                        className="text-lg italic text-[#B8502B]"
-                        style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
+                        className="absolute top-4 left-4 bg-[#202020] text-[#F5F2EE] text-xs tracking-[0.16em] px-3 py-1"
+                        style={{ fontFamily: 'var(--font-en-text)' }}
                       >
                         {item.num}
                       </span>
                     </div>
-                    <p className="mt-1 text-xs text-[#525855] leading-relaxed">{item.desc}</p>
+                    <div className="p-7 sm:p-8">
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        <span className="text-[11px] px-2.5 py-0.5 bg-[#F2EDE7] text-[#5F433E] tracking-[0.06em]">
+                          {item.tag1}
+                        </span>
+                        <span
+                          className="text-[11px] px-2.5 py-0.5 border border-[#202020]/15 text-[#757575] tracking-[0.08em]"
+                          style={{ fontFamily: 'var(--font-en-text)' }}
+                        >
+                          {item.tag2}
+                        </span>
+                      </div>
+                      <h3
+                        className="text-xl text-[#202020] leading-[1.5] tracking-[0.06em] mb-3"
+                        style={{ fontFamily: 'var(--font-jp-heading)' }}
+                      >
+                        {item.title}
+                      </h3>
+                      <p className="text-sm text-[#757575] leading-[1.9]">{item.desc}</p>
+                    </div>
                   </div>
-                ))}
-              </div>
+                </article>
+              ))}
             </div>
-          </div>
-        </section>
-
-        {/* SCREEN 07: GALERI, EKOSISTEM & PENDAFTARAN WHATSAPP */}
-        <section
-          id="galeri"
-          className="min-h-[calc(100svh-72px)] flex flex-col justify-between pt-6 pb-0 px-4 sm:px-8 max-w-[1320px] mx-auto scroll-mt-[72px]"
-        >
-          <div className="grid lg:grid-cols-12 gap-5 items-stretch my-auto py-4">
-            <div className="lg:col-span-7 flex flex-col justify-between gap-4">
-              <div>
-                <span className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#B8502B]">
-                  {isEn ? '06 · GALLERY & ECOSYSTEM' : '06 · GALERI & EKOSISTEM'}
-                </span>
-                <h2 className="mt-1 font-extrabold text-2xl sm:text-3xl tracking-[-0.03em] text-[#101614]">
-                  {isEn
-                    ? 'Collaborative exploration in the workshop room.'
-                    : 'Suasana eksplorasi dan kolaborasi di ruang workshop.'}
-                </h2>
-              </div>
-
-              <div className="grid sm:grid-cols-2 gap-3.5">
-                <button
-                  type="button"
-                  onClick={() => setActiveVideo('workshop')}
-                  aria-label={
-                    isEn
-                      ? 'Play Clevio AI Pro workshop video'
-                      : 'Putar video dokumentasi sesi Clevio AI Pro'
-                  }
-                  className="group relative aspect-[16/10] rounded-2xl overflow-hidden bg-[#101614] border border-[#DED9CE] text-left block"
+          ) : (
+            <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-8">
+              {t.sale.audiences.map((item) => (
+                <article
+                  key={item.num}
+                  className="bg-white flex flex-col justify-between overflow-hidden group shadow-[0_2px_16px_rgba(32,32,32,0.03)]"
                 >
-                  <img
-                    src="./clevio-pro/unsplash-gallery-4.jpg"
-                    alt="Video dokumentasi Clevio AI Pro"
-                    className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent p-4 flex items-end justify-between">
-                    <div>
-                      <span className="text-[10px] font-bold tracking-wider uppercase text-[#E8C5B0] block">
-                        VIDEO HIGHLIGHT
-                      </span>
-                      <span className="text-xs sm:text-sm font-bold text-white">
-                        {isEn ? 'Watch Workshop Session' : 'Tonton Cuplikan Sesi'}
+                  <div>
+                    <div className="aspect-[16/10] overflow-hidden bg-[#E9E1DA] relative">
+                      <img
+                        src={asset(item.img)}
+                        alt={item.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      />
+                      <span
+                        className="absolute top-4 left-4 bg-[#202020] text-[#F5F2EE] text-xs tracking-[0.16em] px-3 py-1"
+                        style={{ fontFamily: 'var(--font-en-text)' }}
+                      >
+                        {item.num}
                       </span>
                     </div>
-                    <span className="w-10 h-10 rounded-full bg-[#B8502B] text-white flex items-center justify-center flex-shrink-0">
-                      <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 ml-0.5">
-                        <polygon points="8 5 19 12 8 19 8 5" />
+                    <div className="p-7 sm:p-8">
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        <span className="text-[11px] px-2.5 py-0.5 bg-[#F2EDE7] text-[#5F433E] tracking-[0.06em]">
+                          {item.tag1}
+                        </span>
+                        <span
+                          className="text-[11px] px-2.5 py-0.5 border border-[#202020]/15 text-[#757575] tracking-[0.08em]"
+                          style={{ fontFamily: 'var(--font-en-text)' }}
+                        >
+                          {item.tag2}
+                        </span>
+                      </div>
+                      <h3
+                        className="text-xl text-[#202020] leading-[1.5] tracking-[0.06em] mb-3"
+                        style={{ fontFamily: 'var(--font-jp-heading)' }}
+                      >
+                        {item.title}
+                      </h3>
+                      <p className="text-sm text-[#757575] leading-[1.9]">{item.desc}</p>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+
+          <div className="mt-14">
+            <a href={WA_URL} target="_blank" rel="noopener noreferrer" className="nkg-btn">
+              <span>{t.sale.btnText}</span>
+              <span className="nkg-btn-pill" aria-hidden="true">
+                →
+              </span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* =====================================================================
+          VIDEO DOCUMENTATION SECTION (.home-post style 2-column editorial list)
+      ===================================================================== */}
+      <section id="dokumentasi" className="nkg-paper py-24 sm:py-32 border-b border-[#202020]/10">
+        <div className="max-w-[1600px] mx-auto px-6 sm:px-12 lg:px-16">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
+            <h2 className="nkg-ttl-dual">
+              <span className="font-jp">{t.videos.titleJp}</span>
+              <span className="font-en">{t.videos.titleEn}</span>
+            </h2>
+            <a href={WA_URL} target="_blank" rel="noopener noreferrer" className="nkg-btn">
+              <span>{t.header.cta}</span>
+              <span className="nkg-btn-pill" aria-hidden="true">
+                →
+              </span>
+            </a>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            {t.videos.items.map((vid, idx) => (
+              <article
+                key={vid.id}
+                onClick={() => setActiveVideo(vid.id)}
+                className="bg-white p-6 sm:p-8 grid grid-cols-1 sm:grid-cols-12 gap-6 items-center cursor-pointer group shadow-[0_2px_16px_rgba(32,32,32,0.03)] hover:shadow-[0_12px_30px_rgba(32,32,32,0.08)] transition-all"
+              >
+                <div className="sm:col-span-5 aspect-[4/3] overflow-hidden bg-[#202020] relative">
+                  <img
+                    src={asset(idx === 0 ? 'video1-thumb.jpg' : 'video2-thumb.jpg')}
+                    alt={vid.title}
+                    className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                    <span className="w-12 h-12 rounded-full bg-white/95 text-[#202020] flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <svg className="w-5 h-5 fill-current ml-0.5" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M8 5v14l11-7z" />
                       </svg>
                     </span>
                   </div>
-                </button>
-
-                <div className="aspect-[16/10] rounded-2xl overflow-hidden bg-white border border-[#DED9CE]">
-                  <img
-                    src="./clevio-pro/unsplash-gallery-1.jpg"
-                    alt="Sesi diskusi strategis"
-                    className="w-full h-full object-cover sepia-[.08]"
-                    loading="lazy"
-                  />
                 </div>
-
-                <div className="aspect-[16/10] rounded-2xl overflow-hidden bg-white border border-[#DED9CE]">
-                  <img
-                    src="./clevio-pro/unsplash-gallery-2.jpg"
-                    alt="Kolaborasi pemetaan masalah"
-                    className="w-full h-full object-cover sepia-[.08]"
-                    loading="lazy"
-                  />
-                </div>
-
-                <div className="aspect-[16/10] rounded-2xl overflow-hidden bg-white border border-[#DED9CE]">
-                  <img
-                    src="./clevio-pro/unsplash-gallery-3.jpg"
-                    alt="Eksplorasi prototipe solusi"
-                    className="w-full h-full object-cover sepia-[.08]"
-                    loading="lazy"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
-                {[
-                  { name: 'Harian Kompas', sub: 'Rubrik SOSOK' },
-                  { name: 'Ristek Award', sub: 'Inovasi 2012' },
-                  { name: 'Harvard Seed', sub: 'Social Impact' },
-                  { name: 'Agriana.ai', sub: 'AI Pangan' },
-                  { name: 'Clevio Camp', sub: 'EdTech' },
-                ].map((org) => (
-                  <div
-                    key={org.name}
-                    className="rounded-xl bg-white border border-[#DED9CE] px-3 py-2.5 text-center"
-                  >
-                    <p className="text-[11px] font-extrabold text-[#101614]">{org.name}</p>
-                    <p className="text-[10px] text-[#757A77]">{org.sub}</p>
+                <div className="sm:col-span-7 flex flex-col gap-3">
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="text-xs tracking-[0.14em] text-[#AD8A72]"
+                      style={{ fontFamily: 'var(--font-en-text)' }}
+                    >
+                      {vid.date}
+                    </span>
+                    <span className="text-[11px] px-2.5 py-0.5 bg-[#F2EDE7] text-[#5F433E]">
+                      {vid.tag}
+                    </span>
                   </div>
+                  <h3
+                    className="text-lg sm:text-xl text-[#202020] group-hover:text-[#AD8A72] transition-colors leading-[1.5]"
+                    style={{ fontFamily: 'var(--font-jp-heading)' }}
+                  >
+                    {vid.title}
+                  </h3>
+                  <p className="text-xs text-[#757575]">{vid.duration}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* =====================================================================
+          ALTERNATING SPLIT FEATURE BLOCKS (.home-company & .home-company--reverse)
+          Block 1: Dipandu Oleh Aranggi Soemardjan
+          Block 2: Rekam Jejak & Ekosistem Inovasi
+      ===================================================================== */}
+      <section id="mentor" className="nkg-paper relative z-10">
+        {/* Block 1: Image Left (62%), Content Right (38%) */}
+        <div className="flex flex-col lg:flex-row items-stretch">
+          <div className="w-full lg:w-[58%] min-h-[420px] sm:min-h-[580px] lg:min-h-[720px] bg-[#E9E1DA] overflow-hidden relative">
+            <img
+              src={asset('aranggi-real.jpg')}
+              alt="Aranggi Soemardjan - Clevio AI Pro Facilitator"
+              className="w-full h-full object-cover object-top"
+            />
+          </div>
+          <div className="w-full lg:w-[42%] flex flex-col justify-center px-6 sm:px-14 lg:px-20 py-16 lg:py-24">
+            <div className="max-w-md flex flex-col gap-10">
+              <h2 className="nkg-ttl-dual">
+                <span className="font-jp">{t.company1.titleJp}</span>
+                <span className="font-en">{t.company1.titleEn}</span>
+              </h2>
+              <p className="text-base sm:text-lg font-medium text-[#202020] leading-[1.8]">
+                {t.company1.lead}
+              </p>
+              <div className="flex flex-col divide-y divide-[#202020]/15 border-y border-[#202020]/15">
+                {t.company1.links.map((lnk) => (
+                  <a
+                    key={lnk.en}
+                    href={WA_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="py-5 flex items-center justify-between gap-4 group"
+                  >
+                    <div>
+                      <span
+                        className="block text-base sm:text-lg text-[#202020] group-hover:text-[#AD8A72] transition-colors"
+                        style={{ fontFamily: 'var(--font-jp-heading)' }}
+                      >
+                        {lnk.jp}
+                      </span>
+                      <span
+                        className="block text-xs italic text-[#AD8A72] mb-1"
+                        style={{ fontFamily: 'var(--font-en-heading)' }}
+                      >
+                        {lnk.en}
+                      </span>
+                      <span className="block text-xs text-[#757575] leading-relaxed">
+                        {lnk.desc}
+                      </span>
+                    </div>
+                    <span className="nkg-btn-pill shrink-0 group-hover:translate-x-1" aria-hidden="true">
+                      →
+                    </span>
+                  </a>
                 ))}
               </div>
             </div>
+          </div>
+        </div>
 
-            <div
-              id="kontak"
-              className="lg:col-span-5 rounded-3xl bg-[#101614] text-white p-8 sm:p-11 flex flex-col justify-between"
-            >
-              <div>
-                <span className="inline-block px-3 py-1 rounded-full bg-[#B8502B] text-white text-[10px] font-bold tracking-[0.18em] uppercase">
-                  {isEn ? '07 · REGISTRATION' : '07 · PENDAFTARAN'}
-                </span>
-
-                <h2 className="mt-5 font-extrabold text-[32px] sm:text-[42px] leading-[1.06] tracking-[-0.035em] text-white">
-                  {isEn ? (
-                    <>
-                      Ready to lead
-                      <br />
-                      <span
-                        className="italic font-normal text-[#E8C5B0]"
-                        style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
-                      >
-                        change with AI?
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      Siap memimpin
-                      <br />
-                      <span
-                        className="italic font-normal text-[#E8C5B0]"
-                        style={{ fontFamily: '"Instrument Serif", Georgia, serif' }}
-                      >
-                        perubahan dengan AI?
-                      </span>
-                    </>
-                  )}
-                </h2>
-
-                <p className="mt-4 text-sm sm:text-base text-[#B8C0BC] leading-relaxed">
-                  {isEn
-                    ? 'Secure your seat at the next Clevio AI Pro Public Batch or schedule a tailored In-House session for your leadership team.'
-                    : 'Amankan tempat Anda di workshop Clevio AI Pro atau jadwalkan sesi in-house khusus untuk tim kepemimpinan Anda.'}
-                </p>
-
-                <div className="mt-7">
+        {/* Block 2 (.home-company--reverse): Content Left (42%), Image Right (58%) */}
+        <div className="flex flex-col lg:flex-row-reverse items-stretch">
+          <div className="w-full lg:w-[58%] min-h-[380px] sm:min-h-[520px] lg:min-h-[680px] bg-[#E9E1DA] overflow-hidden relative">
+            <img
+              src={asset('unsplash-gallery-3.jpg')}
+              alt="Clevio Innovation Track Record"
+              className="w-full h-full object-cover object-center"
+            />
+          </div>
+          <div className="w-full lg:w-[42%] flex flex-col justify-center px-6 sm:px-14 lg:px-20 py-16 lg:py-24">
+            <div className="max-w-md flex flex-col gap-10 lg:ml-auto">
+              <h2 className="nkg-ttl-dual">
+                <span className="font-jp">{t.company2.titleJp}</span>
+                <span className="font-en">{t.company2.titleEn}</span>
+              </h2>
+              <p className="text-base sm:text-lg font-medium text-[#202020] leading-[1.8]">
+                {t.company2.lead}
+              </p>
+              <div className="flex flex-col divide-y divide-[#202020]/15 border-y border-[#202020]/15">
+                {t.company2.links.map((lnk) => (
                   <a
-                    href={waHref}
+                    key={lnk.en}
+                    href={WA_URL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full min-h-[52px] rounded-full bg-[#B8502B] hover:bg-[#9E4120] text-white px-7 py-3.5 text-sm font-bold inline-flex items-center justify-center gap-3 transition-colors"
+                    className="py-5 flex items-center justify-between gap-4 group"
                   >
-                    <span>
-                      {isEn ? 'Register via WhatsApp' : 'Daftar Workshop via WhatsApp'}
+                    <div>
+                      <span
+                        className="block text-base sm:text-lg text-[#202020] group-hover:text-[#AD8A72] transition-colors"
+                        style={{ fontFamily: 'var(--font-jp-heading)' }}
+                      >
+                        {lnk.jp}
+                      </span>
+                      <span
+                        className="block text-xs italic text-[#AD8A72] mb-1"
+                        style={{ fontFamily: 'var(--font-en-heading)' }}
+                      >
+                        {lnk.en}
+                      </span>
+                      <span className="block text-xs text-[#757575] leading-relaxed">
+                        {lnk.desc}
+                      </span>
+                    </div>
+                    <span className="nkg-btn-pill shrink-0 group-hover:translate-x-1" aria-hidden="true">
+                      →
                     </span>
-                    <ArrowRightIcon className="w-4 h-4" />
                   </a>
-                </div>
-              </div>
-
-              <div className="mt-8 pt-6 border-t border-white/15 space-y-2 text-xs text-[#949E99]">
-                <div className="flex items-center justify-between">
-                  <span>WhatsApp</span>
-                  <a
-                    href={waHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-bold text-white hover:underline tabular-nums inline-flex items-center gap-1.5"
-                  >
-                    <PhoneIcon className="w-3.5 h-3.5 text-[#D98260]" />
-                    <span>+62 822-2111-8860</span>
-                  </a>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Email</span>
-                  <a
-                    href="mailto:clevioaipro@gmail.com"
-                    className="font-semibold text-white hover:underline"
-                  >
-                    clevioaipro@gmail.com
-                  </a>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Website</span>
-                  <a
-                    href="https://cleviopro.vercel.app"
-                    className="font-semibold text-white hover:underline"
-                  >
-                    chiefaiofficer.id
-                  </a>
-                </div>
+                ))}
               </div>
             </div>
           </div>
+        </div>
+      </section>
 
-          <footer className="py-4 border-t border-[#DED9CE] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#5C615E]">
-            <div className="flex items-center gap-3">
-              <span className="font-bold text-[#101614]">clevio AI Pro</span>
-              <span>·</span>
-              <span>© 2026 Clevio AI Pro. All rights reserved.</span>
+      {/* =====================================================================
+          FOOTER PARALLAX IMAGE + OVERLAPPING CTA CARD + DARK FOOTER (.footer)
+      ===================================================================== */}
+      <div className="relative w-full h-[280px] sm:h-[420px] overflow-hidden">
+        <img
+          src={asset('unsplash-gallery-4.jpg')}
+          alt="Clevio Executive Session"
+          className="w-full h-full object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-black/35" />
+      </div>
+
+      <footer className="bg-[#0F0F0F] text-[#F5F2EE] relative z-10">
+        {/* Overlapping Contact Card (.footer--cta .cta) */}
+        <div className="max-w-[1440px] mx-auto px-6 sm:px-12 -mt-24 sm:-mt-32 relative z-20">
+          <div className="bg-[#F2EDE7] text-[#202020] p-8 sm:p-14 lg:p-20 shadow-2xl">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+              <div className="lg:col-span-4">
+                <h2 className="nkg-ttl-dual">
+                  <span className="font-jp">{t.footer.ctaTitleJp}</span>
+                  <span className="font-en">{t.footer.ctaTitleEn}</span>
+                </h2>
+              </div>
+
+              <div className="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-4">
+                <a
+                  href={WA_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="nkg-btn-solid"
+                >
+                  <span>{t.footer.ctaBtn1}</span>
+                  <span aria-hidden="true">→</span>
+                </a>
+                <a
+                  href={WA_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="nkg-btn-solid !bg-transparent !text-[#202020] hover:!bg-[#202020] hover:!text-[#F5F2EE]"
+                >
+                  <span>{t.footer.ctaBtn2}</span>
+                  <span aria-hidden="true">→</span>
+                </a>
+              </div>
+
+              <div className="lg:col-span-4 lg:border-l lg:border-[#202020]/15 lg:pl-10 flex flex-col gap-1">
+                <a
+                  href={WA_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-2xl sm:text-3xl font-medium tracking-[0.06em] text-[#202020] hover:text-[#AD8A72] transition-colors"
+                  style={{ fontFamily: 'var(--font-en-text)' }}
+                >
+                  +62 822-2111-8860
+                </a>
+                <p className="text-xs text-[#757575]">{t.footer.telTime}</p>
+              </div>
             </div>
-            <a href="#top" className="font-bold text-[#101614] hover:text-[#B8502B]">
-              {isEn ? 'Back to top ↑' : 'Kembali ke atas ↑'}
-            </a>
-          </footer>
-        </section>
-      </main>
 
+            {/* Format / Coverage Bar (.cta__area) */}
+            <div className="mt-10 pt-8 border-t border-[#202020]/15 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-8 text-xs sm:text-sm">
+              <span className="font-semibold text-[#202020] shrink-0">{t.footer.areaLabel}</span>
+              <span className="text-[#757575]">{t.footer.areaDesc}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Dark Footer Body (.footer_body) */}
+        <div className="max-w-[1600px] mx-auto px-6 sm:px-12 lg:px-16 pt-20 pb-14">
+          <div className="flex flex-col lg:flex-row justify-between gap-12 pb-14 border-b border-white/10">
+            <div className="max-w-md flex flex-col gap-5">
+              <div className="flex items-center gap-3">
+                <span className="flex items-center gap-1" aria-hidden="true">
+                  <span
+                    className="block w-2.5 h-5 rounded-[2px] bg-[#F5F2EE]"
+                    style={{ transform: 'skewY(-22deg)' }}
+                  />
+                  <span
+                    className="block w-2.5 h-5 rounded-[2px] bg-[#AD8A72]"
+                    style={{ transform: 'skewY(22deg)' }}
+                  />
+                </span>
+                <span
+                  className="text-xl tracking-[0.1em] text-[#F5F2EE]"
+                  style={{ fontFamily: 'var(--font-en-heading)' }}
+                >
+                  CLEVIO AI PRO
+                </span>
+              </div>
+              <p className="text-xs text-[#BDBDBD] leading-relaxed">{t.footer.addressLabel}</p>
+              <p className="text-xs text-[#757575] leading-relaxed">{t.footer.addressBody}</p>
+            </div>
+
+            <div className="flex flex-wrap gap-8 sm:gap-14 text-xs tracking-[0.12em] uppercase text-[#BDBDBD]">
+              <button
+                type="button"
+                onClick={() => scrollToSection('tantangan')}
+                className="hover:text-[#D6B996] transition-colors cursor-pointer"
+              >
+                01 / {t.works.titleEn}
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollToSection('program')}
+                className="hover:text-[#D6B996] transition-colors cursor-pointer"
+              >
+                02 / {t.event.titleEn}
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollToSection('kompetensi')}
+                className="hover:text-[#D6B996] transition-colors cursor-pointer"
+              >
+                03 / {t.sale.titleEn}
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollToSection('mentor')}
+                className="hover:text-[#D6B996] transition-colors cursor-pointer"
+              >
+                04 / {t.company1.titleEn}
+              </button>
+            </div>
+          </div>
+
+          <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#757575]">
+            <p>{t.footer.copyright}</p>
+            <a
+              href={WA_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#BDBDBD] hover:text-[#D6B996] transition-colors"
+            >
+              WhatsApp: +62 822-2111-8860
+            </a>
+          </div>
+        </div>
+      </footer>
+
+      {/* =====================================================================
+          YOUTUBE VIDEO MODAL
+      ===================================================================== */}
       {activeVideo && (
         <div
-          role="dialog"
-          aria-modal="true"
-          aria-label="Pemutar Video Clevio AI Pro"
-          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 sm:p-6"
+          className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4"
           onClick={() => setActiveVideo(null)}
         >
           <div
-            className="w-full max-w-4xl rounded-2xl bg-[#101614] border border-white/20 shadow-2xl overflow-hidden"
+            className="relative w-full max-w-md aspect-[9/16] max-h-[85vh] bg-black overflow-hidden shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/10 text-white text-xs sm:text-sm">
-              <span className="font-bold">
-                {activeVideo === 'workshop'
-                  ? isEn
-                    ? 'Clevio AI Pro Workshop Highlight'
-                    : 'Cuplikan Pengalaman Workshop Clevio AI Pro'
-                  : isEn
-                    ? 'Facilitator Profile: Aranggi Soemardjan'
-                    : 'Profil Fasilitator: Aranggi Soemardjan'}
-              </span>
-              <button
-                type="button"
-                onClick={() => setActiveVideo(null)}
-                className="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 text-xs font-semibold text-white"
-              >
-                {isEn ? 'Close ✕' : 'Tutup ✕'}
-              </button>
-            </div>
-            <div className="aspect-video w-full bg-black">
-              <iframe
-                className="w-full h-full"
-                src={activeVideo === 'workshop' ? VIDEO_WORKSHOP_EMBED : VIDEO_ARANGGI_EMBED}
-                title="Video Clevio AI Pro"
-                allow="autoplay; encrypted-media; fullscreen"
-                allowFullScreen
-              />
-            </div>
+            <button
+              type="button"
+              onClick={() => setActiveVideo(null)}
+              className="absolute top-3 right-3 z-10 w-10 h-10 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-black cursor-pointer"
+              aria-label="Close video"
+            >
+              <svg className="w-5 h-5 stroke-current" fill="none" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <iframe
+              src={`https://www.youtube.com/embed/${activeVideo}?autoplay=1`}
+              title="Clevio AI Pro Session Documentation"
+              className="w-full h-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
           </div>
         </div>
       )}
     </div>
-  )
+  );
 }
